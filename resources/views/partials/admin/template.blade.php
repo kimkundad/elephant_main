@@ -15,7 +15,7 @@
 	<!--begin::Body-->
 	<body
     id="kt_app_body"
-    data-kt-app-layout="light-sidebar"
+    data-kt-app-layout="dark-sidebar"
     data-kt-app-header-fixed="true"
     data-kt-app-sidebar-enabled="true"
     data-kt-app-sidebar-fixed="true"
