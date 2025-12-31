@@ -1,0 +1,79 @@
+<div class="menu-mask"></div>
+   <!-- MOBILE MENU HOLDER -->
+   <div class="mobile-menu-holder">
+      <div class="modal-menu-container">
+         <div class="exit-mobile">
+            <span class="icon-bar1"></span>
+            <span class="icon-bar2"></span>
+         </div>
+         <!-- MOBILE MENU -->
+         <ul class="menu-mobile">
+            <li class="menu-item menu-item-has-children current-menu-item">
+               <a href="">Home</a>
+
+            </li>
+
+
+         </ul>
+         <!-- /MOBILE MENU -->
+      </div>
+      <!-- modal-menu-container -->
+      <div class="menu-contact">
+         <div class="mobile-btn"> <a href="#" class="view-more">Book
+               a Table</a></div>
+         <ul class="mobile-contact">
+            <li class="mobile-address">58 Ralph Ave<br>
+               New York, New York 1111
+            </li>
+            <li class="mobile-phone">+1 800 000 111</li>
+            <li class="mobile-email">contact@example.com</li>
+         </ul>
+         <ul class="social-media">
+            <li><a class="social-facebook" href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+            <li><a class="social-twitter" href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+            <li><a class="social-tripadvisor" href="#" target="_blank"><i class="fab fa-tripadvisor"></i></a></li>
+            <li><a class="social-instagram" href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+            <li><a class="social-pinterest" href="#" target="_blank"><i class="fab fa-pinterest"></i></a></li>
+         </ul>
+      </div>
+      <!-- /menu-contact-->
+   </div>
+   <!-- /MOBILE MENU HOLDER -->
+   <!-- HEADER -->
+   <header id="header-1" class="headerHolder header-1 nav-fixed-top">
+      <div class="nav-button-holder">
+         <button type="button" class="nav-button">
+            <span class="icon-bar"></span>
+         </button>
+      </div>
+      <!-- /nav-button-holder-->
+      <!-- LOGO -->
+      <div class="logo logo-1"><a href=""><img class="img-fluid"
+               src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
+               alt="Caverta"></a></div>
+      <!-- MENU -->
+      <nav class="nav-holder nav-holder-1">
+         <ul class="menu-nav menu-nav-1">
+            <li class="menu-item menu-item-has-children current-menu-item">
+               <a href="">Home</a>
+
+            </li>
+            <li class="menu-item menu-item-has-children">
+               <a href="">Menu</a>
+
+            </li>
+
+
+
+         </ul>
+      </nav>
+      <!-- /MENU -->
+      <div class="social-btn-top1">
+         <ul class="social-media social-media1">
+
+         </ul>
+         <div class="btn-header btn-header1"> <a href="" class="view-more">Book a Table</a>
+         </div>
+      </div>
+      <!-- /social-btn-top1 -->
+   </header>

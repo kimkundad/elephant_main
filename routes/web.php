@@ -7,10 +7,17 @@ use App\Http\Controllers\Admin\TourController;
 use App\Http\Controllers\Admin\TourSessionController;
 use App\Http\Controllers\Admin\TourAvailabilityController;
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\HomeController;
 
 // หน้าแรก
-Route::get('/', function () {
-    return view('welcome');
+Route::name('frontend.')->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+    Route::get('/tours/{slug}', [TourController::class, 'show'])->name('tours.show');
+
+    Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 });
 
 // เพิ่ม route alias สำหรับ login
