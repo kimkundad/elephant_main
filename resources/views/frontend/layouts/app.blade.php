@@ -56,7 +56,7 @@
 
     @stack('styles')
 </head>
-<body class="home">
+<body class="@yield('body-class')">
 
     @include('frontend.partials.header')
 

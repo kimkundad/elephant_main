@@ -11,6 +11,12 @@ class PickupLocation extends Model
         'name',
         'latitude',
         'longitude',
-        'is_active'
+        'is_active',
+        'is_meeting_point', // ✅ เพิ่ม
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_meeting_point' => 'boolean', // ✅ cast เป็น boolean
     ];
 }

@@ -40,7 +40,14 @@
    </div>
    <!-- /MOBILE MENU HOLDER -->
    <!-- HEADER -->
-   <header id="header-1" class="headerHolder header-1 nav-fixed-top">
+   @php
+  // หน้าไหนให้ header ดำทันที
+  $forceDark = request()->routeIs('frontend.tours.*')
+            || request()->routeIs('frontend.booking.*') || request()->routeIs('frontend.about') || request()->routeIs('frontend.contact') || request()->routeIs('frontend.tours.index');
+@endphp
+
+<header id="header-1"
+        class="headerHolder header-1  {{ $forceDark ? 'nav-fixed-top header-dark' : '' }}">
       <div class="nav-button-holder">
          <button type="button" class="nav-button">
             <span class="icon-bar"></span>
@@ -48,20 +55,29 @@
       </div>
       <!-- /nav-button-holder-->
       <!-- LOGO -->
-      <div class="logo logo-1"><a href=""><img class="img-fluid"
+      <div class="logo logo-1"><a href="{{ url('/') }}"><img class="img-fluid"
                src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
                alt="Caverta"></a></div>
       <!-- MENU -->
       <nav class="nav-holder nav-holder-1">
          <ul class="menu-nav menu-nav-1">
-            <li class="menu-item menu-item-has-children current-menu-item">
-               <a href="">Home</a>
+            <li class="menu-item menu-item-has-children {{ request()->routeIs('frontend.home') ? 'current-menu-item' : '' }}">
+  <a href="{{ route('frontend.home') }}">Home</a>
+</li>
 
-            </li>
-            <li class="menu-item menu-item-has-children">
-               <a href="">Menu</a>
+<li class="menu-item menu-item-has-children {{ request()->routeIs('frontend.tours.index') ? 'current-menu-item' : '' }}">
+  <a href="{{ route('frontend.tours.index') }}">Programs</a>
+</li>
 
-            </li>
+<li class="menu-item menu-item-has-children {{ request()->routeIs('frontend.about') ? 'current-menu-item' : '' }}">
+  <a href="{{ route('frontend.about') }}">About</a>
+</li>
+
+
+<li class="menu-item menu-item-has-children {{ request()->routeIs('frontend.contact') ? 'current-menu-item' : '' }}">
+  <a href="{{ route('frontend.contact') }}">Contact</a>
+</li>
+
 
 
 
@@ -72,7 +88,7 @@
          <ul class="social-media social-media1">
 
          </ul>
-         <div class="btn-header btn-header1"> <a href="" class="view-more">Book a Table</a>
+         <div class="btn-header btn-header1">
          </div>
       </div>
       <!-- /social-btn-top1 -->

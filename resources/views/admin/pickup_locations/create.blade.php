@@ -44,6 +44,41 @@
                             </div>
                         </div>
 
+                        {{-- สถานะ / ประเภท --}}
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="is_active"
+                   name="is_active"
+                   value="1"
+                   {{ old('is_active', 1) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_active">
+                เปิดใช้งาน (Active)
+            </label>
+        </div>
+        <small class="text-muted">ถ้าปิด จะไม่แสดงให้ลูกค้าเลือกในหน้า Booking</small>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="is_meeting_point"
+                   name="is_meeting_point"
+                   value="1"
+                   {{ old('is_meeting_point', 0) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_meeting_point">
+                เป็น “จุดนัดรับ” (Meeting Point)
+            </label>
+        </div>
+        <small class="text-muted">ใช้กรณีลูกค้าอยู่นอกเขตโรงแรมรับส่ง ให้มารอที่จุดนี้</small>
+    </div>
+</div>
+
+<br>
+
                         <button class="btn btn-primary">บันทึกข้อมูล</button>
 
                     </form>

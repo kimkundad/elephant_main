@@ -23,3 +23,18 @@
       crossorigin="anonymous"></script>
 
    <script src="https://apps.elfsight.com/p/platform.js" defer></script>
+
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const header = document.getElementById('header-1');
+  if (!header) return;
+
+  if (document.body.classList.contains('page-home')) {
+    header.classList.remove('header-dark');
+    // ล้าง inline ที่อาจถูกธีมใส่มา
+    header.style.background = '';
+    header.style.marginTop = '';
+    header.style.position = '';
+  }
+});
+</script>

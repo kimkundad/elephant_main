@@ -22,6 +22,8 @@
                         <thead>
                             <tr>
                                 <th>ชื่อโรงแรม / จุดรับ</th>
+                                <th>ประเภท</th>
+                                <th>สถานะ</th>
                                 <th>แผนที่</th>
                                 <th width="150">จัดการ</th>
                             </tr>
@@ -31,6 +33,21 @@
                             @foreach ($locations as $loc)
                                 <tr>
                                     <td>{{ $loc->name }}</td>
+                                    <td>
+                                        @if($loc->is_meeting_point)
+                                            <span class="badge bg-info">Meeting Point</span>
+                                        @else
+                                            <span class="badge bg-secondary">Hotel Pickup</span>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        @if($loc->is_active)
+                                            <span class="badge bg-success">Active</span>
+                                        @else
+                                            <span class="badge bg-danger">Inactive</span>
+                                        @endif
+                                    </td>
 
                                     <td>
                                         @if($loc->latitude)

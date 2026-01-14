@@ -64,6 +64,42 @@
                                 </div>
                             </div>
 
+
+                            {{-- สถานะ / ประเภท --}}
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="is_active"
+                   name="is_active"
+                   value="1"
+                   {{ old('is_active', $pickup_location->is_active) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_active">
+                เปิดใช้งาน (Active)
+            </label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-check form-switch">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="is_meeting_point"
+                   name="is_meeting_point"
+                   value="1"
+                   {{ old('is_meeting_point', $pickup_location->is_meeting_point) ? 'checked' : '' }}>
+            <label class="form-check-label" for="is_meeting_point">
+                เป็น “จุดนัดรับ” (Meeting Point)
+            </label>
+        </div>
+    </div>
+</div>
+
+
+
+                            <Br>
+
                             <button class="btn btn-primary mt-4">อัปเดตข้อมูล</button>
 
                         </form>

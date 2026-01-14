@@ -8,16 +8,43 @@ use App\Http\Controllers\Admin\TourSessionController;
 use App\Http\Controllers\Admin\TourAvailabilityController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TourController as FrontTourController;
+use App\Http\Controllers\BookingController as FrontBookingController;
+use App\Http\Controllers\PickupLocationLookupController;
 
 // หน้าแรก
 Route::name('frontend.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/about', [HomeController::class, 'about'])->name('about');
+    Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+    Route::post('/contact', [HomeController::class, 'contactStore'])->name('contact.store');
 
-    Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
-    Route::get('/tours/{slug}', [TourController::class, 'show'])->name('tours.show');
 
-    Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
-    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+    // ✅ ใช้ Frontend TourController
+    Route::get('/tours', [FrontTourController::class, 'index'])->name('tours.index');
+    Route::get('/tours/{slug}', [FrontTourController::class, 'show'])->name('tours.show');
+
+    // ดึงรอบตามวันที่ (ไว้ทำเปลี่ยนวันแบบในรูป)
+    Route::get('/tours/{slug}/sessions', [FrontTourController::class, 'sessionsForDate'])
+        ->name('tours.sessions');
+
+        Route::get('/booking', [FrontBookingController::class, 'create'])
+        ->name('booking.create');
+
+    Route::post('/booking', [FrontBookingController::class, 'store'])
+        ->name('booking.store');
+
+
+        Route::get('/pickup-locations/search', [PickupLocationLookupController::class, 'search'])
+    ->name('pickup-locations.search');
+
+Route::get('/pickup-locations/resolve', [PickupLocationLookupController::class, 'resolve'])
+    ->name('pickup-locations.resolve');
+
+    Route::get('/booking/confirmed/{booking}', [FrontBookingController::class, 'confirmed'])
+    ->name('booking.confirmed');
+
+
 });
 
 // เพิ่ม route alias สำหรับ login
@@ -99,6 +126,12 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         // เปิด/ปิดการมองเห็นโปรแกรม
         Route::get('tours/{id}/toggle', [TourController::class, 'toggle'])
             ->name('tours.toggle');
+
+            Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+    Route::get('/tours/{slug}', [TourController::class, 'show'])->name('tours.show');
+
+    Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 
 
         /*

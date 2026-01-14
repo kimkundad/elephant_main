@@ -31,19 +31,24 @@ class PickupLocationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'latitude'    => 'nullable|numeric',
-            'longitude'   => 'nullable|numeric',
-        ]);
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'latitude' => 'nullable|numeric',
+        'longitude' => 'nullable|numeric',
+        'is_active' => 'sometimes|boolean',
+        'is_meeting_point' => 'sometimes|boolean',
+    ]);
 
-        PickupLocation::create($request->all());
+    $data['is_active'] = $request->has('is_active');
+    $data['is_meeting_point'] = $request->has('is_meeting_point'); // ✅
 
-        return redirect()->route('admin.pickup-locations.index')
-            ->with('success', 'เพิ่มจุดรับส่งสำเร็จ');
-    }
+    PickupLocation::create($data);
+
+    return redirect()->route('admin.pickup-locations.index')
+        ->with('success', 'Pickup location created successfully.');
+}
+
 
     /**
      * Display the specified resource.
@@ -66,20 +71,24 @@ class PickupLocationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PickupLocation $pickup_location)
-    {
-        //
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'latitude'    => 'nullable|numeric',
-            'longitude'   => 'nullable|numeric',
-        ]);
+    public function update(Request $request, PickupLocation $pickupLocation)
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'latitude' => 'nullable|numeric',
+        'longitude' => 'nullable|numeric',
+        'is_active' => 'sometimes|boolean',
+        'is_meeting_point' => 'sometimes|boolean',
+    ]);
 
-        $pickup_location->update($request->all());
+    $data['is_active'] = $request->has('is_active');
+    $data['is_meeting_point'] = $request->has('is_meeting_point'); // ✅
 
-        return redirect()->route('admin.pickup-locations.index')
-            ->with('success', 'อัปเดตจุดรับส่งสำเร็จ');
-    }
+    $pickupLocation->update($data);
+
+    return redirect()->route('admin.pickup-locations.index')
+        ->with('success', 'Pickup location updated successfully.');
+}
 
     /**
      * Remove the specified resource from storage.

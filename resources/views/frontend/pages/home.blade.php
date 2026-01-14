@@ -91,80 +91,49 @@
 
 
       <div id="home-content-28" class="home-section home-section-28">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="alignc mobile-margin-b48">
-                     <div class="smalltitle margin-b16">Elephants</div>
-                     <h2 class="home-title">Meet Our Elephants</h2>
-                  </div>
-               </div>
-               <!-- /col-md-12 -->
-            </div>
-            <!-- /row -->
-            <div class="blog-3col-grid home-blog-grid">
-               <div class="row">
-                  <div class="col-md-4">
-                     <article class="blog-item blog-item-3col-grid">
-                        <a href="">
-                           <div class="post-image"><img src="./index_files/images/sroy_fah-1.webp" class="img-fluid"
-                                 alt="Chef New Summer Dish"></div>
-                        </a>
-                        <div class="post-holder post-content content-grid">
-                           <ul class="post-meta">
-                              <li class="meta-date">RESCUED 8 FEBRUARY 2018</li>
-                           </ul>
-                           <h2 class="article-title"><a href="blog-single-post.html">SROY FAH</a></h2>
-                           <p>Maecenas ornare varius mauris eu commodo. Aenean nibh risus, rhoncus eget consectetur ac.
-                              Consectetur adipiscing elit. Vivamus auctor condimentum sem et gravida. Maecenas id enim
-                              pharetra, sollicitudin dui eget, blandit ...</p>
-                           <a class="view-more" href="blog-single-post.html">Read More</a>
-                        </div>
-                     </article>
-                  </div>
-                  <div class="col-md-4">
-                     <article class="blog-item blog-item-3col-grid">
-                        <a href="">
-                           <div class="post-image"><img src="./index_files/images/madee-2.webp" class="img-fluid"
-                                 alt="Chef New Summer Dish"></div>
-                        </a>
-                        <div class="post-holder post-content content-grid">
-                           <ul class="post-meta">
-                              <li class="meta-date">RESCUED 8 FEBRUARY 2018</li>
-                           </ul>
-                           <h2 class="article-title"><a href="blog-single-post.html">SROY FAH</a></h2>
-                           <p>Maecenas ornare varius mauris eu commodo. Aenean nibh risus, rhoncus eget consectetur ac.
-                              Consectetur adipiscing elit. Vivamus auctor condimentum sem et gravida. Maecenas id enim
-                              pharetra, sollicitudin dui eget, blandit ...</p>
-                           <a class="view-more" href="blog-single-post.html">Read More</a>
-                        </div>
-                     </article>
-                  </div>
-                  <div class="col-md-4">
-                     <article class="blog-item blog-item-3col-grid">
-                        <a href="">
-                           <div class="post-image"><img src="./index_files/images/sri_nual-1.webp" class="img-fluid"
-                                 alt="Chef New Summer Dish"></div>
-                        </a>
-                        <div class="post-holder post-content content-grid">
-                           <ul class="post-meta">
-                              <li class="meta-date">RESCUED 8 FEBRUARY 2018</li>
-                           </ul>
-                           <h2 class="article-title"><a href="blog-single-post.html">SROY FAH</a></h2>
-                           <p>Maecenas ornare varius mauris eu commodo. Aenean nibh risus, rhoncus eget consectetur ac.
-                              Consectetur adipiscing elit. Vivamus auctor condimentum sem et gravida. Maecenas id enim
-                              pharetra, sollicitudin dui eget, blandit ...</p>
-                           <a class="view-more" href="blog-single-post.html">Read More</a>
-                        </div>
-                     </article>
-                  </div>
-               </div>
-               <!-- /row -->
-            </div>
-            <!-- /home-blog-grid -->
-         </div>
-         <!-- /container -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alignc mobile-margin-b48">
+          <div class="smalltitle margin-b16">Tours</div>
+          <h2 class="home-title">Our Tours</h2>
+        </div>
       </div>
+    </div>
+
+    <div class="blog-3col-grid home-blog-grid">
+      <div class="row">
+
+        @forelse($tours as $tour)
+        <div class="col-md-4 mobile-margin-b32">
+            <a href="{{ route('frontend.tours.show', $tour->slug) }}" class="tour-tile">
+            <img
+                src="{{ $tour->thumbnail ? asset($tour->thumbnail) : asset('images/placeholder-tour.jpg') }}"
+                alt="{{ $tour->name }}"
+                loading="lazy"
+            >
+            <div class="tour-tile__overlay"></div>
+
+            <div class="tour-tile__title">
+                {{ $tour->name }}
+            </div>
+            </a>
+        </div>
+        @empty
+        <div class="col-md-12">
+            <div class="alignc">
+            <p>ยังไม่มีโปรแกรมทัวร์ให้แสดงในตอนนี้</p>
+            </div>
+        </div>
+        @endforelse
+
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
       <!-- /SECTION 3 -->
       <!-- SECTION 4 -->
       <div id="home-content-4" class="home-section home-section-4 parallax">
@@ -184,7 +153,7 @@
       <!-- /SECTION 4 -->
       <!-- SECTION 5 -->
 
-      <div id="home-content-3" class="home-section home-section-3">
+      {{-- <div id="home-content-3" class="home-section home-section-3">
          <div class="container">
             <div class="row">
                <div class="col-md-12">
@@ -366,7 +335,7 @@
             <!-- /row -->
          </div>
          <!-- /container -->
-      </div>
+      </div> --}}
 
 
 
