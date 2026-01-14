@@ -1,0 +1,21 @@
+services:
+  php82:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: elephant-php82
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "9002:9000"
+    restart: unless-stopped
+
+  node:
+    image: node:20-alpine
+    container_name: elephant-node
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: sh -lc "npm ci && npm run build"
+    profiles: ["build"]
