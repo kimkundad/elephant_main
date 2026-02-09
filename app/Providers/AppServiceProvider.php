@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\View::composer('frontend.*', function ($view) {
+            $setting = \App\Models\SiteSetting::first();
+            $view->with('siteSetting', $setting);
+        });
     }
 }

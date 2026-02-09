@@ -1,0 +1,12 @@
+@import "./bootstrap.min.css";
+@import "./font-awesome.min.css";
+@import "./owl.carousel.min.css";
+@import "./style.css";
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Prompt", sans-serif;
+}

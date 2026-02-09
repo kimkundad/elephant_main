@@ -17,7 +17,7 @@
 
       <div class="tour-calendar-card">
         <div class="calendar-header">
-          <div class="calendar-title">Choose date</div>
+          <div class="calendar-title">Choose date 1</div>
           <div class="calendar-month">
             <a class="cal-nav" href="{{ route('frontend.tours.show', [$tour->slug, 'month'=>$prev, 'date'=>$selectedDate]) }}">‹</a>
             <span>{{ $m->format('F Y') }}</span>

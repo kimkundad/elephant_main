@@ -3,32 +3,34 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Elephant Sanctuary')</title>
+    <title>@yield('title', 'SMALL ELEPHANTS')</title>
 
     {{-- ถ้าใช้ Vite --}}
-    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    @vite(['resources/frontend/css/app.css', 'resources/frontend/js/app.js'])
+
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}">
+
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('frontend/css/font-awesome.min.css') }}">
+
 
     <!-- Owl Carousel -->
-    <link rel="stylesheet" href="{{ asset('frontend/css/owl.carousel.min.css') }}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
     <!-- Main Theme CSS -->
-    <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
+
 
     <!-- Favicons -->
-    <link rel="icon" href="{{ asset('frontend/images/icons/favicon-32x32.png') }}" sizes="32x32">
-    <link rel="icon" href="{{ asset('frontend/images/icons/favicon-192x192.png') }}" sizes="192x192">
-    <link rel="apple-touch-icon" href="{{ asset('frontend/images/icons/favicon-180x180.png') }}">
+    <link rel="icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-32x32.png') }}" sizes="32x32">
+    <link rel="icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-192x192.png') }}" sizes="192x192">
+    <link rel="apple-touch-icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-180x180.png') }}">
 
     {{-- Custom inline style (ถ้าจำเป็น) --}}
     <style id="fit-vids-style">
@@ -50,6 +52,45 @@
       .logo img {
     width: 160px;
 }
+.testimonial-box{
+    background:#222;
+    padding:25px;
+    border-radius:12px;
+    color:white;
+    height:100%;
+}
+
+.testimonial-author{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.testimonial-author img{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+}
+
+.testimonial-rating{
+    color:#9acd32;
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.testimonial-text{
+    font-size:14px;
+    line-height:1.6;
+}
+.testimonial-slider {
+    position: relative;
+    z-index: 5;
+}
+.testimonial-slider {
+    position: relative;
+    z-index: 50;
+}
    </style>
 
     {{-- เผื่อหน้าอื่น push css เพิ่ม --}}
@@ -69,3 +110,4 @@
     @stack('scripts')
 </body>
 </html>
+

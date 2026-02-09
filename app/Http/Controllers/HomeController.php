@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Tour;
 use Illuminate\Support\Str;
 use App\Models\Contact;
+use App\Models\Elephant;
 
 class HomeController extends Controller
 {
@@ -17,7 +18,7 @@ class HomeController extends Controller
         $tours = Tour::query()
             ->where('is_active', 1)
             ->orderByDesc('id')
-            ->take(3)
+            ->take(5)
             ->get()
             ->map(function ($tour) {
                 // สร้าง excerpt ให้สวย ถ้าไม่มี short_description ก็ใช้ description แทน
@@ -27,7 +28,13 @@ class HomeController extends Controller
                 return $tour;
             });
 
-        return view('frontend.pages.home', compact('tours'));
+        $elephants = Elephant::query()
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('frontend.pages.home', compact('tours', 'elephants'));
         // ถ้า home ของคุณอยู่ path อื่น เช่น frontend/home ก็แก้เป็น:
         // return view('frontend.home', compact('tours'));
     }
@@ -40,6 +47,17 @@ class HomeController extends Controller
     public function contact()
     {
         return view('frontend.pages.contact');
+    }
+
+    public function elephants()
+    {
+        $elephants = Elephant::query()
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('frontend.pages.elephants', compact('elephants'));
     }
 
     public function contactStore(Request $request)

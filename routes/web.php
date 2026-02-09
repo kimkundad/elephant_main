@@ -11,6 +11,21 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TourController as FrontTourController;
 use App\Http\Controllers\BookingController as FrontBookingController;
 use App\Http\Controllers\PickupLocationLookupController;
+use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\BookingPublicController;
+use App\Http\Controllers\GoogleReviewsController;
+use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\ElephantController;
+
+Route::get('/api/google-reviews', [GoogleReviewsController::class, 'index']);
+
+
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');
+    
+
+Route::get('/b/{code}', [BookingPublicController::class, 'show'])->name('booking.public');
 
 // หน้าแรก
 Route::name('frontend.')->group(function () {
@@ -18,6 +33,27 @@ Route::name('frontend.')->group(function () {
     Route::get('/about', [HomeController::class, 'about'])->name('about');
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact', [HomeController::class, 'contactStore'])->name('contact.store');
+    Route::get('/our-elephants', [HomeController::class, 'elephants'])->name('elephants');
+
+    // ตรวจสถานะ PromptPay (polling จากหน้า QR)
+    Route::get('/booking/{booking}/payment-status', [FrontBookingController::class, 'paymentStatus'])
+        ->name('booking.payment_status');
+
+    // Success (Card) – Stripe redirect กลับมา
+    Route::get('/booking/{booking}/success', function (\App\Models\Booking $booking) {
+        return redirect()->route('frontend.booking.confirmed', $booking);
+    })->name('booking.success');
+
+    // Cancel (Card)
+    Route::get('/booking/{booking}/cancel', function (\App\Models\Booking $booking) {
+        $booking->update([
+            'payment_status' => 'canceled',
+        ]);
+
+        return redirect()
+            ->route('frontend.booking.create')
+            ->with('error', 'Payment was canceled');
+    })->name('booking.cancel');
 
 
     // ✅ ใช้ Frontend TourController
@@ -74,6 +110,17 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
+
+        // Site settings
+        Route::get('/settings', [SiteSettingController::class, 'edit'])
+            ->name('settings.edit');
+        Route::post('/settings', [SiteSettingController::class, 'update'])
+            ->name('settings.update');
+
+        // Elephants
+        Route::resource('elephants', ElephantController::class);
+        Route::get('/elephants/{elephant}/toggle', [ElephantController::class, 'toggle'])
+            ->name('elephants.toggle');
 
         // Users
         Route::get('/users', [UserController::class, 'index'])

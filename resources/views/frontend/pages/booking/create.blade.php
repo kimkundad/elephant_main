@@ -23,6 +23,7 @@
             </div>
         </div>
 
+
         <form method="POST" action="{{ route('frontend.booking.store') }}" class="booking-grid">
             @csrf
 
@@ -79,6 +80,7 @@
                         </div>
                     </div>
                 </div>
+                
 
                 <div class="card">
                     <div class="card-title">Additional information</div>
@@ -86,39 +88,60 @@
                     <label class="f-label">Hotel Pick up & Drop Off</label>
 
                     <div class="mb-3" style="position:relative;">
-                        <label class="form-label">ค้นหาโรงแรม / สถานที่ (Google)</label>
+                        <label class="form-label">ค้นหาโรงแรม / ที่พัก (Google) — เฉพาะในตัวเมืองเชียงใหม่</label>
                         <input id="searchInput"
                             type="text"
                             class="f-input"
-                            placeholder="เช่น Centara, Akyra, Maya Mall"
+                            placeholder="พิมพ์ชื่อโรงแรม/ที่พัก แล้วเลือกจากรายการ"
                             autocomplete="off">
+
+                        <div class="tiny" style="margin-top:8px; color:#666;">
+                            * ถ้าไม่พบในรายการ (เช่น Airbnb) ระบบจะให้กรอกที่อยู่และปักหมุดแทน
+                        </div>
                     </div>
 
-                    {{-- hidden fields จาก Google --}}
+                    {{-- hidden fields (Google / Manual pin) --}}
                     <input type="hidden" name="google_place_id" id="google_place_id" value="">
                     <input type="hidden" name="google_place_name" id="google_place_name" value="">
                     <input type="hidden" name="google_place_address" id="google_place_address" value="">
                     <input type="hidden" name="google_lat" id="google_lat" value="">
                     <input type="hidden" name="google_lng" id="google_lng" value="">
+                    <input type="hidden" name="pickup_source" id="pickup_source" value="">
+                    <input type="hidden" name="pickup_out_of_bounds" id="pickup_out_of_bounds" value="0">
 
-                    {{-- ผลตรวจสอบกับ DB --}}
-                    <input type="hidden" name="pickup_location_id" id="pickup_location_id" value="">
-
+                    {{-- ✅ อยู่ในเขตรับส่ง --}}
                     <div id="pickupFound" class="tiny" style="display:none; margin-top:8px;">
                         ✅ โรงแรมนี้อยู่ในเขตรับส่งของเรา
                     </div>
 
-                    {{-- ถ้าไม่เจอใน DB -> ให้เลือก Meeting Point --}}
+                    {{-- ❌ ไม่พบใน Google -> กรอกที่อยู่ + ปักหมุด --}}
+                    <div id="manualWrap" style="display:none; margin-top:12px;">
+                        <label class="f-label">If your hotel is not listed, please provide address below:</label>
+                        <input type="text" name="manual_address" id="manual_address" class="f-input"
+                               placeholder="เช่น M Social Hotel, 199 Soi Rat Uthit 200 Pi 1, ...">
+
+                        <div class="tiny" style="margin-top:8px; color:#666;">
+                            กรุณาปักหมุดที่พักของคุณให้ตรง เพื่อให้เราตรวจสอบเขตรับ-ส่งได้
+                        </div>
+
+                        <div id="manualMap" style="height:260px; border-radius:12px; overflow:hidden; margin-top:10px; border:1px solid #e6e6e6;"></div>
+
+                        <div class="tiny" style="margin-top:8px; color:#666;">
+                            พิกัดที่ปัก: <span id="manualLatLngText">-</span>
+                        </div>
+                    </div>
+
+                    {{-- ถ้า “อยู่นอกเขตรับส่ง” -> ให้เลือก Meeting Point --}}
                     <div id="meetingWrap" style="display:none; margin-top:12px;">
                         <label class="f-label">โรงแรมนี้อยู่นอกเขตรับส่ง กรุณาเลือก “จุดนัดรับ”</label>
                         <select name="meeting_point_id" id="meeting_point_id" class="f-input">
-                        <option value="">Please select meeting point</option>
-                        @foreach($meetingPoints as $mp)
-                            <option value="{{ $mp->id }}">{{ $mp->name }}</option>
-                        @endforeach
+                            <option value="">Please select meeting point</option>
+                            @foreach($meetingPoints as $mp)
+                                <option value="{{ $mp->id }}">{{ $mp->name }}</option>
+                            @endforeach
                         </select>
                     </div>
-                    </div>
+                </div>
 
 
 
@@ -169,6 +192,29 @@
                         <strong>THB <span id="sum-total">0</span></strong>
                     </div>
 
+                    {{-- Payment details --}}
+                    <div class="card" style="margin-top:12px;">
+                    <div class="card-title">Payment details</div>
+
+                    <label class="checkbox" style="display:block; margin-bottom:8px;">
+                        <input type="radio" name="pay_type" value="full" checked>
+                        <span>Pay full amount</span>
+                    </label>
+
+                    <label class="checkbox" style="display:block; margin-bottom:8px;">
+                        <input type="radio" name="pay_type" value="deposit">
+                        <span>Reserve with deposit</span>
+                    </label>
+
+                    <div style="margin-top:10px;">
+                        <label class="f-label">Payment method</label>
+                        <select name="payment_channel" class="f-input" required>
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="promptpay">QR Code (PromptPay)</option>
+                        </select>
+                    </div>
+                    </div>
+
                     <button type="submit" class="btn-pay">Book</button>
 
                     <div class="tiny">
@@ -180,7 +226,8 @@
         </form>
     </div>
 
-    {{-- Simple pricing JS --}}
+
+        {{-- Simple pricing JS --}}
     <script>
         (function() {
             const PRICES = {
@@ -235,137 +282,217 @@
         })();
     </script>
 
-   <script>
-  function initHotelAutocomplete() {
-    const input = document.getElementById('searchInput');
-    if (!input) return;
-
-    const pickupId = document.getElementById('pickup_location_id');
-    const meetingWrap = document.getElementById('meetingWrap');
-    const meetingSelect = document.getElementById('meeting_point_id');
-    const pickupFound = document.getElementById('pickupFound');
-
-    const gPlaceId = document.getElementById('google_place_id');
-    const gName = document.getElementById('google_place_name');
-    const gAddr = document.getElementById('google_place_address');
-    const gLat = document.getElementById('google_lat');
-    const gLng = document.getElementById('google_lng');
-
-    // ✅ จำกัดให้โชว์ผลในเชียงใหม่ (ถ้าต้องการ)
-    // ถ้าอยากปล่อยทั้งประเทศ ลบบรรทัด componentRestrictions ออก
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      fields: ['place_id', 'name', 'formatted_address', 'geometry'],
-      componentRestrictions: { country: 'th' },
-      // types: ['establishment'] // ใช้ได้ แต่บางทีหาโรงแรมไม่เจอ ลองเปิด/ปิดดู
-    });
-
-    autocomplete.addListener('place_changed', async () => {
-      const place = autocomplete.getPlace();
-      if (!place || !place.name) return;
-
-      // เก็บข้อมูลจาก Google
-      gPlaceId.value = place.place_id || '';
-      gName.value = place.name || '';
-      gAddr.value = place.formatted_address || '';
-      gLat.value = place.geometry?.location?.lat?.() ?? '';
-      gLng.value = place.geometry?.location?.lng?.() ?? '';
-
-      // reset สถานะ DB
-      pickupId.value = '';
-      pickupFound.style.display = 'none';
-      meetingWrap.style.display = 'none';
-      meetingSelect.value = '';
-
-      // ✅ ตรวจสอบกับ DB ด้วยชื่อโรงแรม (exact match)
-      try {
-        const res = await fetch(`{{ route('frontend.pickup-locations.resolve') }}?name=${encodeURIComponent(place.name)}`);
-        const data = await res.json();
-
-        if (data && data.found) {
-          // เจอใน DB -> ใช้ pickup_location_id
-          pickupId.value = data.id;
-          pickupFound.style.display = 'block';
-          meetingWrap.style.display = 'none';
-          meetingSelect.value = '';
-        } else {
-          // ไม่เจอ -> ให้เลือก meeting point
-          meetingWrap.style.display = 'block';
-        }
-      } catch (e) {
-        // ถ้า resolve ล้มเหลว -> ให้เลือก meeting point กันพลาด
-        meetingWrap.style.display = 'block';
-      }
-    });
-  }
-</script>
-
-
-{{-- Google hotel search --}}
+{{-- Google hotel search + Manual pin --}}
 <script>
 window.initHotelAutocomplete = function () {
   const input = document.getElementById('searchInput');
   if (!input) return;
 
+  const manualWrap = document.getElementById('manualWrap');
+  const manualAddress = document.getElementById('manual_address');
+  const manualLatLngText = document.getElementById('manualLatLngText');
+
+  const pickupFound = document.getElementById('pickupFound');
+  const meetingWrap = document.getElementById('meetingWrap');
+  const meetingSelect = document.getElementById('meeting_point_id');
+
+  const placeIdEl = document.getElementById('google_place_id');
+  const placeNameEl = document.getElementById('google_place_name');
+  const placeAddrEl = document.getElementById('google_place_address');
+  const latEl = document.getElementById('google_lat');
+  const lngEl = document.getElementById('google_lng');
+  const sourceEl = document.getElementById('pickup_source');
+  const outEl = document.getElementById('pickup_out_of_bounds');
+
   // ===== Chiang Mai City bounds =====
-  const chiangMaiBounds = new google.maps.LatLngBounds(
+  const bounds = new google.maps.LatLngBounds(
     new google.maps.LatLng(18.730, 98.930), // SW
     new google.maps.LatLng(18.840, 99.050)  // NE
   );
 
+  const isWithinBounds = (lat, lng) => (
+    lat >= 18.730 && lat <= 18.840 && lng >= 98.930 && lng <= 99.050
+  );
+
+  const setHidden = (el, v) => { if (el) el.value = (v ?? ''); };
+
+  const hideAllStatus = () => {
+    pickupFound.style.display = 'none';
+    meetingWrap.style.display = 'none';
+  };
+
+  const clearGoogle = () => {
+    setHidden(placeIdEl, '');
+    setHidden(placeNameEl, '');
+    setHidden(placeAddrEl, '');
+  };
+
+  const clearLatLng = () => {
+    setHidden(latEl, '');
+    setHidden(lngEl, '');
+    setHidden(outEl, '0');
+    if (manualLatLngText) manualLatLngText.textContent = '-';
+  };
+
+  const applyLatLng = (lat, lng) => {
+    setHidden(latEl, lat);
+    setHidden(lngEl, lng);
+
+    const inBounds = isWithinBounds(lat, lng);
+    if (inBounds) {
+      pickupFound.style.display = 'block';
+      meetingWrap.style.display = 'none';
+      setHidden(outEl, '0');
+      if (meetingSelect) meetingSelect.value = '';
+    } else {
+      pickupFound.style.display = 'none';
+      meetingWrap.style.display = 'block';
+      setHidden(outEl, '1');
+    }
+
+    if (manualLatLngText) manualLatLngText.textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
+  };
+
+  // ========= Google Autocomplete (lodging only) =========
   const autocomplete = new google.maps.places.Autocomplete(input, {
     fields: ['place_id', 'name', 'formatted_address', 'geometry'],
     componentRestrictions: { country: 'th' },
-    bounds: chiangMaiBounds,
-    strictBounds: true, // ⭐ สำคัญ: นอกกรอบไม่แสดง
-    types: ['establishment'], // โรงแรม/สถานที่
+    bounds: bounds,
+    strictBounds: true,
+    types: ['lodging'],
   });
 
-  autocomplete.addListener('place_changed', async () => {
+  autocomplete.addListener('place_changed', () => {
     const place = autocomplete.getPlace();
-    if (!place || !place.geometry) return;
+    if (!place || !place.geometry || !place.geometry.location) return;
 
-    // 🔒 ตรวจซ้ำว่าอยู่ใน bounds จริง
-    if (!chiangMaiBounds.contains(place.geometry.location)) {
-      alert('กรุณาเลือกสถานที่ภายในตัวเมืองเชียงใหม่เท่านั้น');
+    // ตรวจซ้ำว่าอยู่ใน bounds จริง
+    if (!bounds.contains(place.geometry.location)) {
+      alert('กรุณาเลือกโรงแรม/ที่พักภายในตัวเมืองเชียงใหม่เท่านั้น');
       input.value = '';
+      clearGoogle();
+      clearLatLng();
+      hideAllStatus();
+      manualWrap.style.display = 'none';
       return;
     }
 
-    // ===== เก็บข้อมูลจาก Google =====
-    document.getElementById('google_place_id').value = place.place_id || '';
-    document.getElementById('google_place_name').value = place.name || '';
-    document.getElementById('google_place_address').value = place.formatted_address || '';
-    document.getElementById('google_lat').value = place.geometry.location.lat();
-    document.getElementById('google_lng').value = place.geometry.location.lng();
+    // hide manual (เพราะเลือกจาก Google สำเร็จ)
+    manualWrap.style.display = 'none';
 
-    // ===== ตรวจสอบกับ DB =====
-    try {
-      const res = await fetch(
-        `{{ route('frontend.pickup-locations.resolve') }}?name=${encodeURIComponent(place.name)}`
-      );
-      const data = await res.json();
+    setHidden(sourceEl, 'google');
+    setHidden(placeIdEl, place.place_id || '');
+    setHidden(placeNameEl, place.name || '');
+    setHidden(placeAddrEl, place.formatted_address || '');
 
-      const pickupFound = document.getElementById('pickupFound');
-      const meetingWrap = document.getElementById('meetingWrap');
-      const pickupId = document.getElementById('pickup_location_id');
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    applyLatLng(lat, lng);
+  });
 
-      pickupFound.style.display = 'none';
-      meetingWrap.style.display = 'none';
-      pickupId.value = '';
+  // ========= Manual map pin =========
+  let map = null;
+  let marker = null;
+  const geocoder = new google.maps.Geocoder();
 
-      if (data && data.found) {
-        pickupId.value = data.id;
-        pickupFound.style.display = 'block';
-      } else {
-        meetingWrap.style.display = 'block';
-      }
-    } catch (e) {
-      document.getElementById('meetingWrap').style.display = 'block';
+  const ensureMap = () => {
+    if (map) return;
+
+    const mapEl = document.getElementById('manualMap');
+    map = new google.maps.Map(mapEl, {
+      center: { lat: 18.7883, lng: 98.9853 }, // Chiang Mai (center-ish)
+      zoom: 13,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+
+    // คลิกเพื่อปักหมุด
+    map.addListener('click', (e) => {
+      placeMarker(e.latLng);
+    });
+  };
+
+  const placeMarker = (latLng) => {
+    if (!marker) {
+      marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        draggable: true,
+      });
+      marker.addListener('dragend', () => {
+        const p = marker.getPosition();
+        applyLatLng(p.lat(), p.lng());
+      });
+    } else {
+      marker.setPosition(latLng);
     }
+
+    map.panTo(latLng);
+    applyLatLng(latLng.lat(), latLng.lng());
+  };
+
+  const showManual = () => {
+    manualWrap.style.display = 'block';
+    hideAllStatus();
+    clearGoogle();
+    clearLatLng();
+    setHidden(sourceEl, 'manual');
+    ensureMap();
+  };
+
+  // ถ้าพิมพ์แล้วไม่ได้เลือกจากรายการ -> แสดง manual
+  let t = null;
+  input.addEventListener('input', () => {
+    hideAllStatus();
+    clearGoogle();
+    setHidden(sourceEl, '');
+    clearLatLng();
+
+    if (t) clearTimeout(t);
+    t = setTimeout(() => {
+      const val = (input.value || '').trim();
+      if (val.length >= 2) {
+        if (!placeIdEl.value) showManual();
+      } else {
+        manualWrap.style.display = 'none';
+      }
+    }, 600);
+  });
+
+  input.addEventListener('blur', () => {
+    const val = (input.value || '').trim();
+    if (val.length >= 2 && !placeIdEl.value) {
+      showManual();
+    }
+  });
+
+  // geocode ที่อยู่คร่าวๆ เพื่อเลื่อนแผนที่ (ถ้าหาได้)
+  let gTimer = null;
+  manualAddress?.addEventListener('input', () => {
+    if (gTimer) clearTimeout(gTimer);
+    gTimer = setTimeout(() => {
+      const addr = (manualAddress.value || '').trim();
+      if (!addr) return;
+
+      geocoder.geocode({
+        address: addr,
+        componentRestrictions: { country: 'TH' },
+      }, (results, status) => {
+        if (status !== 'OK' || !results || !results[0]) return;
+        const loc = results[0].geometry.location;
+
+        ensureMap();
+        map.setCenter(loc);
+        map.setZoom(15);
+
+        // ปักให้ก่อน 1 ครั้ง แล้ว user ลากแก้ได้
+        placeMarker(loc);
+      });
+    }, 700);
   });
 };
 </script>
-
 
 {{-- โหลด Google Places (ต้องใส่ key จริง) --}}
 <script

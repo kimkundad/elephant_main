@@ -55,10 +55,14 @@
                                             <td>{{ $session->start_time }} - {{ $session->end_time }}</td>
 
                                             <td>
-                                                <input type="checkbox"
-                                                       name="sessions[{{ $session->id }}][is_open]"
-                                                       value="1"
-                                                       {{ $av?->is_open ? 'checked' : '' }}>
+                                                <input type="hidden" name="sessions[{{ $session->id }}][is_open]" value="1">
+                                                    <label>
+                                                    <input type="checkbox"
+                                                            name="sessions[{{ $session->id }}][is_open]"
+                                                            value="0"
+                                                            {{ (isset($availabilities[$session->id]) && $availabilities[$session->id]->is_open == 0) ? 'checked' : '' }}>
+                                                    ปิดรอบนี้ (เฉพาะวันนี้)
+                                                    </label>
                                             </td>
 
                                             <td>

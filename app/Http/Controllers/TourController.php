@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\TourAvailability; // ✅ เพิ่มบรรทัดนี้
 
-
 class TourController extends Controller
 {
     public function index()
@@ -32,78 +31,106 @@ public function show(string $slug, Request $request)
     $selectedDate = $request->query('date', now()->toDateString());
     $month = $request->query('month', now()->format('Y-m'));
 
-    // ดึง sessions ของทัวร์
     $sessions = $tour->sessions()
         ->where('is_active', 1)
         ->orderBy('start_time')
         ->get();
 
-    // ✅ ดึง availability เฉพาะวันนั้น และเฉพาะที่เปิด (is_open=1)
-    $openAvailability = TourAvailability::query()
-        ->where('tour_id', $tour->id)
-        ->where('date', $selectedDate)
-        ->where('is_open', 1)
-        ->get()
-        ->keyBy('session_id');
+    // ✅ ใช้ timezone ของระบบ (แนะนำตั้งค่า config/app.php => timezone = 'Asia/Bangkok')
+    $now = now();
+    $isToday = ($selectedDate === $now->toDateString());
 
-    // ✅ ถ้าวันนั้นไม่มี availability เลย -> ต้องไม่มีรอบ
-    if ($openAvailability->isEmpty()) {
-        $sessionsForSelected = collect();
-    } else {
-        // ✅ เอาเฉพาะ session ที่มี availability เปิดของวันนั้น
-        $sessionsForSelected = $sessions
-            ->filter(fn ($s) => $openAvailability->has($s->id))
-            ->filter(fn ($s) => (int) $s->remainingCapacity($selectedDate) > 0)
-            ->values();
-    }
+    $sessionsForSelected = $sessions
+        ->filter(function ($s) use ($selectedDate, $now, $isToday) {
+
+            // 1) กรองตามเวลา (เฉพาะวัน "วันนี้")
+            if ($isToday) {
+                // เอาวัน+เวลา session มารวมเป็น datetime แล้วเทียบกับตอนนี้
+                $sessionStart = Carbon::parse($selectedDate.' '.$s->start_time);
+
+                // ถ้าเลยเวลาเริ่มไปแล้ว => ไม่ให้จอง
+                if ($sessionStart->lte($now)) {
+                    return false;
+                }
+            }
+
+            // 2) กรองตาม capacity / availability ที่คุณมีอยู่แล้ว
+            return (int) $s->remainingCapacity($selectedDate) > 0;
+        })
+        ->values();
 
     return view('frontend.pages.tours.show', compact(
-        'tour',
-        'selectedDate',
-        'month',
-        'sessionsForSelected'
+        'tour', 'selectedDate', 'month', 'sessionsForSelected'
     ));
 }
 
 
 
-public function sessionsForDate(string $slug, Request $request)
-{
-    $tour = Tour::query()
-        ->where('slug', $slug)
-        ->where('is_active', 1)
-        ->firstOrFail();
+    public function sessionsForDate($slug, Request $request)
+    {
+        $date = $request->query('date', now()->toDateString());
 
-    $date = $request->query('date', now()->toDateString());
+        $tour = Tour::where('slug', $slug)->firstOrFail();
 
-    $openAvailability = TourAvailability::query()
-        ->where('tour_id', $tour->id)
-        ->where('date', $date)
-        ->where('is_open', 1)
-        ->get()
-        ->keyBy('session_id');
+        // 1) sessions หลักจาก tour_sessions
+        $sessions = $tour->sessions()
+            ->where('is_active', 1)
+            ->orderBy('start_time')
+            ->get(['id','tour_id','title','name','start_time','end_time','default_capacity','capacity']);
 
-    if ($openAvailability->isEmpty()) {
-        return response()->json(['date' => $date, 'sessions' => []]);
-    }
+        // 2) exception ของวันนั้น (ปิด/override) จาก tour_session_availability
+        $availMap = TourAvailability::where('tour_id', $tour->id)
+            ->where('date', $date)
+            ->get()
+            ->keyBy('session_id');
 
-    $sessions = $tour->sessions()
-        ->where('is_active', 1)
-        ->orderBy('start_time')
-        ->get()
-        ->filter(fn ($s) => $openAvailability->has($s->id))
-        ->map(function ($s) use ($date) {
+        // 3) booked ต่อ session (query เดียว)
+        $bookedMap = Booking::where('tour_id', $tour->id)
+            ->where('date', $date)
+            // TODO: ใส่เงื่อนไขสถานะที่ “นับจริง” เช่น ->where('payment_status','paid')
+            ->selectRaw('session_id, COALESCE(SUM(total_guests),0) as booked')
+            ->groupBy('session_id')
+            ->pluck('booked', 'session_id');
+
+        // 4) ผสมข้อมูล + คำนวณ remaining
+        $result = $sessions->map(function($s) use ($availMap, $bookedMap) {
+
+            $a = $availMap->get($s->id);
+
+            // default capacity
+            $cap = $s->capacity ?? $s->default_capacity;
+
+            // override capacity เฉพาะวัน
+            if ($a && $a->capacity_override !== null) {
+                $cap = (int)$a->capacity_override;
+            }
+
+            // ถ้าถูกปิดวันนั้น
+            if ($a && (int)$a->is_open === 0) {
+                $remaining = 0;
+            } else {
+                $booked = (int)($bookedMap[$s->id] ?? 0);
+                $remaining = max($cap - $booked, 0);
+            }
+
             return [
                 'id' => $s->id,
-                'title' => $s->title ?? $s->name ?? 'Session',
+                'title' => $s->title ?? $s->name,
                 'start_time' => $s->start_time,
                 'end_time' => $s->end_time,
-                'remaining' => (int) $s->remainingCapacity($date),
+                'capacity' => $cap,
+                'booked' => (int)($bookedMap[$s->id] ?? 0),
+                'remaining' => $remaining,
+                'is_open' => $a ? (int)$a->is_open : 1, // ไม่มี record = เปิด
             ];
         })
-        ->filter(fn ($x) => $x['remaining'] > 0)
+        // เอาเฉพาะรอบที่จองได้
+        ->filter(fn($x) => $x['is_open'] === 1 && $x['remaining'] > 0)
         ->values();
 
-    return response()->json(['date' => $date, 'sessions' => $sessions]);
-}
+        return response()->json([
+            'date' => $date,
+            'sessions' => $result,
+        ]);
+    }
 }

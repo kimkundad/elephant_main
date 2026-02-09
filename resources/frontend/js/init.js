@@ -15,14 +15,7 @@
   
   });
 	
-	// home slider
-	$('.home-slider, .testimonial-slider').owlCarousel({
-    items:1,
-    loop:true,
-	autoplay:true,
-	autoplayTimeout:5000,
-	animateOut: 'fadeOut'
-});
+
 
 $('.home-carousel').owlCarousel({
     items:1,

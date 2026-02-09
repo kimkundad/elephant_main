@@ -11,8 +11,7 @@
                            <p><img class="size-full wp-image-665"
                                  src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
                                  alt="" width="143" height="51"></p>
-                           <p>For a truly memorable dining experience reserve in advance a table as soon as you can.
-                              Come and taste our remarkable food and wine.</p>
+                           <p>{{ $siteSetting->footer_about ?? 'For a truly memorable dining experience reserve in advance a table as soon as you can. Come and taste our remarkable food and wine.' }}</p>
                         </div>
                      </div>
                   </div>
@@ -25,11 +24,11 @@
                      <div id="text-3" class="widget widget-footer widget_text">
                         <h5 class="widgettitle"><span>Address</span></h5>
                         <div class="textwidget">
-                           <p>58 Ralph Ave<br>
-                              New York, New York 1111
-                           </p>
-                           <p>P: +1 800 000 111<br>
-                              E: contact@example.com
+                           <p>{!! nl2br(e($siteSetting->address ?? "58 Ralph Ave
+New York, New York 1111")) !!}</p>
+                           <p>
+                              P: {{ $siteSetting->phone ?? '+1 800 000 111' }}<br>
+                              E: <a href="mailto:{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}">{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}</a>
                            </p>
                         </div>
                      </div>
@@ -43,11 +42,9 @@
                      <div id="text-4" class="widget widget-footer widget_text">
                         <h5 class="widgettitle"><span>Hours</span></h5>
                         <div class="textwidget">
-                           <p>Monday – Sunday<br>
-                              Lunch: 12PM – 2PM<br>
-                              Dinner: 6PM – 10PM
-                           </p>
-                           <p>Happy Hours: 4PM – 6PM</p>
+                           <p>{!! nl2br(e($siteSetting->hours ?? "Monday - Sunday
+Lunch: 12PM - 2PM
+Dinner: 6PM - 10PM")) !!}</p>
                         </div>
                      </div>
                   </div>
@@ -78,18 +75,16 @@
          <div class="copyright">
             <!-- COPYRIGHT -->
             <div class="footer-copy">
-               <p>Copyright © 2021, Caverta . Designed by MatchThemes</p>
+               <p>{{ $siteSetting->copyright_text ?? 'Copyright � 2026, smallelephants.com' }}</p>
             </div>
             <!-- SOCIAL ICONS -->
             <ul class="footer-social">
-               <li><a class="social-facebook" href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-               <li><a class="social-twitter" href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-               <li><a class="social-tripadvisor" href="#" target="_blank"><i class="fab fa-tripadvisor"></i></a></li>
-               <li><a class="social-instagram" href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-               <li><a class="social-pinterest" href="#" target="_blank"><i class="fab fa-pinterest"></i></a></li>
+               <li><a class="social-facebook" href="{{ $siteSetting->facebook_url ?? '#' }}" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+               <li><a class="social-instagram" href="{{ $siteSetting->instagram_url ?? '#' }}" target="_blank"><i class="fab fa-instagram"></i></a></li>
             </ul>
          </div>
          <!--copyright-->
       </div>
       <!--container-->
    </footer>
+

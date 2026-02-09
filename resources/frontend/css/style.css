@@ -1770,12 +1770,12 @@ margin: 48px 0;}
 }
 
 .img-round{
-    -webkit-mask-image: url('images/icons/circle.svg' );
+    -webkit-mask-image: url('../images/icons/circle.svg' );
     -webkit-mask-size: contain;
     -webkit-mask-position: center center;
     -webkit-mask-repeat: no-repeat;
 
-	mask-image: url('images/icons/circle.svg' );
+	mask-image: url('../images/icons/circle.svg' );
     mask-size: contain;
     mask-position: center center;
     mask-repeat: no-repeat;
@@ -2109,51 +2109,51 @@ flex:1 1 auto;}
 ************************************/
 
 /* Home Slider */
-.slide-1{background-image:url('images/reservation-page.jpg');}
-.slide-2{background-image:url('images/slider-2.jpg');}
-.slide-3{background-image:url('images/slider-3.jpg');}
+.slide-1{background-image:url('../images/reservation-page.jpg');}
+.slide-2{background-image:url('../images/slider-2.jpg');}
+.slide-3{background-image:url('../images/slider-3.jpg');}
 
 /* Top Pages Image */
-.top-menu-1col, .top-menu-2col, .top-menu-3col, .top-menu-acc, .top-menu-5{background-image:url('images/menu-img.jpg');}
-.top-reservation{background-image:url('images/reservation-page.jpg');}
-.top-blog-classic, .top-blog-list, .top-blog-grid-2cols, .top-blog-grid-3cols, .top-blog-single-page{background-image:url('images/blog-img.jpg');}
-.top-team-2cols, .top-team-3cols, .top-team-4cols{background-image:url('images/team-page.jpg');}
-.top-gallery-3cols, .top-gallery-3cols-fs, .top-gallery-4cols, .top-gallery-4cols-fs{background-image:url('images/reservation-page.jpg');}
-.top-contact{background-image:url('images/contact-us.jpg');}
+.top-menu-1col, .top-menu-2col, .top-menu-3col, .top-menu-acc, .top-menu-5{background-image:url('../images/menu-img.jpg');}
+.top-reservation{background-image:url('../images/reservation-page.jpg');}
+.top-blog-classic, .top-blog-list, .top-blog-grid-2cols, .top-blog-grid-3cols, .top-blog-single-page{background-image:url('../images/blog-img.jpg');}
+.top-team-2cols, .top-team-3cols, .top-team-4cols{background-image:url('../images/team-page.jpg');}
+.top-gallery-3cols, .top-gallery-3cols-fs, .top-gallery-4cols, .top-gallery-4cols-fs{background-image:url('../images/reservation-page.jpg');}
+.top-contact{background-image:url('../images/contact-us.jpg');}
 
 .topPageCustomH{height:450px;}
 
 /** Gallery Images **/
-.gallery-img1{background-image:url(images/blog/blog9.jpg);}
-.gallery-img2{background-image:url(images/blog/blog2.jpg);}
-.gallery-img3{background-image:url(images/blog/blog4.jpg);}
-.gallery-img4{background-image:url(images/blog/gal-12.jpg);}
-.gallery-img5{background-image:url(images/blog/blog7.jpg);}
-.gallery-img6{background-image:url(images/blog/blog8.jpg);}
-.gallery-img7{background-image:url(images/blog/blog5.jpg);}
-.gallery-img8{background-image:url(images/blog/blog6.jpg);}
-.gallery-img9{background-image:url(images/blog/blog11.jpg);}
-.gallery-img10{background-image:url(images/blog/blog3.jpg);}
-.gallery-img11{background-image:url(images/blog/gal-10.jpg);}
-.gallery-img12{background-image:url(images/blog/gal-11.jpg);}
+.gallery-img1{background-image:url(../images/blog/blog9.jpg);}
+.gallery-img2{background-image:url(../images/blog/blog2.jpg);}
+.gallery-img3{background-image:url(../images/blog/blog4.jpg);}
+.gallery-img4{background-image:url(../images/blog/gal-12.jpg);}
+.gallery-img5{background-image:url(../images/blog/blog7.jpg);}
+.gallery-img6{background-image:url(../images/blog/blog8.jpg);}
+.gallery-img7{background-image:url(../images/blog/blog5.jpg);}
+.gallery-img8{background-image:url(../images/blog/blog6.jpg);}
+.gallery-img9{background-image:url(../images/blog/blog11.jpg);}
+.gallery-img10{background-image:url(../images/blog/blog3.jpg);}
+.gallery-img11{background-image:url(../images/blog/gal-10.jpg);}
+.gallery-img12{background-image:url(../images/blog/gal-11.jpg);}
 
 /* Menu 5 Page */
 
-.menu5-img1{background-image: url('images/home/small-img3.jpg');}
-.menu5-img2{background-image: url('images/home/small-img2.jpg');}
-.menu5-img3{background-image: url('images/home/small-img1.jpg');}
-.menu5-img4{background-image: url('images/home/small-img3.jpg');}
+.menu5-img1{background-image: url('../images/home/small-img3.jpg');}
+.menu5-img2{background-image: url('../images/home/small-img2.jpg');}
+.menu5-img3{background-image: url('../images/home/small-img1.jpg');}
+.menu5-img4{background-image: url('../images/home/small-img3.jpg');}
 
 /* Blog List Page */
-.list-image1{background-image:url('images/blog/blog9.jpg');}
-.list-image2{background-image:url('images/blog/blog8.jpg');}
-.list-image3{background-image:url('images/blog/blog11.jpg');}
-.list-image4{background-image:url('images/blog/blog2.jpg');}
-.list-image5{background-image:url('images/blog/blog4.jpg');}
-.list-image6{background-image:url('images/blog/blog7.jpg');}
-.list-image7{background-image:url('images/blog/blog3.jpg');}
-.list-image8{background-image:url('images/blog/blog5.jpg');}
-.list-image9{background-image:url('images/blog/blog6.jpg');}
+.list-image1{background-image:url('../images/blog/blog9.jpg');}
+.list-image2{background-image:url('../images/blog/blog8.jpg');}
+.list-image3{background-image:url('../images/blog/blog11.jpg');}
+.list-image4{background-image:url('../images/blog/blog2.jpg');}
+.list-image5{background-image:url('../images/blog/blog4.jpg');}
+.list-image6{background-image:url('../images/blog/blog7.jpg');}
+.list-image7{background-image:url('../images/blog/blog3.jpg');}
+.list-image8{background-image:url('../images/blog/blog5.jpg');}
+.list-image9{background-image:url('../images/blog/blog6.jpg');}
 
 
 /*************************************
@@ -3946,3 +3946,33 @@ margin-left:0;margin-top:8px;}
   .contact-hero__title{ font-size:36px; }
   .contact-card, .contact-side{ padding:20px 16px; border-radius:16px; }
 }
+
+
+#google-review-slider .gr-avatar-wrap{
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+}
+#google-review-slider .gr-avatar-wrap img{
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 999px !important;
+  object-fit: cover !important;
+}
+#google-review-slider .gr-gbadge{
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a73e8;
+  font-weight: 900;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

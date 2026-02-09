@@ -2,10 +2,10 @@
 
 @section('content')
 {{-- HERO --}}
-<section class="contact-hero" style="background-image:url('{{ asset('frontend/images/bg-chang.webp') }}')">
+<section class="contact-hero" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}')">
   <div class="contact-hero__overlay"></div>
   <div class="container contact-hero__inner">
-    <div class="contact-hero__kicker">PHUKET ELEPHANT SANCTUARY</div>
+    <div class="contact-hero__kicker">SMALL ELEPHANTS</div>
     <h1 class="contact-hero__title">Contact</h1>
     <p class="contact-hero__lead">
       หากมีคำถามเกี่ยวกับทัวร์ การเดินทาง หรือการจอง กรุณาส่งข้อความหาเราได้เลย
@@ -75,25 +75,29 @@
 
         <div class="contact-side__item">
           <div class="contact-side__label">Office hours</div>
-          <div class="contact-side__value">08:30 – 17:30 (Thailand time)</div>
+          <div class="contact-side__value">{{ $siteSetting->contact_office_hours ?? '08:30 - 17:30 (Thailand time)' }}</div>
         </div>
 
         <div class="contact-side__item">
           <div class="contact-side__label">Email</div>
-          <div class="contact-side__value"><a href="mailto:info@phuketeps.org">info@phuketeps.org</a></div>
+          <div class="contact-side__value"><a href="mailto:{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}">{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}</a></div>
         </div>
 
         <div class="contact-side__item">
           <div class="contact-side__label">Phone</div>
           <div class="contact-side__value">
-            <a href="tel:+6676529099">+66 76 529 099</a><br>
-            <a href="tel:+6662778411">+66 62 778 411</a>
+            @if(!empty($siteSetting?->phone))
+              <a href="tel:{{ $siteSetting->phone }}">{{ $siteSetting->phone }}</a><br>
+            @endif
+            @if(!empty($siteSetting?->phone_secondary))
+              <a href="tel:{{ $siteSetting->phone_secondary }}">{{ $siteSetting->phone_secondary }}</a>
+            @endif
           </div>
         </div>
 
         <div class="contact-side__item">
           <div class="contact-side__label">WhatsApp / Line</div>
-          <div class="contact-side__value">Message us anytime</div>
+          <div class="contact-side__value">{{ $siteSetting->contact_whatsapp_line ?? 'Message us anytime' }}</div>
         </div>
 
         <div class="contact-side__hint">
@@ -109,8 +113,10 @@
 {{-- MAP --}}
 <section class="contact-map">
   <iframe
-    src="https://www.google.com/maps?q=Phuket%20Elephant%20Sanctuary&output=embed"
+    src="{{ $siteSetting->map_embed_url ?? 'https://www.google.com/maps?q=Phuket%20Elephant%20Sanctuary&output=embed' }}"
     loading="lazy"
     referrerpolicy="no-referrer-when-downgrade"></iframe>
 </section>
 @endsection
+
+

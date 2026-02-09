@@ -21,11 +21,22 @@ return [
     'google' => [
         'maps_key' => env('GOOGLE_MAPS_KEY'),
     ],
+    
+    'google_places' => [
+        'key' => env('GOOGLE_PLACES_API_KEY'),
+        'place_id' => env('GOOGLE_PLACE_ID'),
+        'cache_minutes' => (int) env('GOOGLE_REVIEWS_CACHE_MINUTES', 60),
+    ],
 
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    ],
+
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
     'resend' => [

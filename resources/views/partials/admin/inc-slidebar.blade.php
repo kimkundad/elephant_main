@@ -114,19 +114,6 @@
                             </a>
                         </div>
 
-                        {{-- Availability รายวัน --}}
-                        {{-- Availability รายวัน --}}
-                        @isset($tour)
-                            <div class="menu-item">
-                                <a class="menu-link" href="{{ route('admin.tours.availability.index', $tour->id) }}">
-                                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                    <span class="menu-title">Availability รายวัน</span>
-                                </a>
-                            </div>
-                        @endisset
-
-
-
                     </div>
                 </div>
 
@@ -199,6 +186,34 @@
 												<!--end::Svg Icon-->
 											</span>
                         <span class="menu-title">จุดรับส่งรถ (Pick-up Locations)</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.settings.edit') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 8.5A3.5 3.5 0 1 1 8.5 12 3.5 3.5 0 0 1 12 8.5Z" fill="currentColor"/>
+                                    <path opacity="0.3" d="M19.4 13.5a7.8 7.8 0 0 0 0-3l2-1.5-2-3.5-2.4 1a8.6 8.6 0 0 0-2.6-1.5L12 2H8l-.4 3A8.6 8.6 0 0 0 5 6.5l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 0 0 0 3l-2 1.5 2 3.5 2.4-1a8.6 8.6 0 0 0 2.6 1.5L8 22h4l.4-3a8.6 8.6 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">ตั้งค่าเว็บไซต์</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.elephants.index') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M3 7C3 5.3 4.3 4 6 4H16C18.8 4 21 6.2 21 9V13C21 15.2 19.2 17 17 17H13L10 20H8L9 17H7C4.8 17 3 15.2 3 13V7Z" fill="currentColor"/>
+                                    <path d="M8 9.5C8 8.7 8.7 8 9.5 8H12.5C13.3 8 14 8.7 14 9.5V12.5C14 13.3 13.3 14 12.5 14H9.5C8.7 14 8 13.3 8 12.5V9.5Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">ข้อมูลช้าง</span>
                     </a>
                 </div>
 

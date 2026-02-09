@@ -58,6 +58,11 @@
             Sessions
         </a>
 
+        <a href="{{ route('admin.tours.availability.index', $tour->id) }}"
+           class="btn btn-sm btn-info">
+            Availability
+        </a>
+
         <a href="{{ route('admin.tours.edit', $tour->id) }}"
            class="btn btn-sm btn-warning">
            แก้ไข

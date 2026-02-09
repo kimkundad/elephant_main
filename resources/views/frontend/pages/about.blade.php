@@ -2,10 +2,10 @@
 
 @section('content')
 {{-- HERO --}}
-<section class="about-hero" style="background-image:url('{{ asset('frontend/images/bg-chang.webp') }}')">
+<section class="about-hero" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}')">
   <div class="about-hero__overlay"></div>
   <div class="container about-hero__inner">
-    <div class="about-hero__kicker">PHUKET ELEPHANT SANCTUARY</div>
+    <div class="about-hero__kicker">SMALL ELEPHANTS</div>
     <h1 class="about-hero__title">About Our Ethical Sanctuary</h1>
     <p class="about-hero__lead">
       บ้านที่ปลอดภัยสำหรับช้างที่ได้รับการช่วยเหลือ — และประสบการณ์ที่ทำให้คุณรักช้างมากขึ้นในทุกก้าวที่เดิน
@@ -45,10 +45,10 @@
 
       <div class="col-md-6">
         <div class="about-photo-grid">
-          <div class="about-photo about-photo--big" style="background-image:url('{{ asset('frontend/images/welcome-4.png') }}')"></div>
-          <div class="about-photo" style="background-image:url('{{ asset('frontend/images/img1.webp') }}')"></div>
-          <div class="about-photo" style="background-image:url('{{ asset('frontend/images/img2.webp') }}')"></div>
-          <div class="about-photo about-photo--wide" style="background-image:url('{{ asset('frontend/images/img3.webp') }}')"></div>
+          <div class="about-photo about-photo--big" style="background-image:url('{{ Vite::asset('resources/frontend/images/welcome-4.png') }}')"></div>
+          <div class="about-photo" style="background-image:url('{{ Vite::asset('resources/frontend/images/img1.webp') }}')"></div>
+          <div class="about-photo" style="background-image:url('{{ Vite::asset('resources/frontend/images/img2.webp') }}')"></div>
+          <div class="about-photo about-photo--wide" style="background-image:url('{{ Vite::asset('resources/frontend/images/img3.webp') }}')"></div>
         </div>
         <div class="about-caption">
           “ความสุขของเรา คือวันที่ช้างได้เดินช้า ๆ กินหญ้าเงียบ ๆ และใช้ชีวิตในแบบของตัวเอง”
@@ -109,7 +109,7 @@
 
 
 {{-- WHAT TO EXPECT --}}
-<section class="about-section about-section--dark" style="background-image:url('{{ asset('frontend/images/bg-chang.webp') }}')">
+<section class="about-section about-section--dark" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}')">
   <div class="about-dark__overlay"></div>
   <div class="container">
     <div class="row align-items-center about-gap">
@@ -141,3 +141,4 @@
   </div>
 </section>
 @endsection
+
