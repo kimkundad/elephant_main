@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
             $setting = \App\Models\SiteSetting::first();
             $view->with('siteSetting', $setting);
         });
+
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
