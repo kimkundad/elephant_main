@@ -58,9 +58,10 @@ Dinner: 6PM - 10PM")) !!}</p>
                         <h5 class="widgettitle"><span>More Info</span></h5>
                         <div class="textwidget">
                            <ul>
-                              <li><a href="#">Careers</a></li>
-                              <li><a href="#">Get in Touch</a></li>
-                              <li><a href="#">Privacy Policy</a></li>
+                              <li><a href="{{ route('frontend.what_to_bring') }}">What to Bring</a></li>
+                              <li><a href="{{ route('frontend.support_us') }}">How to Support Us</a></li>
+                              <li><a href="{{ route('frontend.terms') }}">Terms &amp; Conditions</a></li>
+                              <li><a href="{{ route('frontend.policy') }}">Policy</a></li>
                            </ul>
                         </div>
                      </div>
@@ -87,4 +88,3 @@ Dinner: 6PM - 10PM")) !!}</p>
       </div>
       <!--container-->
    </footer>
-

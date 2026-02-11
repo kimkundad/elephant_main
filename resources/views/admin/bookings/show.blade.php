@@ -19,9 +19,9 @@
             </div>
 
             <div class="mt-4">
-                <strong>ลูกค้า:</strong> {{ $booking->customer->full_name }} <br>
-                Email: {{ $booking->customer->email }} <br>
-                Phone: {{ $booking->customer->phone }}
+                <strong>ลูกค้า:</strong> {{ $booking->customer?->full_name ?? $booking->customer_name }} <br>
+                Email: {{ $booking->customer?->email ?? $booking->customer_email }} <br>
+                Phone: {{ $booking->customer?->phone ?? $booking->customer_phone }}
             </div>
 
             <div class="mt-4">
@@ -35,6 +35,12 @@
 
             <div class="mt-4">
                 <strong>ราคาทั้งหมด:</strong> THB {{ number_format($booking->total_price, 2) }}
+            </div>
+
+            <div class="mt-4">
+                <strong>ส่วนลด:</strong> THB {{ number_format($booking->discount_amount ?? 0, 2) }} <br>
+                <strong>โค้ดส่วนลด:</strong> {{ $booking->discount_code ?? '-' }} <br>
+                <strong>พนักงานขาย:</strong> {{ $booking->agent?->name ?? '-' }}
             </div>
 
             <div class="mt-4">

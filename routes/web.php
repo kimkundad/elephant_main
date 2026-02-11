@@ -16,6 +16,9 @@ use App\Http\Controllers\BookingPublicController;
 use App\Http\Controllers\GoogleReviewsController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\ElephantController;
+use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\DiscountCodeController;
+use App\Http\Controllers\Admin\AgentReportController;
 
 Route::get('/api/google-reviews', [GoogleReviewsController::class, 'index']);
 
@@ -34,6 +37,10 @@ Route::name('frontend.')->group(function () {
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact', [HomeController::class, 'contactStore'])->name('contact.store');
     Route::get('/our-elephants', [HomeController::class, 'elephants'])->name('elephants');
+    Route::view('/what-to-bring', 'frontend.pages.what-to-bring')->name('what_to_bring');
+    Route::view('/support-us', 'frontend.pages.support-us')->name('support_us');
+    Route::view('/terms', 'frontend.pages.terms')->name('terms');
+    Route::view('/policy', 'frontend.pages.policy')->name('policy');
 
     // ตรวจสถานะ PromptPay (polling จากหน้า QR)
     Route::get('/booking/{booking}/payment-status', [FrontBookingController::class, 'paymentStatus'])
@@ -69,6 +76,8 @@ Route::name('frontend.')->group(function () {
 
     Route::post('/booking', [FrontBookingController::class, 'store'])
         ->name('booking.store');
+    Route::post('/booking/validate-discount', [FrontBookingController::class, 'validateDiscount'])
+        ->name('booking.validate-discount');
 
 
         Route::get('/pickup-locations/search', [PickupLocationLookupController::class, 'search'])
@@ -121,6 +130,14 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::resource('elephants', ElephantController::class);
         Route::get('/elephants/{elephant}/toggle', [ElephantController::class, 'toggle'])
             ->name('elephants.toggle');
+
+        // Agents & Discount Codes
+        Route::resource('agents', AgentController::class);
+        Route::resource('discount-codes', DiscountCodeController::class);
+        Route::get('/reports/agents', [AgentReportController::class, 'index'])
+            ->name('reports.agents');
+        Route::get('/reports/agents/export', [AgentReportController::class, 'exportCsv'])
+            ->name('reports.agents.export');
 
         // Users
         Route::get('/users', [UserController::class, 'index'])

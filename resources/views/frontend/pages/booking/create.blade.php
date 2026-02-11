@@ -24,7 +24,7 @@
         </div>
 
 
-        <form method="POST" action="{{ route('frontend.booking.store') }}" class="booking-grid">
+        <form method="POST" action="{{ route('frontend.booking.store') }}" class="booking-grid" id="booking-form">
             @csrf
 
             <input type="hidden" name="tour_id" value="{{ $tour->id }}">
@@ -93,7 +93,8 @@
                             type="text"
                             class="f-input"
                             placeholder="พิมพ์ชื่อโรงแรม/ที่พัก แล้วเลือกจากรายการ"
-                            autocomplete="off">
+                            autocomplete="off"
+                            required>
 
                         <div class="tiny" style="margin-top:8px; color:#666;">
                             * ถ้าไม่พบในรายการ (เช่น Airbnb) ระบบจะให้กรอกที่อยู่และปักหมุดแทน
@@ -117,7 +118,7 @@
                     {{-- ❌ ไม่พบใน Google -> กรอกที่อยู่ + ปักหมุด --}}
                     <div id="manualWrap" style="display:none; margin-top:12px;">
                         <label class="f-label">If your hotel is not listed, please provide address below:</label>
-                        <input type="text" name="manual_address" id="manual_address" class="f-input"
+                            <input type="text" name="manual_address" id="manual_address" class="f-input"
                                placeholder="เช่น M Social Hotel, 199 Soi Rat Uthit 200 Pi 1, ...">
 
                         <div class="tiny" style="margin-top:8px; color:#666;">
@@ -186,25 +187,29 @@
                         <span>Fees</span>
                         <span>THB <span id="sum-fee">0</span></span>
                     </div>
+                    <div class="sum-row">
+                        <span>Discount</span>
+                        <span>THB <span id="sum-discount">0</span></span>
+                    </div>
 
                     <div class="sum-total">
                         <span>Total</span>
                         <strong>THB <span id="sum-total">0</span></strong>
                     </div>
 
+                    <div class="card" style="margin-top:12px;">
+                    <div class="card-title">Discount code</div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" name="discount_code" id="discount_code" class="f-input" placeholder="กรอกโค้ดส่วนลด">
+                        <button type="button" id="apply_discount" class="btn-pay" style="padding:10px 14px; width:auto;">Apply</button>
+                    </div>
+                    <div id="discount_msg" class="tiny" style="margin-top:6px; color:#666;"></div>
+                    </div>
+
                     {{-- Payment details --}}
                     <div class="card" style="margin-top:12px;">
                     <div class="card-title">Payment details</div>
-
-                    <label class="checkbox" style="display:block; margin-bottom:8px;">
-                        <input type="radio" name="pay_type" value="full" checked>
-                        <span>Pay full amount</span>
-                    </label>
-
-                    <label class="checkbox" style="display:block; margin-bottom:8px;">
-                        <input type="radio" name="pay_type" value="deposit">
-                        <span>Reserve with deposit</span>
-                    </label>
+                   
 
                     <div style="margin-top:10px;">
                         <label class="f-label">Payment method</label>
@@ -215,7 +220,7 @@
                     </div>
                     </div>
 
-                    <button type="submit" class="btn-pay">Book</button>
+                    <button type="submit" class="btn-pay" id="btn-book">Book</button>
 
                     <div class="tiny">
                         By completing this transaction, you agree to our booking terms.
@@ -230,6 +235,90 @@
         {{-- Simple pricing JS --}}
     <script>
         (function() {
+            const form = document.getElementById('booking-form');
+            if (!form) return;
+
+            form.addEventListener('submit', (e) => {
+                const searchInput = document.getElementById('searchInput');
+                const fullName = form.querySelector('input[name="full_name"]');
+                const phone = form.querySelector('input[name="phone"]');
+                const email = form.querySelector('input[name="email"]');
+                const discountCode = document.getElementById('discount_code');
+
+                const manualWrap = document.getElementById('manualWrap');
+                const manualAddress = document.getElementById('manual_address');
+                const meetingWrap = document.getElementById('meetingWrap');
+                const meetingSelect = document.getElementById('meeting_point_id');
+                const latEl = document.getElementById('google_lat');
+                const lngEl = document.getElementById('google_lng');
+                const outEl = document.getElementById('pickup_out_of_bounds');
+
+                if (!searchInput || !searchInput.value.trim()) {
+                    e.preventDefault();
+                    alert('กรุณากรอกชื่อโรงแรม/ที่พัก');
+                    searchInput?.focus();
+                    return;
+                }
+
+                if (manualWrap && manualWrap.style.display !== 'none') {
+                    if (!manualAddress || !manualAddress.value.trim()) {
+                        e.preventDefault();
+                        alert('กรุณากรอกที่อยู่ที่พัก');
+                        manualAddress?.focus();
+                        return;
+                    }
+                    if (!latEl || !lngEl || !latEl.value || !lngEl.value) {
+                        e.preventDefault();
+                        alert('กรุณาปักหมุดที่พักของคุณบนแผนที่');
+                        return;
+                    }
+                }
+
+                if ((meetingWrap && meetingWrap.style.display !== 'none') || (outEl && outEl.value === '1')) {
+                    if (!meetingSelect || !meetingSelect.value) {
+                        e.preventDefault();
+                        alert('กรุณาเลือกจุดนัดรับ');
+                        meetingSelect?.focus();
+                        return;
+                    }
+                }
+
+                if (!fullName || !fullName.value.trim()) {
+                    e.preventDefault();
+                    alert('กรุณากรอกชื่อ-นามสกุล');
+                    fullName?.focus();
+                    return;
+                }
+
+                if (!phone || !phone.value.trim()) {
+                    e.preventDefault();
+                    alert('กรุณากรอกเบอร์โทรศัพท์');
+                    phone?.focus();
+                    return;
+                }
+
+                if (!email || !email.value.trim()) {
+                    e.preventDefault();
+                    alert('กรุณากรอกอีเมล');
+                    email?.focus();
+                    return;
+                }
+
+                if (window.bookingTotalAfterDiscount !== undefined && window.bookingTotalAfterDiscount < 10) {
+                    e.preventDefault();
+                    alert('ยอดชำระหลังหักส่วนลดต้องไม่น้อยกว่า 10 บาท');
+                    return;
+                }
+
+                if (discountCode && discountCode.value.trim() && !window.bookingDiscountValid) {
+                    e.preventDefault();
+                    alert('โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว');
+                    discountCode.focus();
+                    return;
+                }
+            });
+        })();
+        (function() {
             const PRICES = {
                 adult: {{ (int) $prices['adult'] }},
                 child: {{ (int) $prices['child'] }},
@@ -239,6 +328,7 @@
             // Adjust these if needed
             const VAT_RATE = 0.07; // 7%
             const FEE_FLAT = 0; // e.g. 50
+            const MIN_CHARGE = 10;
 
             function clampMin0(n) {
                 return Math.max(0, parseInt(n || 0, 10));
@@ -256,12 +346,26 @@
                 const subtotal = qa * PRICES.adult + qc * PRICES.child + qi * PRICES.infant;
                 const vat = subtotal * VAT_RATE;
                 const fee = FEE_FLAT;
-                const total = subtotal + vat + fee;
+                const discount = window.bookingDiscountAmount || 0;
+                const total = Math.max(0, subtotal + vat + fee - discount);
+                window.bookingTotalAfterDiscount = total;
 
                 document.getElementById('sum-subtotal').textContent = money(subtotal);
                 document.getElementById('sum-vat').textContent = money(vat);
                 document.getElementById('sum-fee').textContent = money(fee);
+                document.getElementById('sum-discount').textContent = money(discount);
                 document.getElementById('sum-total').textContent = money(total);
+
+                const bookBtn = document.getElementById('btn-book');
+                const msg = document.getElementById('discount_msg');
+                if (bookBtn && total > 0 && total < MIN_CHARGE) {
+                    bookBtn.disabled = true;
+                    bookBtn.style.opacity = '0.6';
+                    if (msg) {
+                        msg.textContent = 'ยอดชำระหลังหักส่วนลดต้องไม่น้อยกว่า 10 บาท';
+                        msg.style.color = '#b00020';
+                    }
+                }
             }
 
             document.querySelectorAll('.qty-btn').forEach(btn => {
@@ -278,7 +382,100 @@
                 inp.addEventListener('input', calc);
             });
 
+            window.bookingDiscountAmount = 0;
+            window.bookingDiscountValid = true;
+            window.updateBookingTotals = calc;
+
             calc();
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const applyBtn = document.getElementById('apply_discount');
+            const codeInput = document.getElementById('discount_code');
+            const msg = document.getElementById('discount_msg');
+            const bookBtn = document.getElementById('btn-book');
+
+            if (!applyBtn || !codeInput) return;
+
+            const setState = (valid, message, amount) => {
+                window.bookingDiscountValid = valid;
+                window.bookingDiscountAmount = valid ? (amount || 0) : 0;
+                if (msg) {
+                    msg.textContent = message || '';
+                    msg.style.color = valid ? '#2e7d32' : '#b00020';
+                }
+                if (bookBtn) {
+                    if (codeInput.value.trim() && !valid) {
+                        bookBtn.disabled = true;
+                        bookBtn.style.opacity = '0.6';
+                    } else {
+                        bookBtn.disabled = false;
+                        bookBtn.style.opacity = '1';
+                    }
+                }
+                if (window.updateBookingTotals) {
+                    window.updateBookingTotals();
+                }
+            };
+
+            const resetState = () => {
+                window.bookingDiscountValid = !codeInput.value.trim();
+                window.bookingDiscountAmount = 0;
+                if (msg) msg.textContent = '';
+                if (bookBtn) {
+                    if (codeInput.value.trim()) {
+                        bookBtn.disabled = true;
+                        bookBtn.style.opacity = '0.6';
+                    } else {
+                        bookBtn.disabled = false;
+                        bookBtn.style.opacity = '1';
+                    }
+                }
+                if (window.updateBookingTotals) {
+                    window.updateBookingTotals();
+                }
+            };
+
+            codeInput.addEventListener('input', () => {
+                resetState();
+            });
+
+            applyBtn.addEventListener('click', async () => {
+                const code = codeInput.value.trim();
+                if (!code) {
+                    setState(false, 'กรุณากรอกโค้ดส่วนลด');
+                    return;
+                }
+
+                applyBtn.disabled = true;
+                applyBtn.textContent = 'Checking...';
+
+                try {
+                    const res = await fetch("{{ route('frontend.booking.validate-discount') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({ code })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) {
+                        setState(false, data.message || 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว');
+                    } else {
+                        setState(true, 'โค้ดส่วนลดใช้ได้', data.amount || 0);
+                    }
+                } catch (e) {
+                    setState(false, 'ไม่สามารถตรวจสอบโค้ดส่วนลดได้');
+                } finally {
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply';
+                }
+            });
         })();
     </script>
 
@@ -306,12 +503,12 @@ window.initHotelAutocomplete = function () {
 
   // ===== Chiang Mai City bounds =====
   const bounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(18.730, 98.930), // SW
-    new google.maps.LatLng(18.840, 99.050)  // NE
+    new google.maps.LatLng(18.760, 98.955), // SW (tighter)
+    new google.maps.LatLng(18.815, 99.025)  // NE (tighter)
   );
 
   const isWithinBounds = (lat, lng) => (
-    lat >= 18.730 && lat <= 18.840 && lng >= 98.930 && lng <= 99.050
+    lat >= 18.760 && lat <= 18.815 && lng >= 98.955 && lng <= 99.025
   );
 
   const setHidden = (el, v) => { if (el) el.value = (v ?? ''); };
@@ -374,11 +571,13 @@ window.initHotelAutocomplete = function () {
       clearLatLng();
       hideAllStatus();
       manualWrap.style.display = 'none';
+      if (manualAddress) manualAddress.required = false;
       return;
     }
 
     // hide manual (เพราะเลือกจาก Google สำเร็จ)
     manualWrap.style.display = 'none';
+    if (manualAddress) manualAddress.required = false;
 
     setHidden(sourceEl, 'google');
     setHidden(placeIdEl, place.place_id || '');
@@ -395,6 +594,8 @@ window.initHotelAutocomplete = function () {
   let marker = null;
   const geocoder = new google.maps.Geocoder();
 
+  let boundsRect = null;
+
   const ensureMap = () => {
     if (map) return;
 
@@ -405,6 +606,16 @@ window.initHotelAutocomplete = function () {
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
+    });
+
+    boundsRect = new google.maps.Rectangle({
+      bounds: bounds,
+      map: map,
+      strokeColor: '#d32f2f',
+      strokeOpacity: 0.9,
+      strokeWeight: 2,
+      fillOpacity: 0,
+      clickable: false,
     });
 
     // คลิกเพื่อปักหมุด
@@ -434,6 +645,7 @@ window.initHotelAutocomplete = function () {
 
   const showManual = () => {
     manualWrap.style.display = 'block';
+    if (manualAddress) manualAddress.required = true;
     hideAllStatus();
     clearGoogle();
     clearLatLng();
@@ -456,6 +668,7 @@ window.initHotelAutocomplete = function () {
         if (!placeIdEl.value) showManual();
       } else {
         manualWrap.style.display = 'none';
+        if (manualAddress) manualAddress.required = false;
       }
     }, 600);
   });

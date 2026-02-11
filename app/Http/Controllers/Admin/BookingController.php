@@ -17,7 +17,7 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with(['customer', 'tour', 'session'])
+        $bookings = Booking::with(['customer', 'tour', 'session', 'agent', 'discountCode'])
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -170,7 +170,7 @@ public function store(Request $request)
 
 public function show($id)
 {
-    $booking = Booking::with(['customer', 'tour', 'session', 'pickupLocation'])->findOrFail($id);
+    $booking = Booking::with(['customer', 'tour', 'session', 'pickupLocation', 'agent', 'discountCode'])->findOrFail($id);
     return view('admin.bookings.show', compact('booking'));
 }
 

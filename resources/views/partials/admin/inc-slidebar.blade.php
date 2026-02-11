@@ -204,6 +204,48 @@
                 </div>
 
                 <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.agents.index') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="8" r="4" fill="currentColor" />
+                                    <path opacity="0.3" d="M4 20C4 16.7 7.1 14 12 14C16.9 14 20 16.7 20 20H4Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">พนักงานขาย</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.discount-codes.index') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
+                                    <path d="M8 7H16V9H8V7ZM8 11H16V13H8V11ZM8 15H13V17H8V15Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">โค้ดส่วนลด</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.reports.agents') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M4 4H20V20H4V4Z" fill="currentColor"/>
+                                    <path d="M7 7H17V9H7V7ZM7 11H14V13H7V11ZM7 15H12V17H7V15Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">รายงานเอเจนต์</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
                     <a class="menu-link" href="{{ route('admin.elephants.index') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">

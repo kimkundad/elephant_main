@@ -33,6 +33,9 @@
                                     <th>ลูกค้า</th>
                                     <th>จำนวนคน</th>
                                     <th>ราคารวม</th>
+                                    <th>ส่วนลด</th>
+                                    <th>โค้ด</th>
+                                    <th>พนักงานขาย</th>
                                     <th>สถานะ</th>
                                     <th>การกระทำ</th>
                                 </tr>
@@ -47,7 +50,7 @@
                                             <br>
                                             <small>{{ $b->session?->start_time }} - {{ $b->session?->end_time }}</small>
                                         </td>
-                                        <td>{{ $b->customer?->full_name }}</td>
+                                        <td>{{ $b->customer?->full_name ?? $b->customer_name }}</td>
                                         <td>
                                             {{ $b->total_guests }}
                                             <small>
@@ -57,6 +60,9 @@
                                             </small>
                                         </td>
                                         <td>{{ number_format($b->total_price, 2) }}</td>
+                                        <td>{{ number_format($b->discount_amount ?? 0, 2) }}</td>
+                                        <td>{{ $b->discount_code ?? '-' }}</td>
+                                        <td>{{ $b->agent?->name ?? '-' }}</td>
                                         <td>{{ $b->status }}</td>
                                         <td class="text-nowrap">
                                             <a href="{{ route('admin.bookings.show', $b->id) }}"

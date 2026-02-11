@@ -13,6 +13,7 @@ class Booking extends Model
     'adults','children','infants','total_guests',
     'subtotal','vat_amount','fee_amount','grand_total',
     'total_price','status','pickup_location_id','created_by',
+    'agent_id','discount_code_id','discount_code','discount_amount',
     'payment_status','payment_channel','stripe_session_id','stripe_payment_intent_id',
     'amount_due_now','amount_pay_later','paid_at',
 ];
@@ -40,5 +41,15 @@ class Booking extends Model
     public function pickupLocation()
     {
         return $this->belongsTo(PickupLocation::class);
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
+    }
+
+    public function discountCode()
+    {
+        return $this->belongsTo(DiscountCode::class);
     }
 }

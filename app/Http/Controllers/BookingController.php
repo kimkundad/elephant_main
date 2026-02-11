@@ -8,6 +8,8 @@ use App\Models\TourSession;
 use App\Models\PickupLocation; // ถ้ามี model นี้
 use Carbon\Carbon;
 use App\Models\Booking;
+use App\Models\DiscountCode;
+use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
 
 
@@ -87,8 +89,8 @@ class BookingController extends Controller
             'meeting_point_id' => 'nullable|integer|exists:pickup_locations,id',
 
             // การชำระเงิน
-            'pay_type' => 'required|in:full,deposit',
             'payment_channel' => 'required|in:card,promptpay',
+            'discount_code' => 'nullable|string|max:50',
         ]);
 
         $tour = Tour::findOrFail($data['tour_id']);
@@ -135,57 +137,120 @@ class BookingController extends Controller
         $vat = round($subtotal * $vatRate, 2);
         $fee = 0;
         $grand = round($subtotal + $vat + $fee, 2);
+        $discount = null;
+        $discountAmount = 0;
+        $discountCode = null;
+        $agentId = null;
 
-        // ===== จ่ายเต็ม / มัดจำ =====
-        $depositPercent = (float) (config('booking.deposit_percent') ?? env('BOOKING_DEPOSIT_PERCENT', 0.30));
-        $amountDueNow = $grand;
-        $amountPayLater = 0;
+        if (!empty($data['discount_code'])) {
+            $discountCode = strtoupper(trim($data['discount_code']));
+            $discount = $this->resolveDiscountCode($discountCode);
 
-        if ($data['pay_type'] === 'deposit') {
-            $amountDueNow = round($grand * $depositPercent, 2);
-            $amountPayLater = round($grand - $amountDueNow, 2);
+            if (!$discount['valid']) {
+                return back()->withErrors([
+                    'discount_code' => $discount['message'] ?? 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว',
+                ])->withInput();
+            }
+
+            $discountAmount = min($grand, (float) $discount['amount']);
+            $agentId = $discount['agent_id'] ?? null;
         }
 
-        // ===== สร้าง Booking =====
-        $booking = Booking::create([
-            'customer_id' => null,
-            'customer_name' => $data['full_name'],
-            'customer_phone' => $data['phone'],
-            'customer_email' => $data['email'],
-            'public_code' => \Illuminate\Support\Str::random(32),
+        $grandAfterDiscount = max(0, round($grand - $discountAmount, 2));
+        $minCharge = 10.00;
+        if ($grandAfterDiscount < $minCharge) {
+            return back()->withErrors([
+                'discount_code' => 'ยอดชำระหลังหักส่วนลดต้องไม่น้อยกว่า 10 บาท',
+            ])->withInput();
+        }
 
-            'tour_id' => $data['tour_id'],
-            'session_id' => $data['session_id'],
-            'date' => $data['date'],
+        $booking = null;
 
-            'adults' => $adults,
-            'children' => $children,
-            'infants' => $infants,
-            'total_guests' => $totalGuests,
+        try {
+            DB::transaction(function () use (
+            &$booking,
+            $data,
+            $adults,
+            $children,
+            $infants,
+            $totalGuests,
+            $subtotal,
+            $vat,
+            $fee,
+            $grandAfterDiscount,
+            $discountAmount,
+            $discountCode,
+            $agentId,
+            $pickupLocationId
+            ) {
+            if ($discountCode) {
+                $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
+                if (!$discountRow || !$this->isDiscountCodeUsable($discountRow)) {
+                    throw new \RuntimeException('โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว');
+                }
+                if ($discountRow->max_uses > 0 && $discountRow->used_count >= $discountRow->max_uses) {
+                    throw new \RuntimeException('โค้ดส่วนลดถูกใช้ครบจำนวนแล้ว');
+                }
+            }
 
-            'subtotal' => $subtotal,
-            'vat_amount' => $vat,
-            'fee_amount' => $fee,
-            'grand_total' => $grand,
-            'total_price' => $grand,
+            $booking = Booking::create([
+                'customer_id' => null,
+                'customer_name' => $data['full_name'],
+                'customer_phone' => $data['phone'],
+                'customer_email' => $data['email'],
+                'public_code' => \Illuminate\Support\Str::random(32),
 
-            // ถ้าอยู่นอกเขต -> เก็บเป็น meeting point id
-            'pickup_location_id' => $pickupLocationId,
+                'tour_id' => $data['tour_id'],
+                'session_id' => $data['session_id'],
+                'date' => $data['date'],
 
-            'status' => 'pending',
-            'created_by' => null,
+                'adults' => $adults,
+                'children' => $children,
+                'infants' => $infants,
+                'total_guests' => $totalGuests,
 
-            'payment_status' => $data['payment_channel'] === 'promptpay' ? 'awaiting_qr' : 'pending',
-            'payment_channel' => $data['payment_channel'],
-            'amount_due_now' => $amountDueNow,
-            'amount_pay_later' => $amountPayLater,
-        ]);
+                'subtotal' => $subtotal,
+                'vat_amount' => $vat,
+                'fee_amount' => $fee,
+                'grand_total' => $grandAfterDiscount,
+                'total_price' => $grandAfterDiscount,
+
+                'discount_code' => $discountCode,
+                'discount_amount' => $discountAmount,
+                'agent_id' => $agentId,
+
+                // ถ้าอยู่นอกเขต -> เก็บเป็น meeting point id
+                'pickup_location_id' => $pickupLocationId,
+
+                'status' => 'pending',
+                'created_by' => null,
+
+                'payment_status' => $data['payment_channel'] === 'promptpay' ? 'awaiting_qr' : 'pending',
+                'payment_channel' => $data['payment_channel'],
+                'amount_due_now' => $grandAfterDiscount,
+                'amount_pay_later' => 0,
+            ]);
+
+            if ($discountCode) {
+                $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
+                $discountRow->increment('used_count');
+                $booking->update([
+                    'discount_code_id' => $discountRow->id,
+                    'agent_id' => $discountRow->agent_id,
+                ]);
+            }
+            });
+        } catch (\RuntimeException $e) {
+            return back()->withErrors([
+                'discount_code' => $e->getMessage(),
+            ])->withInput();
+        }
 
         $stripe = new StripeClient(env('STRIPE_SECRET'));
         $currency = env('STRIPE_CURRENCY', 'thb');
 
         // Stripe ใช้หน่วย "สตางค์"
-        $amountSatang = (int) round($amountDueNow * 100);
+        $amountSatang = (int) round($grandAfterDiscount * 100);
 
         // ===== 1) จ่ายด้วยบัตร: Stripe Checkout =====
         if ($data['payment_channel'] === 'card') {
@@ -205,7 +270,8 @@ class BookingController extends Controller
                 'customer_email' => $booking->customer_email,
                 'metadata' => [
                     'booking_id' => (string)$booking->id,
-                    'pay_type' => $data['pay_type'],
+                    'discount_code' => $discountCode,
+                    'discount_amount' => (string) $discountAmount,
                 ],
                 'success_url' => route('frontend.booking.success', $booking->id) . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('frontend.booking.cancel', $booking->id),
@@ -237,7 +303,8 @@ class BookingController extends Controller
             'receipt_email' => $booking->customer_email,
             'metadata' => [
                 'booking_id' => (string)$booking->id,
-                'pay_type' => $data['pay_type'],
+                'discount_code' => $discountCode,
+                'discount_amount' => (string) $discountAmount,
             ],
         ]);
 
@@ -285,5 +352,64 @@ class BookingController extends Controller
         return response()->json($data);
     }
 
+    public function validateDiscount(Request $request)
+    {
+        $code = strtoupper(trim((string) $request->input('code', '')));
+        if ($code === '') {
+            return response()->json([
+                'valid' => false,
+                'message' => 'กรุณากรอกโค้ดส่วนลด',
+            ], 422);
+        }
+
+        $result = $this->resolveDiscountCode($code);
+        if (!$result['valid']) {
+            return response()->json([
+                'valid' => false,
+                'message' => $result['message'] ?? 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว',
+            ], 422);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'amount' => (float) $result['amount'],
+            'agent_id' => $result['agent_id'] ?? null,
+        ]);
+    }
+
+    private function resolveDiscountCode(string $code): array
+    {
+        $discount = DiscountCode::where('code', $code)->first();
+        if (!$discount || !$this->isDiscountCodeUsable($discount)) {
+            return ['valid' => false, 'message' => 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว'];
+        }
+
+        if ($discount->max_uses > 0 && $discount->used_count >= $discount->max_uses) {
+            return ['valid' => false, 'message' => 'โค้ดส่วนลดถูกใช้ครบจำนวนแล้ว'];
+        }
+
+        return [
+            'valid' => true,
+            'amount' => (float) $discount->amount,
+            'agent_id' => $discount->agent_id,
+        ];
+    }
+
+    private function isDiscountCodeUsable(DiscountCode $discount): bool
+    {
+        if (!$discount->is_active) {
+            return false;
+        }
+
+        $now = now();
+        if ($discount->starts_at && $now->lt($discount->starts_at)) {
+            return false;
+        }
+        if ($discount->ends_at && $now->gt($discount->ends_at)) {
+            return false;
+        }
+
+        return true;
+    }
 
 }
