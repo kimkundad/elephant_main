@@ -23,7 +23,7 @@ if ( document.documentElement )
             </script>
 
 <!--begin::Javascript-->
-<script>var hostUrl = "{{ Vite::asset('resources/admin/assets/') }}";</script>
+<script>var hostUrl = "{{ asset('build/admin') }}/";</script>
 <!--begin::Global Javascript Bundle(mandatory for all pages)-->
 <script src="{{ Vite::asset('resources/admin/assets/plugins/global/plugins.bundle.js') }}"></script>
 <script src="{{ Vite::asset('resources/admin/assets/js/scripts.bundle.js') }}"></script>
