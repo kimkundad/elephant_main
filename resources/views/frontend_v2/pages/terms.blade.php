@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('terms.page_title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'ข้อกำหนดการใช้งานเว็บไซต์ การจอง การชำระเงิน และเงื่อนไขการยกเลิก'
+  : 'Review our website terms, booking conditions, payment terms, and cancellation policy.')
 
 @push('styles')
 @include('frontend_v2.partials.about-styles')

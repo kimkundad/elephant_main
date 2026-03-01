@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('booking.promptpay.title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'สแกน QR PromptPay เพื่อชำระเงินและยืนยันการจอง ระบบจะอัปเดตสถานะให้อัตโนมัติ'
+  : 'Scan the PromptPay QR code to complete payment and confirm your booking. Status updates automatically.')
 
 @push('styles')
 <style>

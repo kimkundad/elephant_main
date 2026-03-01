@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('what_to_bring.page_title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'เช็กลิสต์สิ่งที่ควรเตรียมก่อนเข้าร่วมโปรแกรม เช่น เสื้อผ้า รองเท้า และคำแนะนำเพื่อความปลอดภัย'
+  : 'Check what to bring before your visit, including clothing, footwear, and practical tips for a safe experience.')
 
 @push('styles')
 @include('frontend_v2.partials.about-styles')

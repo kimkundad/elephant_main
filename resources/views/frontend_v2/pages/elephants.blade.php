@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('elephants.title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'พบกับช้างแต่ละเชือก เรียนรู้ประวัติการช่วยเหลือ บุคลิก และการดูแลในบ้านหลังใหม่ที่ปลอดภัย'
+  : 'Meet each elephant and learn their rescue stories, personalities, and life in a safe, caring sanctuary.')
 
 @push('styles')
 <style>

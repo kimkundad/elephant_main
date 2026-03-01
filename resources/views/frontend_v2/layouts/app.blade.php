@@ -3,7 +3,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'SMALL ELEPHANTS V2')</title>
+    @php
+        $metaTitle = trim($__env->yieldContent('title', 'SMALL ELEPHANTS V2'));
+        $metaDescription = trim($__env->yieldContent(
+            'meta_description',
+            'Ethical elephant sanctuary experiences in Chiang Mai with meaningful, respectful programs.'
+        ));
+        $ogTitle = trim($__env->yieldContent('og_title', $metaTitle));
+        $ogDescription = trim($__env->yieldContent('og_description', $metaDescription));
+        $ogImage = trim($__env->yieldContent(
+            'og_image',
+            $siteSetting?->og_image_url ?: asset('samet/assets/cover-active.jpg')
+        ));
+    @endphp
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request()->fullUrl() }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <link rel="icon" href="{{ asset('samet/assets/favicon.png') }}">
 

@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('policy.page_title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'อ่านนโยบายความเป็นส่วนตัว การใช้ข้อมูล และการคุ้มครองข้อมูลส่วนบุคคลของผู้ใช้งานเว็บไซต์'
+  : 'Read how we collect, use, and protect your personal information when using our website and services.')
 
 @push('styles')
 @include('frontend_v2.partials.about-styles')

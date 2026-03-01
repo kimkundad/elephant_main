@@ -28,6 +28,9 @@
 @endphp
 
 @section('title', __('booking.page_title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'จองโปรแกรม ' . $tourName . ' เลือกวัน เวลา ผู้เข้าร่วม และชำระเงินออนไลน์ได้อย่างปลอดภัย'
+  : 'Book ' . $tourName . ' online. Select date, session, guest count, and complete payment securely.')
 
 @push('styles')
 <style>

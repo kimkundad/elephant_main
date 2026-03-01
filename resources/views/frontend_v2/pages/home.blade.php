@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
-@section('title', 'Home V2')
+@section('title', \App\Models\SiteText::getValue('home.seo.title', 'Small Elephants Sanctuary Chiang Mai | Ethical Elephant Experiences'))
+@section('meta_description', \App\Models\SiteText::getValue('home.seo.description', 'Visit our ethical elephant sanctuary in Chiang Mai. Learn, connect, and spend meaningful time with elephants through safe and respectful programs.'))
+@section('og_title', \App\Models\SiteText::getValue('home.seo.title', 'Small Elephants Sanctuary Chiang Mai | Ethical Elephant Experiences'))
+@section('og_description', \App\Models\SiteText::getValue('home.seo.description', 'Visit our ethical elephant sanctuary in Chiang Mai. Learn, connect, and spend meaningful time with elephants through safe and respectful programs.'))
 @push('styles')
 <style>
 .elephant-history{max-height:72px; overflow:hidden;}
@@ -368,6 +371,7 @@ document.addEventListener('click', function(e){
 @endpush
 
 @endsection
+
 
 
 

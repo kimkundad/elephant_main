@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', 'Contact V2')
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'สอบถามข้อมูลโปรแกรม การเดินทาง และการจอง ทีมงานพร้อมช่วยเหลือและตอบกลับโดยเร็ว'
+  : 'Get in touch for program details, directions, and booking support. Our team is happy to help.')
 
 @push('styles')
 <style>

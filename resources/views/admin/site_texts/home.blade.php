@@ -32,6 +32,33 @@
               @csrf
 
               <div class="row mb-6">
+                <div class="col-12">
+                  <h4 class="mb-4">SEO (Home)</h4>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">SEO Title (TH)</label>
+                  <input class="form-control" name="seo_title_th"
+                         value="{{ old('seo_title_th', $th['home.seo.title'] ?? 'Small Elephants Sanctuary Chiang Mai | บ้านของช้างที่ปลอดภัย') }}">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">SEO Title (EN)</label>
+                  <input class="form-control" name="seo_title_en"
+                         value="{{ old('seo_title_en', $en['home.seo.title'] ?? 'Small Elephants Sanctuary Chiang Mai | Ethical Elephant Experiences') }}">
+                </div>
+              </div>
+
+              <div class="row mb-6">
+                <div class="col-md-6">
+                  <label class="form-label">SEO Description (TH)</label>
+                  <textarea class="form-control" name="seo_description_th" rows="4">{{ old('seo_description_th', $th['home.seo.description'] ?? 'เยี่ยมชมปางช้างเชิงอนุรักษ์ในเชียงใหม่ เรียนรู้ ดูแล และใช้เวลากับช้างอย่างเคารพธรรมชาติ ผ่านโปรแกรมที่ปลอดภัยและมีจริยธรรม') }}</textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">SEO Description (EN)</label>
+                  <textarea class="form-control" name="seo_description_en" rows="4">{{ old('seo_description_en', $en['home.seo.description'] ?? 'Visit our ethical elephant sanctuary in Chiang Mai. Learn, connect, and spend meaningful time with elephants through safe and respectful programs.') }}</textarea>
+                </div>
+              </div>
+
+              <div class="row mb-6">
                 <div class="col-md-6">
                   <label class="form-label">Slide Title (TH)</label>
                   <input class="form-control" name="slide_title_th"

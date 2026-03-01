@@ -27,6 +27,10 @@ class SiteTextController extends Controller
     public function updateHome(Request $request)
     {
         $data = $request->validate([
+            'seo_title_th' => 'required|string|max:255',
+            'seo_title_en' => 'required|string|max:255',
+            'seo_description_th' => 'required|string|max:1000',
+            'seo_description_en' => 'required|string|max:1000',
             'slide_title_th' => 'required|string|max:255',
             'slide_subtitle_th' => 'required|string|max:1000',
             'slide_title_en' => 'required|string|max:255',
@@ -52,6 +56,11 @@ class SiteTextController extends Controller
             'contact_lead_th' => 'required|string|max:1500',
             'contact_lead_en' => 'required|string|max:1500',
         ]);
+
+        $this->upsertText('home', 'seo', 'home.seo.title', 'th', $data['seo_title_th']);
+        $this->upsertText('home', 'seo', 'home.seo.title', 'en', $data['seo_title_en']);
+        $this->upsertText('home', 'seo', 'home.seo.description', 'th', $data['seo_description_th']);
+        $this->upsertText('home', 'seo', 'home.seo.description', 'en', $data['seo_description_en']);
 
         $this->upsertText('home', 'hero', 'home.hero.slide_title', 'th', $data['slide_title_th']);
         $this->upsertText('home', 'hero', 'home.hero.slide_subtitle', 'th', $data['slide_subtitle_th']);

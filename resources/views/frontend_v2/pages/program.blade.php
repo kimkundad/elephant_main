@@ -1,6 +1,9 @@
 ﻿@extends('frontend_v2.layouts.app')
 
 @section('title', 'Program V2')
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'เลือกโปรแกรมที่เหมาะกับคุณ ทั้งครึ่งวันและเต็มวัน พร้อมกิจกรรมเรียนรู้พฤติกรรมช้างอย่างใกล้ชิดโดยไม่ทำร้ายสัตว์'
+  : 'Explore half-day and full-day elephant experiences designed around welfare, learning, and respectful interaction.')
 @push('styles')
 <style>
 /* =========================

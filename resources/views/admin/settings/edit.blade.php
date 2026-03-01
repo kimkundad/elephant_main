@@ -75,6 +75,22 @@
                 </div>
               </div>
 
+              <div class="row mb-6 align-items-center">
+                <div class="col-md-6">
+                  <label class="form-label">Global OG Image</label>
+                  <input class="form-control" type="file" name="og_image" accept="image/*">
+                  <div class="form-text">Recommended size: 1200 x 630 px (used for social sharing preview).</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label d-block">Current OG Image</label>
+                  @if(!empty($setting->og_image_url))
+                    <img src="{{ $setting->og_image_url }}" alt="OG Image" style="max-height:100px;">
+                  @else
+                    <span class="text-muted">No global OG image yet.</span>
+                  @endif
+                </div>
+              </div>
+
               <div class="row mb-6">
                 <div class="col-md-6">
                   <label class="form-label">Address (EN)</label>

@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', 'About')
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'จากค่ายขี่ช้างสู่บ้านของช้าง เราสร้างพื้นที่ปลอดภัยที่ให้ช้างได้ใช้ชีวิตอย่างธรรมชาติ พร้อมแบ่งปันประสบการณ์ท่องเที่ยวเชิงจริยธรรม'
+  : 'From riding camp to ethical sanctuary, we created a safe home where elephants can live naturally while guests enjoy responsible experiences.')
 
 @push('styles')
 <style>

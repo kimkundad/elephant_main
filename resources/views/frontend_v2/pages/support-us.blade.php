@@ -1,6 +1,9 @@
 @extends('frontend_v2.layouts.app')
 
 @section('title', __('support_us.page_title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'ร่วมเป็นส่วนหนึ่งของการดูแลช้างอย่างยั่งยืน ผ่านการสนับสนุน โครงการ และการมีส่วนร่วมในระยะยาว'
+  : 'Support long-term elephant welfare through donations, partnerships, and meaningful participation.')
 
 @push('styles')
 @include('frontend_v2.partials.about-styles')

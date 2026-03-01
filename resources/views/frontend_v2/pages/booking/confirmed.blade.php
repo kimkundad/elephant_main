@@ -6,6 +6,9 @@
 @endphp
 
 @section('title', __('booking.confirmed.title'))
+@section('meta_description', app()->getLocale() === 'th'
+  ? 'การจองของคุณเสร็จสมบูรณ์แล้ว ตรวจสอบรายละเอียดทัวร์และการเตรียมตัวก่อนเดินทาง'
+  : 'Your booking is confirmed. Review your tour details and get ready for your visit.')
 
 @push('styles')
 <style>

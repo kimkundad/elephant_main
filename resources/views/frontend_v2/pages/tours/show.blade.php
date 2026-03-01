@@ -8,6 +8,9 @@
 @endphp
 
 @section('title', $tourName)
+@section('meta_description', app()->getLocale() === 'th'
+  ? ('รายละเอียดโปรแกรม ' . $tourName . ' เวลา ราคา และรอบกิจกรรมครบถ้วน จองออนไลน์ได้ทันที')
+  : ('View full details of ' . $tourName . ' including schedule, pricing, and session availability. Book online in minutes.'))
 
 @push('styles')
 <style>

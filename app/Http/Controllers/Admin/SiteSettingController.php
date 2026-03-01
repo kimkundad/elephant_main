@@ -37,6 +37,7 @@ class SiteSettingController extends Controller
             'copyright_text' => ['nullable', 'string', 'max:255'],
             'logo_header' => ['nullable', 'image', 'max:2048'],
             'logo_footer' => ['nullable', 'image', 'max:2048'],
+            'og_image' => ['nullable', 'image', 'max:4096'],
         ]);
 
         foreach (['facebook_url', 'instagram_url'] as $key) {
@@ -73,6 +74,14 @@ class SiteSettingController extends Controller
             }
 
             $data['logo_footer_path'] = $request->file('logo_footer')->storePublicly('site', 'spaces');
+        }
+
+        if ($request->hasFile('og_image')) {
+            if ($setting?->og_image_path) {
+                Storage::disk('spaces')->delete($setting->og_image_path);
+            }
+
+            $data['og_image_path'] = $request->file('og_image')->storePublicly('site', 'spaces');
         }
 
         SiteSetting::updateOrCreate(['id' => $setting?->id], $data);

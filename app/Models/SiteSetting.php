@@ -25,6 +25,7 @@ class SiteSetting extends Model
         'logo_path',
         'logo_header_path',
         'logo_footer_path',
+        'og_image_path',
     ];
 
     public function getLogoHeaderUrlAttribute(): ?string
@@ -45,5 +46,14 @@ class SiteSetting extends Model
         }
 
         return Storage::disk('spaces')->url($this->logo_footer_path);
+    }
+
+    public function getOgImageUrlAttribute(): ?string
+    {
+        if (!$this->og_image_path) {
+            return null;
+        }
+
+        return Storage::disk('spaces')->url($this->og_image_path);
     }
 }
