@@ -28,8 +28,40 @@
 
         <div class="card">
           <div class="card-body">
-            <form method="POST" action="{{ route('admin.settings.update') }}">
+            <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
               @csrf
+
+              <div class="row mb-6 align-items-center">
+                <div class="col-md-6">
+                  <label class="form-label">Logo Header</label>
+                  <input class="form-control" type="file" name="logo_header" accept="image/*">
+                  <div class="form-text">ใช้กับ Header/หน้าเว็บทั้งหมด (ยกเว้น Footer)</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label d-block">ตัวอย่างโลโก้ Header ปัจจุบัน</label>
+                  @if(!empty($setting->logo_header_url))
+                    <img src="{{ $setting->logo_header_url }}" alt="Header Logo" style="max-height:70px;">
+                  @else
+                    <span class="text-muted">ยังไม่มีโลโก้ Header</span>
+                  @endif
+                </div>
+              </div>
+
+              <div class="row mb-6 align-items-center">
+                <div class="col-md-6">
+                  <label class="form-label">Logo Footer</label>
+                  <input class="form-control" type="file" name="logo_footer" accept="image/*">
+                  <div class="form-text">ใช้เฉพาะในส่วน Footer</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label d-block">ตัวอย่างโลโก้ Footer ปัจจุบัน</label>
+                  @if(!empty($setting->logo_footer_url))
+                    <img src="{{ $setting->logo_footer_url }}" alt="Footer Logo" style="max-height:70px;">
+                  @else
+                    <span class="text-muted">ยังไม่มีโลโก้ Footer</span>
+                  @endif
+                </div>
+              </div>
 
               <div class="row mb-6">
                 <div class="col-md-6">
@@ -38,7 +70,16 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">ที่อยู่ (แสดงใน Footer/Contact)</label>
-                  <textarea class="form-control" name="address" rows="4">{{ old('address', $setting->address) }}</textarea>
+                  <textarea class="form-control" name="address_th" rows="4">{{ old('address_th', $setting->address_th ?? $setting->address) }}</textarea>
+                  <div class="form-text">Thai address</div>
+                </div>
+              </div>
+
+              <div class="row mb-6">
+                <div class="col-md-6">
+                  <label class="form-label">Address (EN)</label>
+                  <textarea class="form-control" name="address_en" rows="4">{{ old('address_en', $setting->address_en) }}</textarea>
+                  <div class="form-text">English address</div>
                 </div>
               </div>
 

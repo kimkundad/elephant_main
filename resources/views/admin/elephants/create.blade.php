@@ -29,27 +29,39 @@
                             <form method="POST" action="{{ route('admin.elephants.store') }}" enctype="multipart/form-data">
                                 @csrf
 
-                                <div class="row mb-6">
+                                                                <div class="row mb-6">
                                     <div class="col-md-6">
-                                        <label class="form-label">ชื่อช้าง</label>
-                                        <input class="form-control" name="name" value="{{ old('name') }}" required>
+                                        <label class="form-label">ชื่อช้าง (TH)</label>
+                                        <input class="form-control" name="name_th" value="{{ old('name_th') }}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">วันที่ช่วยเหลือ</label>
-                                        <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at') }}">
+                                        <label class="form-label">ชื่อช้าง (EN)</label>
+                                        <input class="form-control" name="name_en" value="{{ old('name_en') }}" required>
                                     </div>
                                 </div>
 
                                 <div class="row mb-6">
-                                    <div class="col-md-8">
-                                        <label class="form-label">ประวัติ</label>
-                                        <textarea class="form-control" name="history" rows="6">{{ old('history') }}</textarea>
+                                    <div class="col-md-6">
+                                        <label class="form-label">วันที่ช่วยเหลือ</label>
+                                        <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at') }}">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label class="form-label">ลำดับการแสดง (น้อยก่อน)</label>
                                         <input class="form-control" type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
                                         <div class="form-text">ใช้จัดเรียงการแสดงบนหน้าบ้าน</div>
                                     </div>
+                                </div>
+
+                                <div class="row mb-6">
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประวัติ (TH)</label>
+                                        <textarea class="form-control" name="history_th" rows="6">{{ old('history_th') }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประวัติ (EN)</label>
+                                        <textarea class="form-control" name="history_en" rows="6">{{ old('history_en') }}</textarea>
+                                    </div>
+                                </div>
                                 </div>
 
                                 <div class="row mb-6">
@@ -78,3 +90,4 @@
         </div>
     </div>
 @endsection
+

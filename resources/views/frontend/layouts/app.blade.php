@@ -103,6 +103,7 @@
 
     @yield('content')
 
+    
 
     @include('frontend.partials.footer')
     @include('frontend.partials.scripts')

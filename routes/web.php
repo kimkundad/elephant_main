@@ -19,6 +19,9 @@ use App\Http\Controllers\Admin\ElephantController;
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\DiscountCodeController;
 use App\Http\Controllers\Admin\AgentReportController;
+use App\Http\Controllers\Admin\SiteTextController;
+use App\Http\Controllers\Admin\TourTagController;
+use App\Http\Controllers\Admin\PageMediaController;
 
 Route::get('/api/google-reviews', [GoogleReviewsController::class, 'index']);
 
@@ -32,15 +35,42 @@ Route::get('/b/{code}', [BookingPublicController::class, 'show'])->name('booking
 
 // หน้าแรก
 Route::name('frontend.')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/about', [HomeController::class, 'about'])->name('about');
-    Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-    Route::post('/contact', [HomeController::class, 'contactStore'])->name('contact.store');
-    Route::get('/our-elephants', [HomeController::class, 'elephants'])->name('elephants');
-    Route::view('/what-to-bring', 'frontend.pages.what-to-bring')->name('what_to_bring');
-    Route::view('/support-us', 'frontend.pages.support-us')->name('support_us');
-    Route::view('/terms', 'frontend.pages.terms')->name('terms');
-    Route::view('/policy', 'frontend.pages.policy')->name('policy');
+    Route::get('/locale/{locale}', function (string $locale) {
+        if (!in_array($locale, ['th', 'en'], true)) {
+            $locale = 'th';
+        }
+        session(['locale' => $locale]);
+        return redirect()->back();
+    })->name('locale.switch');
+
+    // Primary public frontend now uses V2.
+    Route::get('/', [HomeController::class, 'homeV2'])->name('home');
+    Route::get('/home', fn () => redirect()->route('frontend.home'));
+    Route::get('/v2', fn () => redirect()->route('frontend.home'))->name('home.v2');
+
+    Route::get('/about', [HomeController::class, 'aboutV2'])->name('about');
+    Route::get('/v2/about', fn () => redirect()->route('frontend.about'))->name('about.v2');
+
+    Route::get('/programs', [HomeController::class, 'programV2'])->name('program');
+    Route::get('/v2/programs', [HomeController::class, 'programV2'])->name('program.v2');
+
+    Route::get('/contact', [HomeController::class, 'contactV2'])->name('contact');
+    Route::post('/contact', [HomeController::class, 'contactStoreV2'])->name('contact.store');
+    Route::get('/v2/contact', fn () => redirect()->route('frontend.contact'))->name('contact.v2');
+    Route::post('/v2/contact', [HomeController::class, 'contactStoreV2'])->name('contact.v2.store');
+
+    Route::get('/our-elephants', [HomeController::class, 'elephantsV2'])->name('elephants');
+    Route::get('/v2/our-elephants', fn () => redirect()->route('frontend.elephants'))->name('elephants.v2');
+
+    Route::view('/what-to-bring', 'frontend_v2.pages.what-to-bring')->name('what_to_bring');
+    Route::view('/support-us', 'frontend_v2.pages.support-us')->name('support_us');
+    Route::view('/terms', 'frontend_v2.pages.terms')->name('terms');
+    Route::view('/policy', 'frontend_v2.pages.policy')->name('policy');
+
+    Route::view('/v2/what-to-bring', 'frontend_v2.pages.what-to-bring')->name('what_to_bring.v2');
+    Route::view('/v2/support-us', 'frontend_v2.pages.support-us')->name('support_us.v2');
+    Route::view('/v2/terms', 'frontend_v2.pages.terms')->name('terms.v2');
+    Route::view('/v2/policy', 'frontend_v2.pages.policy')->name('policy.v2');
 
     // ตรวจสถานะ PromptPay (polling จากหน้า QR)
     Route::get('/booking/{booking}/payment-status', [FrontBookingController::class, 'paymentStatus'])
@@ -50,6 +80,10 @@ Route::name('frontend.')->group(function () {
     Route::get('/booking/{booking}/success', function (\App\Models\Booking $booking) {
         return redirect()->route('frontend.booking.confirmed', $booking);
     })->name('booking.success');
+
+    Route::get('/v2/booking/{booking}/success', function (\App\Models\Booking $booking) {
+        return redirect()->route('frontend.booking.confirmed.v2', $booking);
+    })->name('booking.success.v2');
 
     // Cancel (Card)
     Route::get('/booking/{booking}/cancel', function (\App\Models\Booking $booking) {
@@ -62,20 +96,35 @@ Route::name('frontend.')->group(function () {
             ->with('error', 'Payment was canceled');
     })->name('booking.cancel');
 
+    Route::get('/v2/booking/{booking}/cancel', function (\App\Models\Booking $booking) {
+        $booking->update([
+            'payment_status' => 'canceled',
+        ]);
+
+        return redirect()
+            ->route('frontend.booking.create')
+            ->with('error', 'Payment was canceled');
+    })->name('booking.cancel.v2');
+
 
     // ✅ ใช้ Frontend TourController
-    Route::get('/tours', [FrontTourController::class, 'index'])->name('tours.index');
-    Route::get('/tours/{slug}', [FrontTourController::class, 'show'])->name('tours.show');
+    Route::get('/tours', fn () => redirect()->route('frontend.program'))->name('tours.index');
+    Route::get('/tours/{slug}', [FrontTourController::class, 'showV2'])->name('tours.show');
+    Route::get('/v2/tours/{slug}', [FrontTourController::class, 'showV2'])->name('tours.show.v2');
 
     // ดึงรอบตามวันที่ (ไว้ทำเปลี่ยนวันแบบในรูป)
     Route::get('/tours/{slug}/sessions', [FrontTourController::class, 'sessionsForDate'])
         ->name('tours.sessions');
 
-        Route::get('/booking', [FrontBookingController::class, 'create'])
+        Route::get('/booking', [FrontBookingController::class, 'createV2'])
         ->name('booking.create');
 
     Route::post('/booking', [FrontBookingController::class, 'store'])
         ->name('booking.store');
+    Route::get('/v2/booking', [FrontBookingController::class, 'createV2'])
+        ->name('booking.create.v2');
+    Route::get('/v2/booking/confirmed/{booking}', [FrontBookingController::class, 'confirmedV2'])
+        ->name('booking.confirmed.v2');
     Route::post('/booking/validate-discount', [FrontBookingController::class, 'validateDiscount'])
         ->name('booking.validate-discount');
 
@@ -86,7 +135,7 @@ Route::name('frontend.')->group(function () {
 Route::get('/pickup-locations/resolve', [PickupLocationLookupController::class, 'resolve'])
     ->name('pickup-locations.resolve');
 
-    Route::get('/booking/confirmed/{booking}', [FrontBookingController::class, 'confirmed'])
+    Route::get('/booking/confirmed/{booking}', [FrontBookingController::class, 'confirmedV2'])
     ->name('booking.confirmed');
 
 
@@ -126,6 +175,16 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::post('/settings', [SiteSettingController::class, 'update'])
             ->name('settings.update');
 
+        // Site texts (v2)
+        Route::get('/site-texts/home', [SiteTextController::class, 'editHome'])
+            ->name('site-texts.home');
+        Route::post('/site-texts/home', [SiteTextController::class, 'updateHome'])
+            ->name('site-texts.home.update');
+        Route::get('/site-texts/about', [SiteTextController::class, 'editAbout'])
+            ->name('site-texts.about');
+        Route::post('/site-texts/about', [SiteTextController::class, 'updateAbout'])
+            ->name('site-texts.about.update');
+
         // Elephants
         Route::resource('elephants', ElephantController::class);
         Route::get('/elephants/{elephant}/toggle', [ElephantController::class, 'toggle'])
@@ -151,6 +210,10 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         */
 
         Route::resource('tours', TourController::class);
+        Route::resource('tour-tags', TourTagController::class)->except(['show']);
+        Route::resource('page-media', PageMediaController::class)
+            ->parameters(['page-media' => 'pageMedia'])
+            ->except(['show']);
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
         Route::resource('bookings', BookingController::class)->only([
             'index', 'create', 'store'

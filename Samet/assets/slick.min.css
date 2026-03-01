@@ -1,0 +1,220 @@
+.slick-list, .slick-slider, .slick-track {
+    position: relative;
+    display: block
+}
+
+.slick-loading .slick-slide, .slick-loading .slick-track {
+    visibility: hidden
+}
+
+.slick-slider {
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -ms-touch-action: pan-y;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent
+}
+
+.slick-list {
+    overflow: hidden;
+    margin: 0;
+    padding: 0
+}
+
+.slick-list:focus {
+    outline: 0
+}
+
+.slick-list.dragging {
+    cursor: pointer;
+    cursor: hand
+}
+
+.slick-slider .slick-list, .slick-slider .slick-track {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+}
+
+.slick-track {
+    top: 0;
+    left: 0
+}
+
+.slick-track:after, .slick-track:before {
+    display: table;
+    content: ''
+}
+
+.slick-track:after {
+    clear: both
+}
+
+.slick-slide {
+    display: none;
+    float: left;
+    height: 100%;
+    min-height: 1px
+}
+
+[dir=rtl] .slick-slide {
+    float: right
+}
+
+.slick-slide img {
+    display: block
+}
+
+.slick-slide.slick-loading img {
+    display: none
+}
+
+.slick-slide.dragging img {
+    pointer-events: none
+}
+
+.slick-initialized .slick-slide {
+    display: block
+}
+
+.slick-vertical .slick-slide {
+    display: block;
+    height: auto;
+    border: 1px solid transparent
+}
+
+.slick-arrow.slick-hidden {
+    display: none
+}
+
+/*# sourceMappingURL=slick.min.css.map */
+
+.slick-dots {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 1rem 0;
+    list-style-type: none;
+}
+
+.slick-dots li {
+    margin: 0 7px;
+}
+
+.slick-dots button {
+    display: block;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    border-radius: 100%;
+    opacity: 0.3;
+    background: #000;
+    text-indent: -9999px;
+}
+
+.slick-dots li.slick-active button {
+    background-color: #000;
+    opacity: 1;
+}
+
+/***************************/
+/* BODY */
+/***************************/
+.detail-facilities .slick-arrow ,
+.our-offers .slick-arrow {
+    position: absolute;
+    width: 100%;
+    margin: auto;
+    border: none;
+    padding: 0 ;
+    color: #fff;
+    transition: all 0.5s;
+    z-index: 1;
+    cursor: pointer;
+}
+.detail-facilities .slick-arrow {
+    bottom: 185px;
+}
+.our-offers .slick-arrow {
+    top: 300px;
+}
+.detail-facilities .slick-arrow .slick-icon {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-block;
+    padding: 30px;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 20px;
+    text-align: center;
+    background: rgba(var(--hg-rgba-color-primary),.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: all .6s;
+
+}
+.detail-facilities .slick-arrow:hover .slick-icon {
+    background: rgba(var(--hg-rgba-color-primary),1);
+}
+.detail-facilities .slick-arrow .slick-prev {
+    left: 38.666667%;
+}
+.detail-facilities .slick-arrow .slick-next {
+    right: -45px;
+}
+.detail-facilities .slick-arrow.slick-disabled {
+    display: none !important;
+}
+.detail-facilities .slick-list, .detail-offers .slick-list {
+    overflow: inherit !important;
+}
+.detail-offers .slick-initialized .slick-slide  {
+    position: relative;
+    top: 100px;
+    margin: 0 25px;
+    opacity: .4;
+    transition: all .6s;
+}
+.detail-offers .slick-initialized .slick-slide .content-offers {
+    opacity: 0;
+    transition: all .4s;
+}
+.detail-offers .slick-initialized .slick-slide.slick-active {
+    top: 0;
+    opacity: 1;
+}
+.detail-offers .slick-initialized .slick-slide.slick-active .content-offers{
+    opacity: 1;
+}
+
+.our-offers .slick-arrow .slick-icon {
+    position: absolute;
+    font-size: 22px;
+    font-family: Arial, sans-serif;
+    color: var(--hg-color-title);
+    opacity: .5;
+    transition: all 0.8s;
+}
+.our-offers .slick-arrow .slick-icon:hover {
+    opacity: 1;
+}
+.our-offers .slick-arrow .slick-prev  {
+    left: -80px;
+}
+.our-offers .slick-arrow .slick-next  {
+    right: -80px;
+}
+.slide_item1 {
+    margin-right: -25px;
+    margin-left: -25px;
+}

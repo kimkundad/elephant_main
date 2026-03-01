@@ -64,6 +64,43 @@ public function show(string $slug, Request $request)
     ));
 }
 
+    public function showV2(string $slug, Request $request)
+    {
+        $tour = Tour::query()
+            ->where('slug', $slug)
+            ->where('is_active', 1)
+            ->firstOrFail();
+
+        $selectedDate = $request->query('date', now()->toDateString());
+        $month = $request->query('month', now()->format('Y-m'));
+
+        $sessions = $tour->sessions()
+            ->where('is_active', 1)
+            ->orderBy('start_time')
+            ->get();
+
+        $now = now();
+        $isToday = ($selectedDate === $now->toDateString());
+
+        $sessionsForSelected = $sessions
+            ->filter(function ($s) use ($selectedDate, $now, $isToday) {
+
+                if ($isToday) {
+                    $sessionStart = Carbon::parse($selectedDate.' '.$s->start_time);
+                    if ($sessionStart->lte($now)) {
+                        return false;
+                    }
+                }
+
+                return (int) $s->remainingCapacity($selectedDate) > 0;
+            })
+            ->values();
+
+        return view('frontend_v2.pages.tours.show', compact(
+            'tour', 'selectedDate', 'month', 'sessionsForSelected'
+        ));
+    }
+
 
 
     public function sessionsForDate($slug, Request $request)

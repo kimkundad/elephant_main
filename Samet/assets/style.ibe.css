@@ -1,0 +1,224 @@
+.reservation-box {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--hg-color-light);
+    transition: .23s ease-in-out;
+    z-index: 10;
+}
+.reservation-box:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../images/icon/vector.svg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: -2;
+}
+
+.reservation-box.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.reservation {
+    position: relative;
+    padding: 0 150px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.title-reservation {
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
+.title-reservation p:nth-child(1), .title-reservation p:nth-child(2) {
+    font-family: var(--hg-font-title);
+    margin: 0;
+    line-height: 1;
+}
+
+.title-reservation p:nth-child(1) {
+    font-size: 22px;
+    letter-spacing: 6px;
+    margin: 0 0 5px;
+}
+
+.title-reservation p:nth-child(2) {
+    font-size: 110px;
+    line-height: 1;
+    color: var(--hg-color-primary);
+}
+
+.title-reservation p:nth-child(3) {
+    font-size: 16px;
+    margin: 0;
+}
+
+.box-reservation {
+    position: relative;
+    width: 500px;
+    text-align: center;
+    margin: 40px auto 0;
+}
+.box-reservation .icon-calendar {
+    position: absolute;
+    height: 30px;
+    font-size: 30px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: 25px;
+    z-index: -1;
+}
+.box-reservation .t-datepicker [class*=col-xs-]:nth-child(2){
+    padding-left: 116px;
+}
+.content_ibe {
+    text-align: left;
+}
+
+.text_ibe {
+    text-transform: uppercase;
+    color: var(--hg-color-secondary);
+    font-size: 16px;
+    margin: 0 0 4px;
+}
+
+.btnbook_reser {
+    position: relative;
+    display: inline-block;
+    padding: 12px 30px;
+    background: var(--hg-color-secondary) !important;
+    color: #fff;
+    font-family: var(--hg-font-title);
+    border: 0;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-top: 45px;
+}
+
+.btnbook_reser:hover {
+    background: var(--hg-color-primary) !important;
+
+}
+
+/*********************************/
+/* CLOSE */
+/*********************************/
+.close_box {
+    position: absolute;
+    top: 50px;
+    right: 150px;
+    width: 55px;
+    height: 55px;
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: all .6s;
+    z-index: 3;
+}
+
+.close_box:before, .close_box:after {
+    content: "";
+    width: 2px;
+    height: 45px;
+    position: absolute;
+    background: var(--hg-color-primary);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    transition: all .6s;
+}
+
+.close_box:before {
+    transform: rotate(45deg);
+}
+
+.close_box:after {
+    transform: rotate(-45deg);
+}
+
+.close_box:hover:before {
+    transform: rotate(222deg);
+}
+
+/*********************************/
+/* SAMETNGASHE */
+/*********************************/
+
+.gj-textbox-md {
+    font-family: var(--hg-font-body) !important;
+    font-size: 24px !important;
+    padding: 0 !important;
+    border: none !important;
+    cursor: pointer;
+}
+.gj-datepicker-md [role=right-icon] {
+    display: none !important;
+}
+
+/*********************************/
+/* BOOK MOBILE */
+/*********************************/
+.book-mobile {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 20px;
+    text-align: center;
+    font-family: var(--hg-font-title);
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(var(--hg-rgba-color-secondary),0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 15px;
+    display: none;
+    z-index: 8;
+
+}
+.book-mobile  i {
+    position: relative;
+    vertical-align: middle;
+    animation: mymove 1.3s infinite;
+}
+@keyframes mymove {
+    0% {
+        left: 0;
+    }
+    30% {
+        left: 4px;
+    }
+    100% {
+        left: 0;
+    }
+}
+@-webkit-keyframes mymove {
+    0% {
+        left: 0;
+    }
+    30% {
+        left: 4px;
+    }
+    100% {
+        left: 0;
+    }
+}
+

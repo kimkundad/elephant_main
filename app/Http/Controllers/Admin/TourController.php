@@ -3,154 +3,159 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Tour;
-use Illuminate\Support\Str;
+use App\Models\TourTag;
+use App\Models\TourTranslation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TourController extends Controller
 {
-    //
-        public function index()
+    public function index()
     {
         $tours = Tour::orderBy('id', 'desc')->get();
+
         return view('admin.tours.index', compact('tours'));
     }
 
     public function create()
     {
-        return view('admin.tours.create');
+        $tags = $this->activeTags();
+
+        return view('admin.tours.create', compact('tags'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
+        $data = $request->validate([
+            'name_th' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
+            'short_description_th' => 'nullable|string',
+            'short_description_en' => 'nullable|string',
+            'description_th' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'thumbnail' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'integer|exists:tour_tags,id',
+            'is_active' => 'nullable|boolean',
         ]);
 
-        // Upload to DigitalOcean Spaces
         $thumbnailPath = null;
-
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $filename = 'tour_'.time().'.'.$file->getClientOriginalExtension();
+            $filename = 'tour_' . time() . '.' . $file->getClientOriginalExtension();
 
             Storage::disk('spaces')->put(
-                'elephant/tours/'.$filename,
+                'elephant/tours/' . $filename,
                 file_get_contents($file),
                 'public'
             );
 
-            $thumbnailPath = Storage::disk('spaces')->url('elephant/tours/'.$filename);
+            $thumbnailPath = Storage::disk('spaces')->url('elephant/tours/' . $filename);
         }
 
-        Tour::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'short_description' => $request->short_description,
-            'description' => $request->description,
-            'min_price' => $request->min_price,
-            'max_price' => $request->max_price,
-            'is_active' => $request->is_active ? 1 : 0,
+        $slugBase = $data['name_en'] ?: $data['name_th'];
+        $tour = Tour::create([
+            'name' => $data['name_th'],
+            'slug' => Str::slug($slugBase),
+            'short_description' => $data['short_description_th'] ?? null,
+            'description' => $data['description_th'] ?? null,
+            'min_price' => $data['min_price'],
+            'max_price' => $data['max_price'],
+            'is_active' => (bool) ($data['is_active'] ?? true),
             'thumbnail' => $thumbnailPath,
         ]);
 
+        $this->syncTranslations($tour, $data);
+        $tour->tags()->sync($data['tag_ids'] ?? []);
+
         return redirect()->route('admin.tours.index')
-                        ->with('success', 'สร้างโปรแกรมสำเร็จ');
+            ->with('success', 'Tour program created successfully.');
     }
 
     public function edit($id)
     {
-        $tour = Tour::findOrFail($id);
-        return view('admin.tours.edit', compact('tour'));
+        $tour = Tour::with(['tags', 'translations'])->findOrFail($id);
+        $tags = $this->activeTags();
+
+        $translationTh = $tour->translations->firstWhere('locale', 'th');
+        $translationEn = $tour->translations->firstWhere('locale', 'en');
+
+        return view('admin.tours.edit', compact('tour', 'tags', 'translationTh', 'translationEn'));
     }
 
     public function update(Request $request, $id)
     {
         $tour = Tour::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required',
+        $data = $request->validate([
+            'name_th' => 'required|string|max:255',
+            'name_en' => 'required|string|max:255',
+            'short_description_th' => 'nullable|string',
+            'short_description_en' => 'nullable|string',
+            'description_th' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'integer|exists:tour_tags,id',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $disk = Storage::disk('spaces');
-        $newThumbnailUrl = $tour->thumbnail; // ใช้รูปเดิมก่อน
+        $newThumbnailUrl = $tour->thumbnail;
 
-        // ถ้ามีการอัปโหลดรูปใหม่
         if ($request->hasFile('thumbnail')) {
-
-            // 1) ลบรูปเก่าใน DigitalOcean Spaces
             if (!empty($tour->thumbnail)) {
-                // root URL เช่น: https://sgp1.digitaloceanspaces.com/bucket
                 $rootUrl = rtrim($disk->url(''), '/');
-
-                // แปลง URL → path
                 $oldPath = str_replace($rootUrl . '/', '', $tour->thumbnail);
-
-                // ลบไฟล์เก่า
                 $disk->delete($oldPath);
             }
 
-            // 2) อัปโหลดรูปใหม่
             $file = $request->file('thumbnail');
             $filename = 'tour_' . time() . '.' . $file->getClientOriginalExtension();
-
             $uploadPath = 'elephant/tours/' . $filename;
-
             $disk->put($uploadPath, file_get_contents($file), 'public');
-
-            // URL ใหม่
             $newThumbnailUrl = $disk->url($uploadPath);
         }
 
-        // 3) บันทึกข้อมูลใหม่ลงฐานข้อมูล
+        $slugBase = $data['name_en'] ?: $data['name_th'];
         $tour->update([
-            'name' => $request->name,
-            'short_description' => $request->short_description,
-            'description' => $request->description,
-            'min_price' => $request->min_price,
-            'max_price' => $request->max_price,
-            'is_active' => $request->is_active ?? 1,
+            'name' => $data['name_th'],
+            'slug' => Str::slug($slugBase),
+            'short_description' => $data['short_description_th'] ?? null,
+            'description' => $data['description_th'] ?? null,
+            'min_price' => $data['min_price'],
+            'max_price' => $data['max_price'],
+            'is_active' => (bool) ($data['is_active'] ?? false),
             'thumbnail' => $newThumbnailUrl,
         ]);
 
+        $this->syncTranslations($tour, $data);
+        $tour->tags()->sync($data['tag_ids'] ?? []);
+
         return redirect()->route('admin.tours.index')
-                        ->with('success', 'อัปเดตโปรแกรมสำเร็จ');
+            ->with('success', 'Tour program updated successfully.');
     }
-
-
 
     public function destroy($id)
     {
         $tour = Tour::findOrFail($id);
 
         if ($tour->thumbnail) {
-            // URL ตัวอย่าง:
-            // https://sgp1.digitaloceanspaces.com/yourbucket/elephant/tours/xxxx.jpg
-
-            // ตัดส่วน URL ให้เหลือแค่ path ที่อยู่ใน bucket
             $disk = Storage::disk('spaces');
             $rootUrl = rtrim($disk->url(''), '/');
-            // ผลแบบ: https://sgp1.digitaloceanspaces.com/yourbucket
-
-            $path = str_replace($rootUrl.'/', '', $tour->thumbnail);
-
-            // ตอนนี้ $path จะเหลือ เช่น:
-            // elephant/tours/xxxx.jpg
-
-            // ลบไฟล์
+            $path = str_replace($rootUrl . '/', '', $tour->thumbnail);
             $disk->delete($path);
         }
 
         $tour->delete();
 
-        return back()->with('success', 'ลบข้อมูล และลบรูปออกจาก DigitalOcean สำเร็จ');
+        return back()->with('success', 'Tour program deleted successfully.');
     }
 
     public function toggle($id)
@@ -160,5 +165,35 @@ class TourController extends Controller
         $tour->save();
 
         return back();
+    }
+
+    private function activeTags()
+    {
+        return TourTag::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+    }
+
+    private function syncTranslations(Tour $tour, array $data): void
+    {
+        TourTranslation::updateOrCreate(
+            ['tour_id' => $tour->id, 'locale' => 'th'],
+            [
+                'name' => $data['name_th'],
+                'short_description' => $data['short_description_th'] ?? null,
+                'description' => $data['description_th'] ?? null,
+            ]
+        );
+
+        TourTranslation::updateOrCreate(
+            ['tour_id' => $tour->id, 'locale' => 'en'],
+            [
+                'name' => $data['name_en'],
+                'short_description' => $data['short_description_en'] ?? null,
+                'description' => $data['description_en'] ?? null,
+            ]
+        );
     }
 }

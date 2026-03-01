@@ -30,25 +30,36 @@
                                 @csrf
                                 @method('PUT')
 
-                                <div class="row mb-6">
+                                                                <div class="row mb-6">
                                     <div class="col-md-6">
-                                        <label class="form-label">ชื่อช้าง</label>
-                                        <input class="form-control" name="name" value="{{ old('name', $elephant->name) }}" required>
+                                        <label class="form-label">ชื่อช้าง (TH)</label>
+                                        <input class="form-control" name="name_th" value="{{ old('name_th', $elephant->translations->firstWhere('locale','th')->name ?? $elephant->name) }}" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">วันที่ช่วยเหลือ</label>
-                                        <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at', optional($elephant->rescued_at)->format('Y-m-d')) }}">
+                                        <label class="form-label">ชื่อช้าง (EN)</label>
+                                        <input class="form-control" name="name_en" value="{{ old('name_en', $elephant->translations->firstWhere('locale','en')->name ?? $elephant->name) }}" required>
                                     </div>
                                 </div>
 
                                 <div class="row mb-6">
-                                    <div class="col-md-8">
-                                        <label class="form-label">ประวัติ</label>
-                                        <textarea class="form-control" name="history" rows="6">{{ old('history', $elephant->history) }}</textarea>
+                                    <div class="col-md-6">
+                                        <label class="form-label">วันที่ช่วยเหลือ</label>
+                                        <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at', optional($elephant->rescued_at)->format('Y-m-d')) }}">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label class="form-label">ลำดับการแสดง (น้อยก่อน)</label>
                                         <input class="form-control" type="number" name="sort_order" value="{{ old('sort_order', $elephant->sort_order) }}" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-6">
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประวัติ (TH)</label>
+                                        <textarea class="form-control" name="history_th" rows="6">{{ old('history_th', $elephant->translations->firstWhere('locale','th')->history ?? $elephant->history) }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ประวัติ (EN)</label>
+                                        <textarea class="form-control" name="history_en" rows="6">{{ old('history_en', $elephant->translations->firstWhere('locale','en')->history ?? $elephant->history) }}</textarea>
                                     </div>
                                 </div>
 
@@ -95,3 +106,4 @@
         </div>
     </div>
 @endsection
+

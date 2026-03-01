@@ -1,0 +1,66 @@
+.contact-form {
+    position: relative;
+    margin: 50px 0 0;
+}
+
+.contact-form  [class*=col-xs-] {
+    padding: 0 50px;
+    text-align: left;
+}
+.contact-form .row-form {
+    margin-left: -50px;
+    margin-right: -50px;
+}
+.contact-form .form {
+    margin-top: 30px;
+    margin-right: -10px;
+    margin-left: -10px;
+}
+.contact-form .form  [class*=col-xs-] {
+    padding: 0 10px 15px;
+    text-align: left;
+}
+.form input, .form textarea {
+    width: 100%;
+    border: 1px solid var(--hg-color-light);
+    outline: none;
+    padding: 10px 47px;
+}
+.form input:focus::-webkit-input-placeholder {
+    color:transparent;
+    transition: all 0.3s;
+}
+.form input::-webkit-input-placeholder ,.form textarea::-webkit-input-placeholder {
+    color: var(--hg-font-body)
+}
+.icon_contact {
+    position: absolute;
+    left: 25px;
+    top: 13px;
+    font-size: 18px;
+}
+.form .btn-book {
+    margin-left: 10px;
+}
+.label-txt {
+    margin: 0 0 5px;
+}
+.notificationAtInput {
+    border-bottom: 1px solid #c30f0f !important;
+}
+.form input + label {
+    font-weight: lighter;
+    margin-top: 8px;
+    color: #c30f0f;
+    display: none;
+    text-transform: capitalize;
+    font-size: 14px;
+}
+
+.contact-form .icon-alert {
+    float: right;
+    position: relative;
+}
+.notificationAtInput + label {
+    display: block !important;
+}

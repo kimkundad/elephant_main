@@ -19,6 +19,11 @@
 
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
             <a href="{{ url('dashboard')}}" class="d-lg-none">
+                @if(!empty($siteSetting?->logo_header_url))
+                    <img alt="Logo" src="{{ $siteSetting->logo_header_url }}" class="h-30px" />
+                @else
+                    <img alt="Logo" src="{{ url('img/logo.webp') }}" class="h-30px" />
+                @endif
             </a>
         </div>
         <!--end::Mobile logo-->

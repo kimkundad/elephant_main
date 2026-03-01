@@ -55,15 +55,16 @@ https://matchthemes.com
 	--submenu-background-color: #9fc4ce;
 	--submenu-normal-color: #252525;
 	--submenu-hover-color: #ffffff;
-	--footer-background-color: #000000;
-	--footer-color: #999999;
-	--footer-title-color: #ffffff;
+	--footer-background-color: #e9e1d6;
+	--footer-color: #313131;
+	--footer-title-color: #302d29;
 	--headings-h1-size: 54px;
 	--headings-h2-size: 48px;
 	--headings-h3-size: 36px;
 	--headings-h4-size: 32px;
 	--headings-h5-size: 24px;
 	--headings-h6-size: 16px;
+  --hg-color-secondary: #bba383;
 }
 
 
@@ -2093,7 +2094,10 @@ footer, footer a, .footer-social li a{color:var(--footer-color);}
 .foo-block, .widget-footer{margin-bottom:36px;}
 .foo-block .widgettitle{ color:var(--footer-title-color); }
 
-.copyright{margin-top:18px;
+.copyright{
+  padding-top: 30px;
+    border-top: 1px solid #66666629;
+  margin-top:18px;
 display:flex;}
 
 .footer-copy{font-size:12px;
@@ -2211,6 +2215,50 @@ cursor:pointer;
 .view-more:hover, #submit:hover, #submit-contact:hover{color:var(--primary-color);
 border:2px solid;
 background:none;
+}
+
+.btn-book {
+    position: relative;
+    display: inline-block;
+    border: none;
+    background: var(--hg-color-secondary);
+    color: #fff;
+    padding: 12px 30px;
+    font-family: var(--hg-font-title);
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-book:before,
+.btn-book:after {
+    content: "";
+    position: absolute;
+    transition: 800ms ease all;
+    background: var(--hg-color-secondary);
+    width: 0;
+    height: 1px;
+}
+
+.btn-book:before {
+    right: 0;
+    top: 0;
+}
+
+.btn-book:after {
+    left: 0;
+    bottom: 0;
+}
+
+.btn-book:hover {
+    color: var(--hg-color-secondary);
+    background: var(--hg-bg);
+}
+
+.btn-book:hover:before,
+.btn-book:hover::after {
+    width: 100%;
 }
 
 .white-btn{background:none;
@@ -3993,3 +4041,148 @@ margin-left:0;margin-top:8px;}
   justify-content: center;
 }
 
+
+
+
+/* EXPERIENCE SHOWCASE (welcome) */
+.exp-showcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0;
+    background: #f4f1ec;
+    margin: 0 0 120px;
+    overflow: hidden;
+    position: relative;
+}
+
+.exp-left,
+.exp-right {
+    position: relative;
+    min-height: 520px;
+}
+
+.exp-left img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.exp-right {
+    padding: 60px 80px 80px;
+    background: #f7f4ef;
+}
+
+.exp-meta {
+    display: flex;
+    gap: 26px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    color: #5f5b53;
+    margin-bottom: 40px;
+}
+
+.exp-title {
+    font-size: 38px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    color: #2a2620;
+}
+
+.exp-sub {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a99682;
+    margin-bottom: 18px;
+}
+
+.exp-body {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #4a453e;
+    max-width: 520px;
+    margin-bottom: 26px;
+}
+
+.exp-cta {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #3b3530;
+    text-decoration: none;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #8d8172;
+}
+
+.exp-right-ghost {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 55%;
+    height: 40%;
+    opacity: 0.45;
+    overflow: hidden;
+}
+
+.exp-right-ghost img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.exp-nav {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    border: 0;
+    background: rgba(120, 115, 108, 0.6);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.exp-nav span {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.exp-nav--left {
+    right: -28px;
+    bottom: 40px;
+}
+
+.exp-nav--right {
+    right: 80px;
+    bottom: 40px;
+}
+
+@media (max-width: 992px) {
+    .exp-showcase {
+        grid-template-columns: 1fr;
+    }
+
+    .exp-right {
+        padding: 40px 24px 70px;
+    }
+
+    .exp-right-ghost {
+        width: 70%;
+    }
+
+    .exp-nav--left {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .exp-nav--right {
+        right: 84px;
+        bottom: 16px;
+    }
+}

@@ -1,0 +1,1828 @@
+@media (max-width: 2000px) {
+    .container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1440px) {
+    /* HEADER */
+    .navbar-header {
+        padding: 0 100px;
+    }
+
+    .nav-menu {
+        padding: 180px 100px 100px;
+    }
+
+    .box-menu [class*=col-xs-]:nth-child(1) {
+        padding-right: 80px;
+    }
+
+    .box-menu nav a {
+        font-size: 44px;
+    }
+
+    /* SLIDE */
+    .hero-slider .text-swiper,
+    .hero-slider .swiper-button-prev {
+        left: 100px;
+    }
+
+    .hero-slider .swiper-button-next {
+        right: 100px;
+    }
+
+    .hero-slider .text-swiper {
+        bottom: 80px;
+    }
+
+    /* RESERVATION */
+    .t-check-out .t-datepicker-day {
+        left: -109%;
+    }
+
+    .close_box {
+        right: 100px;
+    }
+
+    /* BODY */
+    h1 {
+        font-size: 115px;
+    }
+
+    .box_primary, .reservation {
+        padding: 100px;
+    }
+
+    .our-facilities {
+        padding: 100px 0 0;
+    }
+
+    .detail-room > [class*=col-xs-]:nth-child(1) {
+        padding: 100px;
+    }
+
+    .detail-room .icon-room {
+        width: 100%;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1) {
+        padding: 100px 200px 100px 100px;
+    }
+
+    .title-footer {
+        padding: 50px 100px;
+    }
+
+    .contact-footer {
+        padding: 100px;
+    }
+
+    .contact-footer [class*=col-xs-] {
+        padding: 0 25px;
+    }
+
+    .contact-footer-row {
+        margin-right: -25px;
+        margin-left: -25px;
+    }
+
+    .our-offers .slick-arrow .slick-prev {
+        left: -50px;
+    }
+
+    .our-offers .slick-arrow .slick-next {
+        right: -50px;
+    }
+
+    .content-child .item-child [class*=col-xs-]:nth-child(2) {
+        padding: 0 100px;
+    }
+
+    .watermark > div {
+        font-size: 85px;
+    }
+
+    .watermark > div:nth-child(2) {
+        bottom: -15px;
+    }
+}
+
+@media (max-width: 1400px) {
+
+}
+
+@media (max-width: 1366px) {
+    /* HEADER */
+    .box-menu [class*=col-xs-] {
+        width: 50%;
+    }
+
+    .box-menu nav a {
+        font-size: 50px;
+    }
+
+    /* SLIDE */
+    .video_layer {
+        bottom: 60px;
+        right: 100px;
+    }
+
+    /* BODY */
+    h1 {
+        font-size: 100px;
+    }
+
+
+}
+
+@media (max-width: 1280px) {
+    /* HEADER */
+    .navbar-header {
+        padding: 0 80px;
+    }
+
+    .nav-menu {
+        padding: 180px 80px 80px;
+    }
+
+    /* RESERVATION */
+    .close_box {
+        right: 80px;
+    }
+
+    /* SLIDE */
+    .hero-slider .text-swiper,
+    .hero-slider .swiper-button-prev {
+        left: 80px;
+    }
+
+    .hero-slider .swiper-button-next {
+        right: 80px;
+    }
+
+    .video_layer {
+        right: 80px;
+    }
+
+    /* BODY */
+    .our-offers .container, .amenities-room .container {
+        width: 100%;
+    }
+
+    .box_primary, .reservation,
+    .our-offers .box_primary, .detail-room > [class*=col-xs-]:nth-child(1) {
+        padding: 80px;
+    }
+
+    .other {
+        padding: 80px 80px 0;
+    }
+
+    .amenities-room {
+        padding: 80px;
+    }
+
+    .amenities-room .other {
+        padding: 80px 0 0;
+    }
+
+    .our-facilities {
+        padding: 80px 0 0;
+    }
+
+    .title-footer {
+        padding: 50px 80px;
+    }
+
+    .contact-footer {
+        padding: 80px;
+    }
+
+    .box-facilities [class*=col-xs-]:nth-child(2),
+    .content-child .item-child [class*=col-xs-]:nth-child(2) {
+        padding: 0 80px;
+    }
+
+    .title-name-count {
+        padding-left: 80px;
+    }
+
+    .images-room, .images-room-cover {
+        left: -80px;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1) {
+        padding: 80px 180px 80px 80px;
+    }
+
+    .watermark > div {
+        font-size: 85px;
+    }
+
+    .content-child {
+        padding: 80px 0;
+    }
+
+    .content-child .item-child {
+        padding: 0 0 80px;
+    }
+
+    .detail-room .watermark > div {
+        font-size: 90px;
+    }
+
+    .our-offers .slick-arrow .slick-prev {
+        left: -40px;
+    }
+
+    .our-offers .slick-arrow .slick-next {
+        right: -40px;
+    }
+
+    .gallery img {
+        height: 300px;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    /* HEADER */
+    .box-menu nav a {
+        font-size: 50px;
+    }
+
+    /* RESERVATION */
+    .t-datepicker-day {
+        left: -130px;
+    }
+
+    .t-check-out .t-datepicker-day {
+        left: -150%;
+    }
+
+    /*BODY*/
+    .hero-slider .text-swiper {
+        width: 60%;
+    }
+
+    .watermark > div {
+        font-size: 75px;
+    }
+
+    .description .col-xs-8, .description_child .col-xs-8, .description_info .col-xs-8 {
+        width: 80%;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1) {
+        padding: 80px 160px 80px 80px;
+    }
+
+    .box-facilities, .box-facilities.slick-slide.slick-active {
+        position: relative;
+        width: 100%;
+        height: 600px;
+    }
+
+    .content-child .item-child [class*=col-xs-] {
+        height: 600px;
+    }
+
+    .our-offers .slick-arrow .slick-prev {
+        left: -40px;
+    }
+
+    .our-offers .slick-arrow .slick-next {
+        right: -40px;
+    }
+
+    .detail-room h2 {
+        font-size: 55px;
+    }
+
+    .detail-room .icon-room p {
+        font-size: 30px;
+    }
+
+}
+
+@media (max-height: 600px) {
+    /* HEADER */
+    .navbar-header, header.menu-active.header-scroll .navbar-header {
+        top: 50px;
+    }
+
+    .nav-menu {
+        padding: 180px 100px 60px;
+    }
+
+    .box-menu nav a {
+        font-size: 32px;
+    }
+
+    /* SLIDE */
+    .hero-slider .text-swiper {
+        bottom: 50px;
+    }
+
+    /* RESERVATION */
+    .reservation {
+        padding: 50px 100px;
+    }
+
+    /* BANNER */
+    .popup-banner .item-banner {
+        width: 450px;
+        height: 450px;
+    }
+
+    /* BODY */
+    .map iframe {
+        height: 500px;
+    }
+
+}
+
+@media (max-width: 1024px) {
+    /* HEADER */
+    .navbar-header {
+        padding: 0 50px;
+    }
+
+    .box-menu nav a {
+        font-size: 46px;
+    }
+
+    .nav-menu {
+        padding: 180px 50px 50px;
+    }
+
+    .box-menu [class*=col-xs-]:nth-child(1) {
+        padding-right: 50px;
+    }
+
+
+    /* SLIDE */
+    .hero-slider .text-swiper {
+        left: 50px;
+        bottom: 50px;
+    }
+
+    .hero-slider .swiper-button-prev, .hero-slider .swiper-button-next {
+        opacity: 1;
+        visibility: inherit;
+        transform: translateX(0);
+    }
+
+    .hero-slider .swiper-button-prev {
+        left: 50px;
+    }
+
+    .hero-slider .swiper-button-next {
+        right: 50px;
+    }
+
+    .hero-style .slide-title h3 {
+        font-size: 36px;
+    }
+
+    .video_layer {
+        right: 50px;
+    }
+
+    /*RESERVATION */
+    .btn-book-mobile {
+        display: block;
+    }
+
+    .btn-book-head {
+        display: none;
+    }
+
+    /* BODY */
+    .hero-slider .text-swiper {
+        bottom: 50px;
+    }
+
+    h1 {
+        font-size: 80px;
+    }
+
+    h2 {
+        font-size: 55px;
+    }
+
+    .box_primary, .reservation, .our-offers .box_primary {
+        padding: 80px 50px;
+    }
+
+    .our-facilities {
+        padding: 80px 50px 0;
+    }
+
+    .detail-room > [class*=col-xs-]:nth-child(1) {
+        padding: 80px 50px;
+    }
+
+    .detail-facilities, .detail-offers, .copy-right {
+        padding: 50px 0 0;
+    }
+
+    .content-child .detail-room > div {
+        display: block;
+        padding: 10px 0 0;
+        border: none;
+    }
+
+    .content-child .detail-room > div:nth-child(1) {
+        padding: 0;
+    }
+
+    .amenities-room {
+        padding: 80px 50px;
+    }
+
+    .other {
+        padding: 80px 50px 0;
+    }
+
+    .box-facilities [class*=col-xs-]:nth-child(2),
+    .content-child .item-child [class*=col-xs-]:nth-child(2) {
+        padding: 0 50px;
+    }
+
+    .title-name-count {
+        padding-left: 50px;
+    }
+
+    .title-footer {
+        padding: 25px 50px;
+    }
+
+    .contact-footer {
+        font-size: 14px;
+        padding: 50px;
+    }
+
+    .title-footer div {
+        height: 60px;
+    }
+
+    #room-type, .container-content {
+        width: 100%;
+    }
+
+    .card:nth-child(1) {
+        padding: 0 0 15px;
+    }
+
+    .section-color [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1) {
+        height: auto;
+        display: block;
+        padding: 80px 50px 0;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(2):before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 300px;
+        top: 0;
+        background: var(--hg-color-primary);
+    }
+
+    .section-color [class*=col-xs-], .section-color [class*=col-xs-]:nth-child(2) {
+        height: auto;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(2) {
+        overflow: hidden;
+    }
+
+    .images-room, .images-room-cover {
+        position: relative;
+        left: auto;
+        height: auto;
+        padding: 50px 50px 80px;
+    }
+
+    .watermark > div:nth-child(1) {
+        display: none;
+    }
+
+    .watermark > div:nth-child(2) {
+        font-size: 130px;
+        bottom: -36px;
+    }
+
+    .images-room-cover img {
+        height: 600px;
+    }
+
+    .slick-slide .box-facilities img {
+        height: 230px;
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(2) {
+        padding-left: 50px;
+    }
+
+    .box-facilities [class*=col-xs-], .title-name-count {
+        width: 50%;
+    }
+
+    .title-name-count {
+        top: 50px;
+    }
+
+    .detail-facilities .slick-arrow {
+        bottom: 130px;
+    }
+
+    .detail-facilities .slick-arrow i {
+        width: 80px;
+        height: 80px;
+        padding: 30px;
+    }
+
+    .detail-facilities .slick-arrow .slick-prev {
+        left: 45%;
+    }
+
+    .detail-offers .slick-initialized .slick-slide {
+        margin: 0 15px;
+        top: 80px;
+    }
+
+    .slide_item1 {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .our-offers .slick-arrow .slick-next {
+        right: 0;
+    }
+
+    .our-offers .slick-arrow .slick-prev {
+        left: 0;
+    }
+
+    .detail-room h2 {
+        font-size: 36px;
+    }
+
+    .detail-room > [class*=col-xs-] {
+        height: 600px;
+    }
+
+    .detail-room .icon-room label {
+        font-size: 18px;
+    }
+
+    .detail-room .icon-room p {
+        font-size: 30px;
+    }
+
+    .detail-room .watermark > div:nth-child(2) {
+        font-size: 75px;
+        bottom: -18px;
+        color: rgba(255, 255, 255, 0.35);
+    }
+
+    .map iframe {
+        height: 350px;
+    }
+
+    .gallery img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 991px) {
+    /* HEADER */
+    .nav-menu {
+        padding: 152px 50px 50px;
+    }
+
+    .box-menu [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .box-menu [class*=col-xs-]:nth-child(1) {
+        display: none;
+    }
+
+    .box-menu [class*=col-xs-]:nth-child(2) {
+        height: auto;
+        display: block;
+    }
+
+    .box-menu nav.fade_fix {
+        animation-delay: .1s;
+    }
+
+    .menu_mobile {
+        display: block;
+    }
+
+    .header-scroll .btn-book-mobile {
+        padding: 10px 30px;
+        top: 7px;
+    }
+
+    .box-menu nav > ul {
+        max-height: 395px;
+        overflow: scroll;
+    }
+
+    .box-menu nav a:hover {
+        color: #fff;
+    }
+
+    .box-menu nav .menu_mobile .info-detail a {
+        font-size: 36px;
+    }
+
+    /* RESERVATION */
+    .header-scroll .btn-book-mobile {
+        top: 5px;
+    }
+
+    /* BODY */
+    .description .col-xs-8, .description_child .col-xs-8, .description_info .col-xs-8 {
+        width: 100%;
+        padding: 30px 0 0;
+        float: left;
+    }
+
+    .contact-form .form {
+        margin-top: 0;
+    }
+
+    .contact-form .form [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .title-footer div {
+        height: 50px;
+    }
+
+    .title-footer {
+        padding: 25px 50px;
+    }
+    .name-footer {
+        top: 0;
+    }
+    .images-room-cover img, .detail-offers .slick-initialized .slick-slide.slick-active .image-offers,
+    .photo-info figure img, .images-room img {
+        height: 450px;
+    }
+
+    .image-offers {
+        height: 300px;
+    }
+
+    .our-offers .slick-arrow {
+        top: 220px;
+    }
+
+}
+
+@media (max-width: 820px) {
+    /* SLIDE */
+    .hero-style .slide-title h3 {
+        font-size: 30px;
+    }
+
+    .hero-slider .text-swiper {
+        width: 70%;
+    }
+
+    /* BODY */
+    h1 {
+        font-size: 66px;
+    }
+
+    .box_primary, .images-room, .images-room-cover,
+    .our-offers .box_primary, .contact-footer, .detail-room > [class*=col-xs-]:nth-child(1) {
+        padding: 50px;
+    }
+
+    .description [class*=col-xs-], .description_child .col-xs-8,
+    .description_info .col-xs-8 {
+        width: 100%;
+        padding: 30px 0 0;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1),
+    .our-facilities {
+        padding: 50px 50px 0;
+    }
+
+    .amenities-room {
+        padding: 50px;
+    }
+
+    .amenities-room .other {
+        padding: 50px 0 0;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(2):before {
+        height: 200px;
+    }
+
+    .box-facilities {
+        height: auto;
+    }
+
+    .box-facilities [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .box-facilities [class*=col-xs-]:nth-child(2) {
+        padding: 50px 0 0;
+    }
+
+    .watermark > div:nth-child(2) {
+        font-size: 100px;
+    }
+
+    .detail-facilities, .other {
+        padding: 50px 50px 0;
+    }
+
+    .icon-amenities {
+        padding: 30px 0 0;
+    }
+
+    .content-child, .content-child .item-child {
+        padding: 0 0 50px;
+    }
+
+    .title-name-count {
+        display: none;
+    }
+
+    .content-facilities {
+        display: block;
+    }
+
+    .content-facilities .btn-primary {
+        position: relative;
+        margin-top: 15px;
+    }
+
+    .slick-slide .box-facilities img,
+    .slick-slide.slick-active .box-facilities img {
+        position: relative;
+        height: 450px;
+    }
+
+    .detail-facilities .slick-list {
+        overflow: hidden !important;
+    }
+
+    .detail-facilities .slick-arrow {
+        bottom: auto;
+        top: 180px;
+    }
+
+    .detail-facilities .slick-arrow .slick-next {
+        right: -25px;
+    }
+
+    .detail-facilities .slick-arrow .slick-prev {
+        left: -25px;
+    }
+
+    .detail-facilities .slick-arrow.slick-disabled {
+        display: block !important;
+    }
+
+    .slider_facilities {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    .slick-initialized .slick-slide,
+    .detail-offers .slick-initialized .slick-slide {
+        margin: 0 15px;
+    }
+
+    .content-offers [class*=col-xs-] {
+        width: 100%;
+
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(1) {
+        padding-right: 30px;
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(2) {
+        padding-left: 0;
+    }
+
+    .contact-footer [class*=col-xs-] {
+        width: 100%;
+        text-align: center;
+        padding: 0 25px 30px;
+    }
+
+    .contact-footer h4 + p {
+        margin: 15px 0;
+    }
+
+    .menu-footer {
+        margin: 15px 0 0;
+        columns: auto;
+        text-align: center;
+    }
+
+    .menu-footer li {
+        display: inline-block;
+        padding: 0 10px;
+    }
+
+    .copy-right {
+        padding: 30px 0 0;
+    }
+
+    .image-offers {
+        height: 380px;
+    }
+
+    .detail-facilities .col-xs-10,
+    .detail-room > [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .our-offers .slick-arrow {
+        top: 200px;
+    }
+
+    .detail-offers .slick-initialized .slick-slide {
+        top: 30px;
+    }
+
+    .content-child .item-child [class*=col-xs-] {
+        width: 100%;
+        height: 600px;
+    }
+
+    .content-child .item-child [class*=col-xs-]:nth-child(1) {
+        height: 600px;
+    }
+
+    .content-child .item-child [class*=col-xs-] {
+        height: auto;
+    }
+
+    .content-child.dining_child .item-child img {
+        object-position: bottom;
+    }
+
+    .content-child .item-child [class*=col-xs-]:nth-child(2) {
+        display: block;
+        padding: 50px 50px 0;
+    }
+
+    .detail-room > [class*=col-xs-] {
+        height: auto;
+    }
+
+    .detail-room > [class*=col-xs-]:nth-child(1) {
+        display: block;
+    }
+
+    .icon-amenities > div {
+        padding: 15px 25px;
+    }
+
+    .images_icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .detail-room .icon-room > div [class*=col-xs-]:nth-child(1) {
+        width: 5%;
+        vertical-align: top;
+    }
+
+    .detail-room .icon-room > div [class*=col-xs-] {
+
+        float: none;
+        display: inline-block;
+    }
+
+    .detail-room .icon-room > div {
+        width: auto;
+        padding: 30px 30px 0;
+        display: block;
+    }
+
+    .view-photo {
+        width: 130px;
+        height: 130px;
+        opacity: 1;
+        top: auto;
+        bottom: 30px;
+        font-size: 16px;
+        text-align: center;
+        padding: 57px 30px;
+    }
+
+    .view-photo label {
+        display: none;
+    }
+
+    .photo-info:hover .view-photo {
+        top: auto;
+        bottom: 50px;
+    }
+
+    .photo-info figure:before {
+        top: auto;
+        bottom: 0;
+        height: 120px;
+        opacity: 1;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    .contact-form [class*=col-xs-] {
+        padding: 0 15px;
+        text-align: left;
+    }
+
+    .contact-form .row-form {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+
+    .our-offers .slide_item1 .slick-arrow i {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: inline-block;
+        padding: 30px;
+        font-size: 20px;
+        background: rgba(var(--hg-rgba-color-primary), .25);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        transition: all .6s;
+        color: #fff;
+        opacity: 1;
+    }
+
+    .our-offers .slide_item1 .slick-arrow:hover i {
+        background: rgba(var(--hg-rgba-color-primary), 1);
+    }
+
+    .our-offers .slide_item1 .slick-arrow .slick-next {
+        right: -25px;
+    }
+
+    .our-offers .slide_item1 .slick-arrow .slick-prev {
+        left: -25px;
+    }
+
+    .gallery [class*=col-xs-] {
+        width: 50%;
+    }
+
+    .contact-form [class*=col-xs-] {
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 768px) {
+    /* HEADER */
+    .box-menu nav > ul {
+        max-height: 600px;
+        overflow: scroll;
+    }
+
+    /* SLIDE */
+    .hero-slider, .index-video-wrapper {
+        height: 60vh;
+    }
+
+    /* BODY */
+    .box-menu .info-detail {
+        margin: 0 0 15px;
+    }
+
+    .amenities h2 {
+        font-size: 33px;
+    }
+
+    .title-footer div {
+        height: 55px;
+    }
+
+    .contact-form [class*=col-xs-] {
+        width: 100%;
+    }
+
+    .form {
+        margin: 15px 0 0;
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(1),
+    .content-offers [class*=col-xs-]:nth-child(2) {
+        width: 100%;
+    }
+
+    .contact-form {
+        margin: 30px 0 0;
+    }
+
+    .ui-icon-plus {
+        top: 17px;
+    }
+
+    .box-menu ul {
+        max-height: 595px;
+    }
+
+    .name-footer {
+        top: 15px;
+    }
+
+}
+
+@media (max-width: 600px) {
+    /* HEADER */
+    .navbar-brand, .scroll-up header.menu-active .navbar-brand,
+    header.scroll-fixed.menu-active .navbar-brand {
+        width: 100px;
+        right: auto;
+        left: 0;
+        position: relative;
+    }
+
+    .scroll-up header.menu-active .navbar-header .pull-right {
+        position: relative;
+        top: 10px;
+        line-height: 30px;
+    }
+
+    .btn-primary.btn-book-head {
+        display: none;
+    }
+
+    .nav-lang {
+        padding: 0 15px 0 0;
+    }
+
+    header:before {
+        height: 200px;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.80) 100%);
+    }
+
+    .navbar-header {
+        top: 50px;
+        padding: 0 25px;
+    }
+
+    .nav-menu {
+        padding: 138px 25px 50px;
+    }
+
+    .box-menu nav a {
+        font-size: 28px;
+    }
+
+    .box-menu nav .menu_mobile .info-detail a {
+        font-size: 24px;
+    }
+
+    .box-menu li {
+        padding: 4px 0;
+    }
+
+    .ui-icon-plus {
+        width: 20px;
+        height: 20px;
+        top: 14px;
+    }
+
+    .ui-icon-plus:before {
+        height: 20px;
+    }
+
+    .ui-icon-plus:after {
+        width: 20px;
+    }
+
+    .btn-book-mobile {
+        display: none;
+    }
+
+    /* SLIDE */
+    .text-swiper {
+        display: none;
+    }
+
+    .hero-slider, .index-video-wrapper {
+        height: 50vh;
+    }
+
+    .slide-inner:after {
+        display: none;
+    }
+
+    .hero-slider .swiper-button-prev {
+        left: 25px;
+    }
+
+    .hero-slider .swiper-button-next {
+        right: 25px;
+    }
+
+    .hero-slider .text-swiper {
+        left: 25px;
+    }
+    .video_layer {
+        right: 25px;
+        bottom: 25px;
+    }
+    /* BODY */
+    .description h1 {
+        font-size: 40px;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    h2, .amenities h2, .detail-room h2 {
+        font-size: 28px;
+    }
+
+    h3 {
+        font-size: 24px;
+    }
+
+    h4 {
+        font-size: 18px;
+    }
+
+    .container {
+        padding: 0 25px;
+    }
+
+    .box_primary {
+        padding: 50px 0;
+    }
+
+    .section-color [class*=col-xs-]:nth-child(1), .our-facilities,
+    .detail-facilities {
+        padding: 50px 25px 0;
+    }
+
+    .our-offers .box_primary {
+        padding: 50px 0;
+    }
+
+    .box-facilities [class*=col-xs-]:nth-child(2), .detail-offers, .copy-right {
+        padding: 30px 0 0;
+    }
+
+    .detail-facilities {
+        padding: 30px 25px 0;
+    }
+    .detail-room .icon-room > div [class*=col-xs-]:nth-child(1) {
+        width: 8%;
+    }
+
+
+    .detail-facilities .slick-arrow i,
+    .our-offers .slide_item1 .slick-arrow i {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+        padding: 17px;
+        background: rgba(var(--hg-rgba-color-primary), .50);
+    }
+
+    .our-offers .slide_item1 .slick-arrow .slick-next {
+        right: 0;
+    }
+
+    .our-offers .slide_item1 .slick-arrow .slick-prev {
+        left: 0;
+    }
+
+    .content-child .item-child [class*=col-xs-]:nth-child(2) {
+        padding: 30px 25px 0;
+    }
+
+    .detail-room > [class*=col-xs-]:nth-child(1) {
+        padding: 50px 25px;
+    }
+
+    .detail-facilities .slick-arrow {
+        top: 120px;
+    }
+
+    .detail-facilities .slick-arrow .slick-next {
+        right: 0;
+    }
+
+    .detail-facilities .slick-arrow .slick-prev {
+        left: 0;
+    }
+
+    .images-room-cover, .images-room {
+        padding: 50px 25px;
+    }
+
+    .description {
+        background-position: left center;
+    }
+
+    .description [class*=col-xs-] {
+        width: 100%;
+        padding: 30px 0 0;
+    }
+
+    .card-header button {
+        font-size: 28px;
+    }
+
+    .our-facilities {
+        padding: 50px 0 0;
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(1) {
+        width: 100%;
+        padding-right: 0;
+    }
+
+    .content-offers [class*=col-xs-]:nth-child(2) {
+        width: 100%;
+    }
+
+    .content-offers {
+        padding: 30px 0 0;
+    }
+
+    .our-offers .slick-arrow {
+        top: 125px;
+    }
+
+    .our-offers .slick-arrow .slick-next {
+        right: 0;
+    }
+
+    .our-offers .slick-arrow .slick-prev {
+        left: 0;
+    }
+
+    .watermark > div:nth-child(2) {
+        font-size: 50px;
+        bottom: -9px;
+    }
+
+    .images-room-cover img, .images-room img,
+    .detail-offers .slick-initialized .slick-slide.slick-active .image-offers,
+    .slick-slide .box-facilities img, .slick-slide.slick-active .box-facilities img, .image-offers,
+    .gallery img{
+        height: 300px;
+    }
+    .content-child .item-child [class*=col-xs-]:nth-child(1) {
+        height: 300px;
+    }
+
+    .detail-room figure img, .photo-info figure img, .detail-room .photo-info figure img {
+        height: 380px;
+    }
+
+    .detail-facilities .slick-list, .detail-offers .slick-list {
+        overflow: hidden !important;
+    }
+
+    .detail-facilities:before {
+        left: 0;
+    }
+
+    .card:before {
+        width: 100%;
+    }
+
+    .contact-footer [class*=col-xs-]:nth-child(3) {
+        display: none;
+    }
+    .title-footer {
+        padding: 25px;
+        text-align: center;
+    }
+    .contact-footer {
+        padding: 50px 25px;
+        text-align: center;
+    }
+
+    .title-footer div {
+        height: auto;
+        text-align: center;
+    }
+
+    .logo-footer img {
+        height: 65px;
+    }
+
+    .title-footer div:nth-child(2) {
+        float: none;
+        padding: 15px 0 0;
+        display: block;
+    }
+
+    .social-footer a,
+    .social-footer a:last-child {
+        padding: 0 15px;
+    }
+
+    .copy-right {
+        padding: 0;
+    }
+
+    .content-child:before {
+        bottom: 100px;
+    }
+
+    .description_child .col-xs-8, .description_info .col-xs-8 {
+        padding: 15px 0 0;
+    }
+
+    .content-child .detail-room > div {
+        padding: 0 15px 10px 0;
+        border-right: none;
+    }
+
+    .content-child .detail-room > div:nth-child(1) {
+        padding: 0 15px 10px 0;
+    }
+
+    .content-child .detail-room {
+        margin: 0 0 10px;
+    }
+
+    .content-child .item-child .btn-primary {
+        margin-top: 10px;
+    }
+
+    .detail-room .icon-room > div {
+        padding: 30px 0 0;
+        width: 100%;
+
+    }
+
+    .detail-room .watermark > div:nth-child(2) {
+        font-size: 65px;
+    }
+    .amenities-room {
+        padding: 50px 0;
+    }
+    .amenities, .icon-amenities, .amenities-room .other {
+        padding: 0;
+    }
+
+    .other {
+        padding: 50px 0 0;
+    }
+
+    .icon-amenities > div {
+        width: 100%;
+        padding: 10px 0 0;
+        text-align: left;
+    }
+
+    .icon-amenities p {
+        display: inline-block;
+    }
+
+    .images_icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+        vertical-align: middle;
+    }
+
+    .amenities-room:before {
+        bottom: 550px;
+    }
+
+    .detail-room .icon-room > div {
+        padding: 25px 0 0;
+        width: 100%;
+    }
+
+    .gallery [class*=col-xs-] {
+        padding: 5px;
+    }
+
+    .gallery .row-gallery {
+        margin-right: -5px;
+        margin-left: -5px;
+    }
+
+    .site-map {
+        margin: 20px 0 0;
+    }
+
+    .book-mobile {
+        display: block;
+    }
+
+    footer .contact-footer {
+        margin-bottom: 60px;
+    }
+
+    .gallery {
+        margin: 30px 0 0;
+    }
+
+    .gallery > div:nth-child(1) {
+        padding: 0 5px;
+    }
+
+    .gallery [class*=col-xs-] {
+        width: 100%;
+        padding: 30px 5px 0;
+    }
+
+    .contact-form .row-form > [class*=col-xs-]:nth-child(2) {
+        margin-top: 30px;
+    }
+
+    .view-photo {
+        width: 80px;
+        height: 80px;
+        padding: 30px 10px;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    .thai_lang .view-photo {
+        padding: 30px 10px;
+    }
+    .view-photo label {
+        width: 100%;
+        font-size: 14px;
+        text-align: center;
+    }
+    .contact-footer [class*=col-xs-]:nth-child(1) {
+        display: none;
+    }
+    .detail-room .icon-room p {
+        font-size: 24px;
+    }
+    .name-footer {
+        display: none;
+    }
+    .scroll-up header .navbar-brand {
+        top: 4px;
+    }
+    /* BANNER */
+    .popup-banner .item-banner {
+        width: 85%;
+        height: auto;
+        top: 80px;
+        bottom: auto;
+    }
+
+    .popup-banner .item-banner .closed-banner {
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 10px;
+        right: 0;
+    }
+
+}
+
+@media (max-width: 414px) {
+    /* HEADER */
+    .navbar-header, header.menu-active.header-scroll .navbar-header {
+        top: 30px;
+    }
+
+    .ui-icon-plus {
+        top: 13px;
+    }
+
+    /* SLIDE */
+    .hero-slider:before {
+        height: 150px;
+    }
+
+    .hero-slider .text-swiper {
+        bottom: 30px;
+    }
+
+    /* BODY */
+    .section-color [class*=col-xs-]:nth-child(2):before {
+        height: 150px;
+    }
+
+    .logo-footer img {
+        height: 50px;
+    }
+
+    .title-footer div:nth-child(2) {
+        font-size: 14px;
+        padding: 10px 0 0;
+    }
+
+    .contact-footer p + p {
+        margin: 0;
+    }
+
+    .filter-controls {
+        padding: 15px 0 0;
+    }
+
+    .gallery, .site-map {
+        margin: 30px 0 0;
+    }
+
+    .contact-footer .contact-footer-row [class*=col-xs-]:nth-child(1) {
+        display: none;
+    }
+}
+
+@media (max-width: 393px) {
+    /* HEADER */
+
+
+    /* SLIDE */
+    .text-swiper br {
+        display: none;
+    }
+
+    /* BODY */
+    h1 {
+        font-size: 30px;
+    }
+
+    h2, .amenities h2, .detail-room h2 {
+        font-size: 26px;
+    }
+
+    h3 {
+        font-size: 22px;
+    }
+
+    h4 {
+        font-size: 18px;
+    }
+
+    .watermark > div:nth-child(2) {
+        font-size: 55px;
+    }
+
+    .detail-room .icon-room > div [class*=col-xs-]:nth-child(2) {
+        padding-left: 20px;
+    }
+
+    .detail-room .watermark > div:nth-child(2) {
+        font-size: 55px;
+        bottom: -13px;
+    }
+
+    .detail-room .icon-room i {
+        font-size: 24px;
+    }
+
+    .detail-room .icon-room p {
+        font-size: 22px;
+    }
+
+    .detail-room .icon-room label {
+        font-size: 16px;
+    }
+
+    .book-mobile {
+        font-size: 16px;
+    }
+    .scroll-up header .navbar-brand {
+        top: 3px;
+    }
+}
+
+@media (max-width: 375px) {
+    /* HEADER */
+    .box-menu nav a {
+        font-size: 24px;
+    }
+
+    /* BODY */
+    .watermark > div:nth-child(2) {
+        font-size: 38px;
+        bottom: -6px;
+    }
+
+    footer {
+        margin-bottom: 60px;
+    }
+}
+
+@media (max-width: 360px) {
+    /* HEADER */
+    .navbar-header, header.menu-active.header-scroll .navbar-header {
+        top: 30px;
+    }
+    .navbar-header .pull-right {
+        font-size: 14px;
+    }
+
+    /* SLIDE */
+    .hero-slider .swiper-button-prev, .hero-slider .swiper-button-next {
+        width: 35px;
+        height: 35px;
+        padding: 7px;
+    }
+
+    /* BODY */
+    .description h1 {
+        font-size: 36px;
+    }
+    .card-header button {
+        font-size: 20px;
+    }
+    .images-room-cover img, .images-room img, .detail-offers .slick-initialized .slick-slide.slick-active .image-offers,
+    .slick-slide .box-facilities img, .slick-slide.slick-active .box-facilities img, .image-offers,
+    .detail-room figure img, .photo-info figure img, .detail-room .photo-info figure img,.gallery img {
+        height: 280px;
+    }
+    .content-child .item-child h2 {
+        margin: 0 0 5px;
+    }
+    .content-child .item-child h4 {
+        font-size: 16px;
+    }
+
+}
+
+@media (max-width: 320px) {
+    /* HEADER */
+
+
+    header:before {
+        height: 100px;
+    }
+
+    header.header-scroll .navbar-brand {
+        width: 100px;
+        top: 10px;
+    }
+
+    header.menu-active.header-scroll .navbar-brand {
+        width: 100px;
+    }
+
+    .navbar-header .pull-left, .navbar-header .pull-right {
+        line-height: 44px;
+    }
+
+    .ui-icon-plus {
+        top: 8px;
+    }
+    .box-menu nav > ul {
+        max-height: 400px;
+    }
+
+
+    /* SLIDE */
+    .slide-inner:after {
+        display: none;
+    }
+
+    .text-swiper {
+        display: none;
+    }
+
+    /* BODY */
+    .description h1 {
+        font-size: 32px;
+    }
+
+    .description_child h1 {
+        font-size: 26px;
+    }
+
+    h3, .card-header button {
+        font-size: 20px;
+    }
+
+    .watermark > div:nth-child(2) {
+        font-size: 38px;
+        bottom: -6px;
+    }
+
+    .our-offers .slick-arrow {
+        top: 82px;
+    }
+
+    .detail-facilities .slick-arrow {
+        top: 65px;
+    }
+
+    .social-footer a:after {
+        display: none;
+    }
+
+    .title-footer div:nth-child(2) {
+        padding: 15px 0 0;
+    }
+
+    .social-footer a, .social-footer a:last-child {
+        padding: 0 5px;
+    }
+
+    .images-room-cover img, .images-room img, .detail-offers .slick-initialized .slick-slide.slick-active .image-offers, .slick-slide .box-facilities img,
+    .slick-slide.slick-active .box-facilities img, .image-offers, .detail-room figure img,
+    .gallery img{
+        height: 200px;
+    }
+
+    .detail-room .icon-room label {
+        font-size: 16px;
+    }
+
+    .detail-room .icon-room p {
+        font-size: 22px;
+    }
+
+    .detail-room .icon-room > div {
+        padding: 15px 0 0;
+    }
+
+    .detail-room .watermark > div:nth-child(2) {
+        font-size: 50px;
+        bottom: -10px;
+    }
+
+    .photo-info {
+        overflow: hidden;
+    }
+}
+
+@media (max-height: 460px) {
+    /* HEADER */
+    header:before, .slide-inner:after {
+        height: 135px;
+    }
+
+    .btn-primary.btn-book-head {
+        width: 140px;
+        height: 50px;
+    }
+    .box-menu nav a,.box-menu nav .menu_mobile .info-detail a {
+        font-size: 24px;
+    }
+
+    .box-menu nav > ul {
+        max-height: 210px;
+    }
+    .navbar-brand, .scroll-up header.menu-active .navbar-brand {
+        width: 100px;
+    }
+    .ui-icon-plus {
+        top: 3px;
+    }
+    .ui-icon-plus {
+        width: 20px;
+        height: 20px;
+    }
+    .ui-icon-plus:before {
+        height: 20px;
+    }
+    .ui-icon-plus:after {
+        width: 20px;
+    }
+    /* SLIDE */
+    .hero-slider,.index-video-wrapper {
+        height: 100vh;
+    }
+    .hero-style .slide-title label {
+        font-size: 30px;
+    }
+
+    .hero-style .slide-title h2 {
+        font-size: 26px;
+    }
+
+    /* BODY */
+    .watermark > div:nth-child(2) {
+        font-size: 100px;
+        bottom: -30px;
+    }
+    .contact-footer [class*=col-xs-] {
+        padding: 0 20px;
+    }
+}

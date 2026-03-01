@@ -289,6 +289,8 @@
   display:flex;
   flex-direction:column;
   gap:12px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .08), 0 4px 6px 0 rgba(0, 0, 0, .1);
 }
 .tour-card__media{
   width:100%;
@@ -306,10 +308,13 @@
 .tour-card__title{
   font-size:18px;
   font-weight:700;
+  height: 54px;
   margin:0;
   color:#111;
+  padding: 0px 10px;
 }
 .tour-card__text{
+  padding: 0px 10px;
   font-size:14px;
   line-height:1.6;
   color:#444;
@@ -508,21 +513,6 @@
   color:rgba(255,255,255,.82);
   margin-bottom:22px;
 }
-.promise-cta{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 22px;
-  border-radius:999px;
-  background:#a8db3a;
-  color:#0f1a00;
-  font-weight:700;
-  text-decoration:none;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  font-size:12px;
-}
-.promise-cta:hover{ background:#9acd32; color:#0f1a00; }
 .promise-grid{
   display:grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
@@ -570,6 +560,7 @@
 @section('content')
 
 
+
     <!-- HOME SLIDER -->
    <div class="video-container" style="    margin-bottom: 108px;">
       <video id="video" class="video" preload="metadata" autoplay="" loop="" muted=""
@@ -582,7 +573,6 @@
                <div class="intro-txt">Elephants in Phuket</div>
                <h2>Elephants</h2>
                <p>Small Elephants is the first ethical elephant sanctuary in Phuket.</p>
-               <a href="#" class="slider-btn">Contact Us</a>
             </div>
          </div>
       </div>
@@ -622,7 +612,7 @@
                         food and wine. Ut enim ad minim veniam, quis nostrud exercitation ullamco. Quia consequuntur
                         magni dolores eos qui ratione voluptatem sequi nesciunt. Animi, id est laborum et dolorum fuga.
                         Nam libero.</p>
-                     <p><a class="view-more margin-t24" href="">Book a Table</a></p>
+                    
                   </div>
                </div>
                <!-- /col-md-6 -->
@@ -684,7 +674,7 @@
           <div class="tours-kicker">Featured Tour</div>
           <h3 class="tours-title">{{ $featuredTour->name }}</h3>
           <p class="tours-desc">{{ $featuredTour->excerpt ?? '' }}</p>
-          <a class="tours-link" href="{{ route('frontend.tours.show', $featuredTour->slug) }}">Book now ›</a>
+          <a class=" btn-book" href="{{ route('frontend.tours.show', $featuredTour->slug) }}">Book Now</a>
         </div>
       </div>
 
@@ -701,7 +691,7 @@
           </a>
           <h4 class="tour-card__title">{{ $tour->name }}</h4>
           <p class="tour-card__text">{{ $tour->excerpt ?? '' }}</p>
-          <a class="tour-card__link" href="{{ route('frontend.tours.show', $tour->slug) }}">Book now ›</a>
+          <a class=" btn-book" href="{{ route('frontend.tours.show', $tour->slug) }}">Book Now</a>
         </div>
         @endforeach
       </div>
@@ -728,7 +718,7 @@
                         เรามอบประสบการณ์ที่ปลอดภัยและเคารพธรรมชาติของช้าง
                         เน้นการสังเกตและเรียนรู้ พร้อมเรื่องราวการช่วยเหลือของช้างแต่ละตัว
                      </p>
-                     <a href="{{ route('frontend.tours.index') }}" class="promise-cta">Book Now</a>
+                     <a href="{{ route('frontend.tours.index') }}" class="btn-book">Book Now</a>
                      <div class="promise-note">จองรอบล่วงหน้าเพื่อจำกัดจำนวนผู้เข้าชมในแต่ละวัน</div>
                   </div>
                   <div class="col-lg-6">
@@ -786,7 +776,7 @@
                            @endif
                         </div>
                         <div class="elephant-desc">{{ $elephant->history }}</div>
-                        <a href="{{ route('frontend.elephants') }}#{{ $elephant->slug ?? '' }}" class="elephant-btn">Read more ›</a>
+                        <a href="{{ route('frontend.elephants') }}#{{ $elephant->slug ?? '' }}" class="btn-book">Read more ›</a>
                      </div>
                   </div>
                </div>
@@ -1156,3 +1146,4 @@ document.addEventListener('click', function(e){
 @endpush
 
 @endsection
+

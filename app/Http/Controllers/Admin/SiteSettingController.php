@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SiteSettingController extends Controller
 {
@@ -22,6 +23,8 @@ class SiteSettingController extends Controller
         $data = $request->validate([
             'footer_about' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
+            'address_th' => ['nullable', 'string'],
+            'address_en' => ['nullable', 'string'],
             'phone' => ['nullable', 'string', 'max:255'],
             'phone_secondary' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -32,6 +35,8 @@ class SiteSettingController extends Controller
             'contact_whatsapp_line' => ['nullable', 'string', 'max:255'],
             'map_embed_url' => ['nullable', 'string'],
             'copyright_text' => ['nullable', 'string', 'max:255'],
+            'logo_header' => ['nullable', 'image', 'max:2048'],
+            'logo_footer' => ['nullable', 'image', 'max:2048'],
         ]);
 
         foreach (['facebook_url', 'instagram_url'] as $key) {
@@ -44,7 +49,33 @@ class SiteSettingController extends Controller
             }
         }
 
-        SiteSetting::updateOrCreate(['id' => SiteSetting::first()?->id], $data);
+        $addressTh = trim((string) ($data['address_th'] ?? ''));
+        $addressEn = trim((string) ($data['address_en'] ?? ''));
+        if ($addressTh !== '' || $addressEn !== '') {
+            $data['address'] = $addressTh !== '' ? $addressTh : $addressEn;
+        }
+
+        $setting = SiteSetting::first();
+
+        if ($request->hasFile('logo_header')) {
+            if ($setting?->logo_header_path) {
+                Storage::disk('spaces')->delete($setting->logo_header_path);
+            } elseif ($setting?->logo_path) {
+                Storage::disk('spaces')->delete($setting->logo_path);
+            }
+
+            $data['logo_header_path'] = $request->file('logo_header')->storePublicly('site', 'spaces');
+        }
+
+        if ($request->hasFile('logo_footer')) {
+            if ($setting?->logo_footer_path) {
+                Storage::disk('spaces')->delete($setting->logo_footer_path);
+            }
+
+            $data['logo_footer_path'] = $request->file('logo_footer')->storePublicly('site', 'spaces');
+        }
+
+        SiteSetting::updateOrCreate(['id' => $setting?->id], $data);
 
         return back()->with('success', 'บันทึกการตั้งค่าเรียบร้อยแล้ว');
     }

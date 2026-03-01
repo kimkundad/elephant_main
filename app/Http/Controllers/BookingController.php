@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Tour;
-use App\Models\TourSession;
-use App\Models\PickupLocation; // ถ้ามี model นี้
-use Carbon\Carbon;
 use App\Models\Booking;
 use App\Models\DiscountCode;
+use App\Models\PickupLocation;
+use App\Models\Tour;
+use App\Models\TourSession;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
-
 
 class BookingController extends Controller
 {
@@ -21,18 +20,16 @@ class BookingController extends Controller
         $sessionId = $request->query('session');
         $date = $request->query('date');
 
-        // กันเลือกย้อนหลัง
         if ($date && Carbon::parse($date)->lt(now()->startOfDay())) {
             $date = now()->toDateString();
         }
 
-        $tour = Tour::findOrFail($tourId);
+        $tour = Tour::with('translations')->findOrFail($tourId);
         $session = TourSession::findOrFail($sessionId);
 
-        // ราคา (เริ่มง่าย ๆ: ผู้ใหญ่ = min_price, เด็ก = ครึ่งราคา, infant = 0)
         $prices = [
-            'adult' => (int)($tour->min_price ?? 0),
-            'child' => (int)round(($tour->min_price ?? 0) * 0.5),
+            'adult' => (int) ($tour->min_price ?? 0),
+            'child' => (int) round(($tour->min_price ?? 0) * 0.5),
             'infant' => 0,
         ];
 
@@ -42,20 +39,55 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
-        // pickup locations (ถ้าคุณมีตารางนี้อยู่แล้ว)
-
-
         return view('frontend.pages.booking.create', compact(
-            'tour', 'session', 'date', 'prices', 'meetingPoints'
+            'tour',
+            'session',
+            'date',
+            'prices',
+            'meetingPoints'
         ));
     }
 
+    public function createV2(Request $request)
+    {
+        $tourId = $request->query('tour');
+        $sessionId = $request->query('session');
+        $date = $request->query('date');
+
+        if ($date && Carbon::parse($date)->lt(now()->startOfDay())) {
+            $date = now()->toDateString();
+        }
+
+        $tour = Tour::with('translations')->findOrFail($tourId);
+        $session = TourSession::findOrFail($sessionId);
+
+        $prices = [
+            'adult' => (int) ($tour->min_price ?? 0),
+            'child' => (int) round(($tour->min_price ?? 0) * 0.5),
+            'infant' => 0,
+        ];
+
+        $meetingPoints = PickupLocation::query()
+            ->where('is_active', 1)
+            ->where('is_meeting_point', 1)
+            ->orderBy('name')
+            ->get();
+
+        return view('frontend_v2.pages.booking.create', compact(
+            'tour',
+            'session',
+            'date',
+            'prices',
+            'meetingPoints'
+        ));
+    }
 
     private function isWithinChiangMaiBounds(float $lat, float $lng): bool
     {
-        // ===== Chiang Mai City bounds (ตามที่คุณใช้ใน frontend) =====
-        $swLat = 18.730; $swLng = 98.930;
-        $neLat = 18.840; $neLng = 99.050;
+        $swLat = 18.730;
+        $swLng = 98.930;
+        $neLat = 18.840;
+        $neLng = 99.050;
 
         return $lat >= $swLat && $lat <= $neLat
             && $lng >= $swLng && $lng <= $neLng;
@@ -76,7 +108,6 @@ class BookingController extends Controller
             'phone' => 'required|string|max:50',
             'email' => 'required|email|max:255',
 
-            // Google / Manual pickup
             'google_place_id' => 'nullable|string|max:255',
             'google_place_name' => 'nullable|string|max:255',
             'google_place_address' => 'nullable|string|max:255',
@@ -85,59 +116,47 @@ class BookingController extends Controller
             'pickup_source' => 'nullable|in:google,manual',
             'manual_address' => 'nullable|string|max:500',
 
-            // Meeting point (required if out of bounds)
             'meeting_point_id' => 'nullable|integer|exists:pickup_locations,id',
 
-            // การชำระเงิน
             'payment_channel' => 'required|in:card,promptpay',
             'discount_code' => 'nullable|string|max:50',
         ]);
 
-        $tour = Tour::findOrFail($data['tour_id']);
+        $isV2 = $request->boolean('booking_v2');
+        $tour = Tour::with('translations')->findOrFail($data['tour_id']);
 
-        $adults = (int)$data['qty_adult'];
-        $children = (int)$data['qty_child'];
-        $infants = (int)$data['qty_infant'];
+        $adults = (int) $data['qty_adult'];
+        $children = (int) $data['qty_child'];
+        $infants = (int) $data['qty_infant'];
         $totalGuests = $adults + $children + $infants;
 
-        // ===== Pickup logic (สำคัญ) =====
-        $lat = isset($data['google_lat']) ? (float)$data['google_lat'] : null;
-        $lng = isset($data['google_lng']) ? (float)$data['google_lng'] : null;
-
+        $lat = isset($data['google_lat']) ? (float) $data['google_lat'] : null;
+        $lng = isset($data['google_lng']) ? (float) $data['google_lng'] : null;
         $hasLatLng = ($lat !== null && $lng !== null);
 
-        // ถ้าไม่ได้เลือกจาก Google และไม่ได้ปักหมุด -> บังคับให้ทำอย่างใดอย่างหนึ่ง
         if (!$hasLatLng) {
             return back()->withErrors([
-                'google_place_name' => 'กรุณาเลือกโรงแรม/ที่พักจากรายการ หรือกรอกที่อยู่และปักหมุดบนแผนที่',
+                'google_place_name' => __('booking.errors.pickup_required'),
             ])->withInput();
         }
 
         $inBounds = $this->isWithinChiangMaiBounds($lat, $lng);
-
-        // ถ้าอยู่นอก bounds -> ต้องเลือก meeting point
         if (!$inBounds && empty($data['meeting_point_id'])) {
             return back()->withErrors([
-                'meeting_point_id' => 'ที่พักอยู่นอกเขตรับส่ง กรุณาเลือก “จุดนัดรับ”',
+                'meeting_point_id' => __('booking.errors.meeting_point_required'),
             ])->withInput();
         }
 
-        // เก็บ pickup_location_id เฉพาะกรณี meeting point (นอกเขต)
-        $pickupLocationId = null;
-        if (!$inBounds) {
-            $pickupLocationId = (int)$data['meeting_point_id'];
-        }
+        $pickupLocationId = $inBounds ? null : (int) $data['meeting_point_id'];
 
-        // ===== ราคา (adult=min_price, child=50%, infant=0) =====
-        $priceAdult = (int)($tour->min_price ?? 0);
-        $priceChild = (int)round($priceAdult * 0.5);
-        $subtotal = ($adults * $priceAdult) + ($children * $priceChild); // infants ฟรี
+        $priceAdult = (int) ($tour->min_price ?? 0);
+        $priceChild = (int) round($priceAdult * 0.5);
+        $subtotal = ($adults * $priceAdult) + ($children * $priceChild);
 
         $vatRate = 0.07;
         $vat = round($subtotal * $vatRate, 2);
         $fee = 0;
         $grand = round($subtotal + $vat + $fee, 2);
-        $discount = null;
         $discountAmount = 0;
         $discountCode = null;
         $agentId = null;
@@ -148,7 +167,7 @@ class BookingController extends Controller
 
             if (!$discount['valid']) {
                 return back()->withErrors([
-                    'discount_code' => $discount['message'] ?? 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว',
+                    'discount_code' => $discount['message'] ?? __('booking.errors.discount_invalid'),
                 ])->withInput();
             }
 
@@ -157,10 +176,9 @@ class BookingController extends Controller
         }
 
         $grandAfterDiscount = max(0, round($grand - $discountAmount, 2));
-        $minCharge = 10.00;
-        if ($grandAfterDiscount < $minCharge) {
+        if ($grandAfterDiscount < 10.00) {
             return back()->withErrors([
-                'discount_code' => 'ยอดชำระหลังหักส่วนลดต้องไม่น้อยกว่า 10 บาท',
+                'discount_code' => __('booking.errors.min_charge'),
             ])->withInput();
         }
 
@@ -168,77 +186,75 @@ class BookingController extends Controller
 
         try {
             DB::transaction(function () use (
-            &$booking,
-            $data,
-            $adults,
-            $children,
-            $infants,
-            $totalGuests,
-            $subtotal,
-            $vat,
-            $fee,
-            $grandAfterDiscount,
-            $discountAmount,
-            $discountCode,
-            $agentId,
-            $pickupLocationId
+                &$booking,
+                $data,
+                $adults,
+                $children,
+                $infants,
+                $totalGuests,
+                $subtotal,
+                $vat,
+                $fee,
+                $grandAfterDiscount,
+                $discountAmount,
+                $discountCode,
+                $agentId,
+                $pickupLocationId
             ) {
-            if ($discountCode) {
-                $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
-                if (!$discountRow || !$this->isDiscountCodeUsable($discountRow)) {
-                    throw new \RuntimeException('โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว');
+                if ($discountCode) {
+                    $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
+                    if (!$discountRow || !$this->isDiscountCodeUsable($discountRow)) {
+                        throw new \RuntimeException(__('booking.errors.discount_invalid'));
+                    }
+                    if ($discountRow->max_uses > 0 && $discountRow->used_count >= $discountRow->max_uses) {
+                        throw new \RuntimeException(__('booking.errors.discount_limit_reached'));
+                    }
                 }
-                if ($discountRow->max_uses > 0 && $discountRow->used_count >= $discountRow->max_uses) {
-                    throw new \RuntimeException('โค้ดส่วนลดถูกใช้ครบจำนวนแล้ว');
-                }
-            }
 
-            $booking = Booking::create([
-                'customer_id' => null,
-                'customer_name' => $data['full_name'],
-                'customer_phone' => $data['phone'],
-                'customer_email' => $data['email'],
-                'public_code' => \Illuminate\Support\Str::random(32),
+                $booking = Booking::create([
+                    'customer_id' => null,
+                    'customer_name' => $data['full_name'],
+                    'customer_phone' => $data['phone'],
+                    'customer_email' => $data['email'],
+                    'public_code' => \Illuminate\Support\Str::random(32),
 
-                'tour_id' => $data['tour_id'],
-                'session_id' => $data['session_id'],
-                'date' => $data['date'],
+                    'tour_id' => $data['tour_id'],
+                    'session_id' => $data['session_id'],
+                    'date' => $data['date'],
 
-                'adults' => $adults,
-                'children' => $children,
-                'infants' => $infants,
-                'total_guests' => $totalGuests,
+                    'adults' => $adults,
+                    'children' => $children,
+                    'infants' => $infants,
+                    'total_guests' => $totalGuests,
 
-                'subtotal' => $subtotal,
-                'vat_amount' => $vat,
-                'fee_amount' => $fee,
-                'grand_total' => $grandAfterDiscount,
-                'total_price' => $grandAfterDiscount,
+                    'subtotal' => $subtotal,
+                    'vat_amount' => $vat,
+                    'fee_amount' => $fee,
+                    'grand_total' => $grandAfterDiscount,
+                    'total_price' => $grandAfterDiscount,
 
-                'discount_code' => $discountCode,
-                'discount_amount' => $discountAmount,
-                'agent_id' => $agentId,
+                    'discount_code' => $discountCode,
+                    'discount_amount' => $discountAmount,
+                    'agent_id' => $agentId,
+                    'pickup_location_id' => $pickupLocationId,
 
-                // ถ้าอยู่นอกเขต -> เก็บเป็น meeting point id
-                'pickup_location_id' => $pickupLocationId,
+                    'status' => 'pending',
+                    'created_by' => null,
 
-                'status' => 'pending',
-                'created_by' => null,
-
-                'payment_status' => $data['payment_channel'] === 'promptpay' ? 'awaiting_qr' : 'pending',
-                'payment_channel' => $data['payment_channel'],
-                'amount_due_now' => $grandAfterDiscount,
-                'amount_pay_later' => 0,
-            ]);
-
-            if ($discountCode) {
-                $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
-                $discountRow->increment('used_count');
-                $booking->update([
-                    'discount_code_id' => $discountRow->id,
-                    'agent_id' => $discountRow->agent_id,
+                    'payment_status' => $data['payment_channel'] === 'promptpay' ? 'awaiting_qr' : 'pending',
+                    'payment_channel' => $data['payment_channel'],
+                    'amount_due_now' => $grandAfterDiscount,
+                    'amount_pay_later' => 0,
                 ]);
-            }
+
+                if ($discountCode) {
+                    $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
+                    $discountRow->increment('used_count');
+                    $booking->update([
+                        'discount_code_id' => $discountRow->id,
+                        'agent_id' => $discountRow->agent_id,
+                    ]);
+                }
             });
         } catch (\RuntimeException $e) {
             return back()->withErrors([
@@ -248,12 +264,13 @@ class BookingController extends Controller
 
         $stripe = new StripeClient(env('STRIPE_SECRET'));
         $currency = env('STRIPE_CURRENCY', 'thb');
-
-        // Stripe ใช้หน่วย "สตางค์"
         $amountSatang = (int) round($grandAfterDiscount * 100);
 
-        // ===== 1) จ่ายด้วยบัตร: Stripe Checkout =====
         if ($data['payment_channel'] === 'card') {
+            $tourName = optional($tour->translation(app()->getLocale()))->name ?: ($tour->name ?? __('booking.labels.tour_fallback'));
+            $successRoute = $isV2 ? route('frontend.booking.success.v2', $booking->id) : route('frontend.booking.success', $booking->id);
+            $cancelRoute = $isV2 ? route('frontend.booking.cancel.v2', $booking->id) : route('frontend.booking.cancel', $booking->id);
+
             $session = $stripe->checkout->sessions->create([
                 'mode' => 'payment',
                 'payment_method_types' => ['card'],
@@ -263,18 +280,18 @@ class BookingController extends Controller
                         'currency' => $currency,
                         'unit_amount' => $amountSatang,
                         'product_data' => [
-                            'name' => 'Booking #' . $booking->id . ' - ' . ($tour->name ?? 'Tour'),
+                            'name' => __('booking.stripe.product_name', ['id' => $booking->id, 'tour' => $tourName]),
                         ],
                     ],
                 ]],
                 'customer_email' => $booking->customer_email,
                 'metadata' => [
-                    'booking_id' => (string)$booking->id,
+                    'booking_id' => (string) $booking->id,
                     'discount_code' => $discountCode,
                     'discount_amount' => (string) $discountAmount,
                 ],
-                'success_url' => route('frontend.booking.success', $booking->id) . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('frontend.booking.cancel', $booking->id),
+                'success_url' => $successRoute . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => $cancelRoute,
             ]);
 
             $booking->update([
@@ -284,25 +301,22 @@ class BookingController extends Controller
             return redirect()->away($session->url);
         }
 
-        // ===== 2) จ่ายด้วย QR (PromptPay): PaymentIntent =====
         $intent = $stripe->paymentIntents->create([
             'amount' => $amountSatang,
             'currency' => $currency,
             'payment_method_types' => ['promptpay'],
-
             'confirm' => true,
             'payment_method_data' => [
                 'type' => 'promptpay',
                 'billing_details' => [
                     'email' => $booking->customer_email,
-                    'name'  => $booking->customer_name,
+                    'name' => $booking->customer_name,
                     'phone' => $booking->customer_phone,
                 ],
             ],
-
             'receipt_email' => $booking->customer_email,
             'metadata' => [
-                'booking_id' => (string)$booking->id,
+                'booking_id' => (string) $booking->id,
                 'discount_code' => $discountCode,
                 'discount_amount' => (string) $discountAmount,
             ],
@@ -312,13 +326,10 @@ class BookingController extends Controller
             'stripe_payment_intent_id' => $intent->id,
         ]);
 
-        $qrPng = data_get($intent, 'next_action.promptpay_display_qr_code.image_url_png');
-        $expiresAt = data_get($intent, 'next_action.promptpay_display_qr_code.expires_at');
-
-        return view('frontend.pages.booking.promptpay', [
+        return view($isV2 ? 'frontend_v2.pages.booking.promptpay' : 'frontend.pages.booking.promptpay', [
             'booking' => $booking,
-            'qrPng' => $qrPng,
-            'expiresAt' => $expiresAt,
+            'qrPng' => data_get($intent, 'next_action.promptpay_display_qr_code.image_url_png'),
+            'expiresAt' => data_get($intent, 'next_action.promptpay_display_qr_code.expires_at'),
         ]);
     }
 
@@ -327,24 +338,26 @@ class BookingController extends Controller
         return view('frontend.pages.booking.confirmed', compact('booking'));
     }
 
+    public function confirmedV2(\App\Models\Booking $booking)
+    {
+        return view('frontend_v2.pages.booking.confirmed', compact('booking'));
+    }
+
     public function paymentStatus(\App\Models\Booking $booking)
     {
-        // สถานะจาก DB (สำคัญสุด เพราะ webhook เป็นคนอัปเดต)
         $data = [
-            'booking_status' => $booking->status,              // pending / confirmed
-            'payment_status' => $booking->payment_status,      // awaiting_qr / paid / failed
+            'booking_status' => $booking->status,
+            'payment_status' => $booking->payment_status,
         ];
 
-        // ถ้าไม่มี PI ก็ส่งแค่นี้
         if (!$booking->stripe_payment_intent_id) {
             return response()->json($data);
         }
 
-        // (optional) แนบสถานะจาก Stripe เพื่อ debug
         try {
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+            $stripe = new StripeClient(env('STRIPE_SECRET'));
             $intent = $stripe->paymentIntents->retrieve($booking->stripe_payment_intent_id, []);
-            $data['stripe_status'] = $intent->status; // requires_action / processing / succeeded
+            $data['stripe_status'] = $intent->status;
         } catch (\Throwable $e) {
             $data['stripe_status'] = 'unknown';
         }
@@ -358,7 +371,7 @@ class BookingController extends Controller
         if ($code === '') {
             return response()->json([
                 'valid' => false,
-                'message' => 'กรุณากรอกโค้ดส่วนลด',
+                'message' => __('booking.errors.discount_required'),
             ], 422);
         }
 
@@ -366,7 +379,7 @@ class BookingController extends Controller
         if (!$result['valid']) {
             return response()->json([
                 'valid' => false,
-                'message' => $result['message'] ?? 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว',
+                'message' => $result['message'] ?? __('booking.errors.discount_invalid'),
             ], 422);
         }
 
@@ -381,11 +394,11 @@ class BookingController extends Controller
     {
         $discount = DiscountCode::where('code', $code)->first();
         if (!$discount || !$this->isDiscountCodeUsable($discount)) {
-            return ['valid' => false, 'message' => 'โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุแล้ว'];
+            return ['valid' => false, 'message' => __('booking.errors.discount_invalid')];
         }
 
         if ($discount->max_uses > 0 && $discount->used_count >= $discount->max_uses) {
-            return ['valid' => false, 'message' => 'โค้ดส่วนลดถูกใช้ครบจำนวนแล้ว'];
+            return ['valid' => false, 'message' => __('booking.errors.discount_limit_reached')];
         }
 
         return [
@@ -411,5 +424,4 @@ class BookingController extends Controller
 
         return true;
     }
-
 }

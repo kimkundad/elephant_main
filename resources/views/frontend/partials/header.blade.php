@@ -1,4 +1,9 @@
 <div class="menu-mask"></div>
+@php
+   $localizedAddress = app()->getLocale() === 'th'
+      ? ($siteSetting?->address_th ?? $siteSetting?->address ?? "58 Ralph Ave\nNew York, New York 1111")
+      : ($siteSetting?->address_en ?? $siteSetting?->address ?? "58 Ralph Ave\nNew York, New York 1111");
+@endphp
    <!-- MOBILE MENU HOLDER -->
    <div class="mobile-menu-holder">
       <div class="modal-menu-container">
@@ -26,10 +31,10 @@
       <!-- modal-menu-container -->
       <div class="menu-contact">
          <div class="mobile-btn">
-            <a href="{{ route('frontend.tours.index') }}" class="view-more">Book Now</a>
+            <a href="{{ route('frontend.tours.index') }}" class="btn-book">Book Now</a>
          </div>
          <ul class="mobile-contact">
-            <li class="mobile-address">{!! nl2br(e($siteSetting->address ?? "58 Ralph Ave\nNew York, New York 1111")) !!}</li>
+            <li class="mobile-address">{!! nl2br(e($localizedAddress)) !!}</li>
             <li class="mobile-phone">{{ $siteSetting->phone ?? '+1 800 000 111' }}</li>
             <li class="mobile-email">{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}</li>
          </ul>
@@ -61,9 +66,15 @@
       </div>
       <!-- /nav-button-holder-->
       <!-- LOGO -->
-      <div class="logo logo-1"><a href="{{ url('/') }}"><img class="img-fluid"
-               src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
-               alt="Small Elephants"></a></div>
+      <div class="logo logo-1"><a href="{{ url('/') }}">
+            @if(!empty($siteSetting?->logo_header_url))
+               <img class="img-fluid" src="{{ $siteSetting->logo_header_url }}" alt="Small Elephants">
+            @else
+               <img class="img-fluid"
+                    src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
+                    alt="Small Elephants">
+            @endif
+         </a></div>
       <!-- MENU -->
       <nav class="nav-holder nav-holder-1">
          <ul class="menu-nav menu-nav-1">

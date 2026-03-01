@@ -7,9 +7,13 @@
         <a target="_blank" href="{{ url('/') }}">
 
 
-            <img src="{{ url('img/logo.webp') }}" alt="Logo" class="h-35px app-sidebar-logo-default" />
-
-            <img src="{{ url('img/logo.webp') }}" alt="Logo" class="h-35px app-sidebar-logo-minimize" />
+            @if(!empty($siteSetting?->logo_header_url))
+                <img src="{{ $siteSetting->logo_header_url }}" alt="Logo" class="h-35px app-sidebar-logo-default" />
+                <img src="{{ $siteSetting->logo_header_url }}" alt="Logo" class="h-35px app-sidebar-logo-minimize" />
+            @else
+                <img src="{{ url('img/logo.webp') }}" alt="Logo" class="h-35px app-sidebar-logo-default" />
+                <img src="{{ url('img/logo.webp') }}" alt="Logo" class="h-35px app-sidebar-logo-minimize" />
+            @endif
 
 
         </a>
@@ -77,7 +81,7 @@
                 </div>
 
 
-                {{-- เมนูโปรแกรมทัวร์ --}}
+                {{-- Tour Programs --}}
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 
                     <span class="menu-link">
@@ -91,29 +95,34 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">โปรแกรมทัวร์</span>
+                        <span class="menu-title">Tour Programs</span>
                         <span class="menu-arrow"></span>
                     </span>
 
-                    {{-- เมนูย่อย --}}
+                    {{-- Sub Menu --}}
                     <div class="menu-sub menu-sub-accordion">
 
-                        {{-- รายการโปรแกรมทัวร์ --}}
+                        {{-- Program List --}}
                         <div class="menu-item">
                             <a class="menu-link" href="{{ route('admin.tours.index') }}">
                                 <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">รายการโปรแกรม</span>
+                                <span class="menu-title">Program List</span>
                             </a>
                         </div>
 
-                        {{-- Sessions ของโปรแกรมทั้งหมด --}}
                         <div class="menu-item">
                             <a class="menu-link" href="{{ route('admin.sessions.all') }}">
                                 <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Sessions ของโปรแกรม</span>
+                                <span class="menu-title">Tour Sessions</span>
                             </a>
                         </div>
 
+                        <div class="menu-item">
+                            <a class="menu-link" href="{{ route('admin.tour-tags.index') }}">
+                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                                <span class="menu-title">Tour Tags</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -134,7 +143,7 @@
                             </span>
                             <!--end::Svg Icon-->
                         </span>
-                        <span class="menu-title">รายชื่อลูกค้า</span>
+                        <span class="menu-title">Customers</span>
                     </a>
                 </div>
 
@@ -151,7 +160,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">ผู้ใช้งานทั้งหมด</span>
+                        <span class="menu-title">Users</span>
                     </a>
                 </div>
 
@@ -160,7 +169,7 @@
                     <a class="menu-link" href="{{ route('admin.bookings.index') }}">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
-                                {{-- ไอคอนจอง --}}
+                                {{-- Booking Icon --}}
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor"/>
                                     <rect x="7" y="8" width="10" height="2" fill="white"/>
@@ -168,7 +177,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">รายการจอง (Bookings)</span>
+                        <span class="menu-title">Bookings</span>
                     </a>
                 </div>
 
@@ -185,7 +194,7 @@
 												</span>
 												<!--end::Svg Icon-->
 											</span>
-                        <span class="menu-title">จุดรับส่งรถ (Pick-up Locations)</span>
+                        <span class="menu-title">Pick-up Locations</span>
                     </a>
                 </div>
 
@@ -199,9 +208,10 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">ตั้งค่าเว็บไซต์</span>
+                        <span class="menu-title">Site Settings</span>
                     </a>
                 </div>
+                
 
                 <div class="menu-item">
                     <a class="menu-link" href="{{ route('admin.agents.index') }}">
@@ -213,7 +223,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">พนักงานขาย</span>
+                        <span class="menu-title">Sales Agents</span>
                     </a>
                 </div>
 
@@ -227,7 +237,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">โค้ดส่วนลด</span>
+                        <span class="menu-title">Discount Codes</span>
                     </a>
                 </div>
 
@@ -241,7 +251,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">รายงานเอเจนต์</span>
+                        <span class="menu-title">Agent Reports</span>
                     </a>
                 </div>
 
@@ -255,7 +265,7 @@
                                 </svg>
                             </span>
                         </span>
-                        <span class="menu-title">ข้อมูลช้าง</span>
+                        <span class="menu-title">Elephants</span>
                     </a>
                 </div>
 
@@ -277,14 +287,55 @@
                             </span>
                             <!--end::Svg Icon-->
                         </span>
-                        <span class="menu-title">ออกจากระบบ</span>
+                        <span class="menu-title">Logout</span>
                     </a>
                     <!--end:Menu link-->
                 </div>
 
+            <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.site-texts.home') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
+                                    <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">Site Texts (Home)</span>
+                    </a>
+                </div>
 
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.site-texts.about') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
+                                    <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">Site Texts (About)</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.page-media.index') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
+                                    <path d="M8 8H16V16H8V8ZM9 9V15H15V9H9Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">Page Media</span>
+                    </a>
+                </div>
 
             </div>
+                
             <!--end::Menu-->
         </div>
         <!--end::Menu wrapper-->
@@ -292,3 +343,6 @@
     <!--end::sidebar menu-->
 
 </div>
+
+
+

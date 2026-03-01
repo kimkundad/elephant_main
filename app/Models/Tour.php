@@ -28,4 +28,27 @@ class Tour extends Model
     {
         return $this->hasMany(TourAvailability::class);
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(TourTag::class, 'tour_tag_tour');
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(TourTranslation::class);
+    }
+
+    public function translation(?string $locale = null): ?TourTranslation
+    {
+        $locale = $locale ?: app()->getLocale();
+
+        $translation = $this->translations->firstWhere('locale', $locale);
+        if ($translation) {
+            return $translation;
+        }
+
+        return $this->translations->firstWhere('locale', 'th')
+            ?: $this->translations->firstWhere('locale', 'en');
+    }
 }

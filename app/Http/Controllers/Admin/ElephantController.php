@@ -13,6 +13,7 @@ class ElephantController extends Controller
     public function index()
     {
         $elephants = Elephant::orderBy('sort_order')
+            ->with('translations')
             ->orderByDesc('id')
             ->get();
 
@@ -27,9 +28,11 @@ class ElephantController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name_th' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
             'rescued_at' => ['nullable', 'date'],
-            'history' => ['nullable', 'string'],
+            'history_th' => ['nullable', 'string'],
+            'history_en' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'images' => ['required', 'array', 'min:1', 'max:3'],
@@ -38,17 +41,26 @@ class ElephantController extends Controller
 
         $imageUrls = $this->uploadImages($request->file('images', []));
 
-        $slug = $this->makeSlug($data['name']);
+        $slug = $this->makeSlug($data['name_th']);
 
-        Elephant::create([
-            'name' => $data['name'],
+        $elephant = Elephant::create([
+            'name' => $data['name_th'],
             'slug' => $slug,
             'rescued_at' => $data['rescued_at'] ?? null,
-            'history' => $data['history'] ?? null,
+            'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
             'is_active' => $request->boolean('is_active'),
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
+
+        $elephant->translations()->updateOrCreate(
+            ['locale' => 'th'],
+            ['name' => $data['name_th'], 'history' => $data['history_th'] ?? null]
+        );
+        $elephant->translations()->updateOrCreate(
+            ['locale' => 'en'],
+            ['name' => $data['name_en'], 'history' => $data['history_en'] ?? null]
+        );
 
         return redirect()
             ->route('admin.elephants.index')
@@ -57,15 +69,18 @@ class ElephantController extends Controller
 
     public function edit(Elephant $elephant)
     {
+        $elephant->load('translations');
         return view('admin.elephants.edit', compact('elephant'));
     }
 
     public function update(Request $request, Elephant $elephant)
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name_th' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
             'rescued_at' => ['nullable', 'date'],
-            'history' => ['nullable', 'string'],
+            'history_th' => ['nullable', 'string'],
+            'history_en' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array', 'min:1', 'max:3'],
@@ -78,17 +93,26 @@ class ElephantController extends Controller
             $imageUrls = $this->uploadImages($request->file('images', []));
         }
 
-        $slug = $this->makeSlug($data['name'], $elephant->id);
+        $slug = $this->makeSlug($data['name_th'], $elephant->id);
 
         $elephant->update([
-            'name' => $data['name'],
+            'name' => $data['name_th'],
             'slug' => $slug,
             'rescued_at' => $data['rescued_at'] ?? null,
-            'history' => $data['history'] ?? null,
+            'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
             'is_active' => $request->boolean('is_active'),
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
+
+        $elephant->translations()->updateOrCreate(
+            ['locale' => 'th'],
+            ['name' => $data['name_th'], 'history' => $data['history_th'] ?? null]
+        );
+        $elephant->translations()->updateOrCreate(
+            ['locale' => 'en'],
+            ['name' => $data['name_en'], 'history' => $data['history_en'] ?? null]
+        );
 
         return redirect()
             ->route('admin.elephants.index')

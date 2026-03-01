@@ -1,5 +1,10 @@
 <!-- FOOTER -->
    <footer style="margin-top: 0px;">
+      @php
+         $localizedAddress = app()->getLocale() === 'th'
+            ? ($siteSetting?->address_th ?? $siteSetting?->address ?? "58 Ralph Ave\nNew York, New York 1111")
+            : ($siteSetting?->address_en ?? $siteSetting?->address ?? "58 Ralph Ave\nNew York, New York 1111");
+      @endphp
       <div class="container">
          <div class="footer-widgets">
             <div class="row">
@@ -8,9 +13,15 @@
                   <div class="foo-block">
                      <div id="text-2" class="widget widget-footer widget_text">
                         <div class="textwidget">
-                           <p><img class="size-full wp-image-665"
-                                 src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
-                                 alt="" width="143" height="51"></p>
+                           <p>
+                              @if(!empty($siteSetting?->logo_footer_url))
+                                 <img class="size-full wp-image-665" src="{{ $siteSetting->logo_footer_url }}" alt="Logo" width="143" height="51">
+                              @else
+                                 <img class="size-full wp-image-665"
+                                      src="https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/01/45c7bf722bb167f407ce49150b85be7b.png?h=120&zoom=2"
+                                      alt="" width="143" height="51">
+                              @endif
+                           </p>
                            <p>{{ $siteSetting->footer_about ?? 'For a truly memorable dining experience reserve in advance a table as soon as you can. Come and taste our remarkable food and wine.' }}</p>
                         </div>
                      </div>
@@ -24,8 +35,7 @@
                      <div id="text-3" class="widget widget-footer widget_text">
                         <h5 class="widgettitle"><span>Address</span></h5>
                         <div class="textwidget">
-                           <p>{!! nl2br(e($siteSetting->address ?? "58 Ralph Ave
-New York, New York 1111")) !!}</p>
+                           <p>{!! nl2br(e($localizedAddress)) !!}</p>
                            <p>
                               P: {{ $siteSetting->phone ?? '+1 800 000 111' }}<br>
                               E: <a href="mailto:{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}">{{ $siteSetting->email ?? 'infosmallelephants@gmail.com' }}</a>
