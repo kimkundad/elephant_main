@@ -62,6 +62,7 @@ Route::name('frontend.')->group(function () {
     Route::get('/our-elephants', [HomeController::class, 'elephantsV2'])->name('elephants');
     Route::get('/v2/our-elephants', fn () => redirect()->route('frontend.elephants'))->name('elephants.v2');
 
+    
     Route::view('/what-to-bring', 'frontend_v2.pages.what-to-bring')->name('what_to_bring');
     Route::view('/support-us', 'frontend_v2.pages.support-us')->name('support_us');
     Route::view('/terms', 'frontend_v2.pages.terms')->name('terms');
