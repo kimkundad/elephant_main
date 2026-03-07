@@ -116,7 +116,7 @@
             </table>
 
             <div class="mt-4">
-              {{ $mediaItems->links() }}
+              {{ $mediaItems->links('pagination::bootstrap-5') }}
             </div>
           </div>
         </div>

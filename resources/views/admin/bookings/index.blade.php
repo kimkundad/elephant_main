@@ -93,7 +93,7 @@
                             </tbody>
                         </table>
 
-                        {{ $bookings->links() }}
+                        {{ $bookings->links('pagination::bootstrap-5') }}
 
                     </div>
                 </div>

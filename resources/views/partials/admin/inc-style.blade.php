@@ -2,14 +2,8 @@
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->
-		<!--begin::Vendor Stylesheets(used for this page only)-->
-		<link href="{{ Vite::asset('resources/admin/assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<!--end::Vendor Stylesheets-->
-		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-		<link href="{{ Vite::asset('resources/admin/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-		<link href="{{ Vite::asset('resources/admin/assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+		@vite('resources/admin/css/app.css')
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		<!--end::Global Stylesheets Bundle-->
 <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
 <style>
         body, body, h1, h2, h3, h4, h5, h6 {
