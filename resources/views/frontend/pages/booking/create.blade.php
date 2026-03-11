@@ -214,8 +214,11 @@
                     <div style="margin-top:10px;">
                         <label class="f-label">Payment method</label>
                         <select name="payment_channel" class="f-input" required>
-                        <option value="card">Credit/Debit Card</option>
-                        <option value="promptpay">QR Code (PromptPay)</option>
+                        @foreach ($availablePaymentChannels as $paymentChannel)
+                        <option value="{{ $paymentChannel }}" @selected(old('payment_channel', $availablePaymentChannels[0] ?? 'card') === $paymentChannel)>
+                            {{ $paymentChannel === 'promptpay' ? 'QR Code (PromptPay)' : 'Credit/Debit Card' }}
+                        </option>
+                        @endforeach
                         </select>
                     </div>
                     </div>

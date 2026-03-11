@@ -10,7 +10,9 @@ use App\Models\TourSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Stripe\StripeClient;
+use Stripe\Exception\InvalidRequestException;
 
 class BookingController extends Controller
 {
@@ -39,12 +41,15 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
+        $availablePaymentChannels = $this->availablePaymentChannels();
+
         return view('frontend.pages.booking.create', compact(
             'tour',
             'session',
             'date',
             'prices',
-            'meetingPoints'
+            'meetingPoints',
+            'availablePaymentChannels'
         ));
     }
 
@@ -73,13 +78,38 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
+        $availablePaymentChannels = $this->availablePaymentChannels();
+
         return view('frontend_v2.pages.booking.create', compact(
             'tour',
             'session',
             'date',
             'prices',
-            'meetingPoints'
+            'meetingPoints',
+            'availablePaymentChannels'
         ));
+    }
+
+    private function availablePaymentChannels(): array
+    {
+        $configured = config('services.stripe.enabled_payment_channels', ['card']);
+
+        if (!is_array($configured)) {
+            $configured = ['card'];
+        }
+
+        $allowed = ['card', 'promptpay'];
+
+        return array_values(array_intersect($allowed, array_unique($configured))) ?: ['card'];
+    }
+
+    private function promptPayUnavailableMessage(): string
+    {
+        if (app()->getLocale() === 'th') {
+            return 'PromptPay ยังไม่เปิดใช้งานบน Stripe account นี้ กรุณาเลือกชำระด้วยบัตร';
+        }
+
+        return 'PromptPay is not enabled for this Stripe account. Please choose card payment.';
     }
 
     private function isWithinChiangMaiBounds(float $lat, float $lng): bool
@@ -95,6 +125,8 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        $availablePaymentChannels = $this->availablePaymentChannels();
+
         $data = $request->validate([
             'tour_id' => 'required|integer|exists:tours,id',
             'session_id' => 'required|integer|exists:tour_sessions,id',
@@ -118,7 +150,7 @@ class BookingController extends Controller
 
             'meeting_point_id' => 'nullable|integer|exists:pickup_locations,id',
 
-            'payment_channel' => 'required|in:card,promptpay',
+            'payment_channel' => ['required', Rule::in($availablePaymentChannels)],
             'discount_code' => 'nullable|string|max:50',
         ]);
 
@@ -262,7 +294,7 @@ class BookingController extends Controller
             ])->withInput();
         }
 
-        $stripe = new StripeClient(env('STRIPE_SECRET'));
+        $stripe = new StripeClient(config('services.stripe.secret'));
         $currency = env('STRIPE_CURRENCY', 'thb');
         $amountSatang = (int) round($grandAfterDiscount * 100);
 
@@ -301,26 +333,38 @@ class BookingController extends Controller
             return redirect()->away($session->url);
         }
 
-        $intent = $stripe->paymentIntents->create([
-            'amount' => $amountSatang,
-            'currency' => $currency,
-            'payment_method_types' => ['promptpay'],
-            'confirm' => true,
-            'payment_method_data' => [
-                'type' => 'promptpay',
-                'billing_details' => [
-                    'email' => $booking->customer_email,
-                    'name' => $booking->customer_name,
-                    'phone' => $booking->customer_phone,
+        try {
+            $intent = $stripe->paymentIntents->create([
+                'amount' => $amountSatang,
+                'currency' => $currency,
+                'payment_method_types' => ['promptpay'],
+                'confirm' => true,
+                'payment_method_data' => [
+                    'type' => 'promptpay',
+                    'billing_details' => [
+                        'email' => $booking->customer_email,
+                        'name' => $booking->customer_name,
+                        'phone' => $booking->customer_phone,
+                    ],
                 ],
-            ],
-            'receipt_email' => $booking->customer_email,
-            'metadata' => [
-                'booking_id' => (string) $booking->id,
-                'discount_code' => $discountCode,
-                'discount_amount' => (string) $discountAmount,
-            ],
-        ]);
+                'receipt_email' => $booking->customer_email,
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'discount_code' => $discountCode,
+                    'discount_amount' => (string) $discountAmount,
+                ],
+            ]);
+        } catch (InvalidRequestException $e) {
+            $message = strtolower($e->getMessage());
+
+            if (str_contains($message, 'payment_method_types') || str_contains($message, 'promptpay')) {
+                return back()->withErrors([
+                    'payment_channel' => $this->promptPayUnavailableMessage(),
+                ])->withInput();
+            }
+
+            throw $e;
+        }
 
         $booking->update([
             'stripe_payment_intent_id' => $intent->id,
@@ -355,7 +399,7 @@ class BookingController extends Controller
         }
 
         try {
-            $stripe = new StripeClient(env('STRIPE_SECRET'));
+            $stripe = new StripeClient(config('services.stripe.secret'));
             $intent = $stripe->paymentIntents->retrieve($booking->stripe_payment_intent_id, []);
             $data['stripe_status'] = $intent->status;
         } catch (\Throwable $e) {

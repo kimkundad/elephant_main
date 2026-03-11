@@ -37,6 +37,10 @@ return [
     'stripe' => [
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'enabled_payment_channels' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('STRIPE_ENABLED_PAYMENT_CHANNELS', 'card'))
+        ))),
     ],
 
     'resend' => [

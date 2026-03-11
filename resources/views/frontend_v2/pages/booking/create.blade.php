@@ -303,8 +303,11 @@
             <div style="margin-top:10px;">
               <label class="f-label">{{ __('booking.create.payment_method') }}</label>
               <select name="payment_channel" class="f-input" required>
-                <option value="card">{{ __('booking.create.payment_card') }}</option>
-                <option value="promptpay">{{ __('booking.create.payment_promptpay') }}</option>
+                @foreach ($availablePaymentChannels as $paymentChannel)
+                <option value="{{ $paymentChannel }}" @selected(old('payment_channel', $availablePaymentChannels[0] ?? 'card') === $paymentChannel)>
+                  {{ $paymentChannel === 'promptpay' ? __('booking.create.payment_promptpay') : __('booking.create.payment_card') }}
+                </option>
+                @endforeach
               </select>
             </div>
           </div>
