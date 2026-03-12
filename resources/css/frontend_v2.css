@@ -1,0 +1,3 @@
+/* Frontend V2 Vite entry.
+   Keep this layer minimal while legacy samet assets are still loaded.
+   Add V2-only overrides here first, then migrate old assets incrementally. */

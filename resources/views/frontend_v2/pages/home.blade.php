@@ -659,9 +659,7 @@
                   </div>
                   
                 </article>
-
             </section>
-
 
             <section class="main ">
                 <div class="our-facilities">
