@@ -68,10 +68,10 @@ Route::name('frontend.')->group(function () {
     Route::view('/terms', 'frontend_v2.pages.terms')->name('terms');
     Route::view('/policy', 'frontend_v2.pages.policy')->name('policy');
 
-    Route::view('/v2/what-to-bring', 'frontend_v2.pages.what-to-bring')->name('what_to_bring.v2');
-    Route::view('/v2/support-us', 'frontend_v2.pages.support-us')->name('support_us.v2');
-    Route::view('/v2/terms', 'frontend_v2.pages.terms')->name('terms.v2');
-    Route::view('/v2/policy', 'frontend_v2.pages.policy')->name('policy.v2');
+    Route::get('/v2/what-to-bring', fn () => redirect()->route('frontend.what_to_bring'))->name('what_to_bring.v2');
+    Route::get('/v2/support-us', fn () => redirect()->route('frontend.support_us'))->name('support_us.v2');
+    Route::get('/v2/terms', fn () => redirect()->route('frontend.terms'))->name('terms.v2');
+    Route::get('/v2/policy', fn () => redirect()->route('frontend.policy'))->name('policy.v2');
 
     // ตรวจสถานะ PromptPay (polling จากหน้า QR)
     Route::get('/booking/{booking}/payment-status', [FrontBookingController::class, 'paymentStatus'])
