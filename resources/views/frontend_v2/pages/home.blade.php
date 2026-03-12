@@ -8,8 +8,168 @@
 <style>
 .elephant-history{max-height:72px; overflow:hidden;}
 
+.hero-slider.hero-style{
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+
+.hero-discovery{
+    position: absolute;
+    left: 50%;
+    bottom: 200px;
+    transform: translateX(-50%);
+    width: min(960px, calc(100% - 40px));
+    z-index: 4;
+    text-align: center;
+}
+
+.hero-discovery__inner{
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.hero-discovery__title{
+    color: #fff;
+    font-size: 62px;
+    line-height: .98;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    margin: 0 0 22px;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+}
+
+.hero-discovery__search{
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, .96);
+    border-radius: 999px;
+    padding: 10px 10px 10px 26px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .18);
+}
+
+.hero-discovery__field{
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: #222;
+    font-size: 17px;
+    outline: none;
+}
+
+.hero-discovery__field::placeholder{
+    color: #777;
+}
+
+.hero-discovery__button{
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 999px;
+    background: #0f8a4a;
+    color: #fff;
+    font-weight: 700;
+    font-size: 17px;
+    padding: 16px 30px;
+    cursor: pointer;
+    transition: transform .2s ease, background .2s ease;
+}
+
+.hero-discovery__button:hover{
+    background: #0c733e;
+    transform: translateY(-1px);
+}
+
+.hero-discovery__autocomplete{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(760px, calc(100vw - 24px));
+    z-index: 9999;
+    background: rgba(255, 255, 255, .98);
+    border-radius: 26px;
+    padding: 16px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .2);
+    text-align: left;
+}
+
+.box_primary.description{
+    position: relative;
+    z-index: 1;
+}
+
+.hero-discovery__autocomplete[hidden]{
+    display: none;
+}
+
+.hero-discovery__autocomplete-title{
+    font-size: 14px;
+    color: #526072;
+    margin-bottom: 10px;
+    padding: 0 6px;
+}
+
+.hero-discovery__suggestions{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 320px;
+    overflow: auto;
+}
+
+.hero-discovery__suggestion{
+    width: 100%;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+}
+
+.hero-discovery__suggestion:hover,
+.hero-discovery__suggestion.is-active{
+    background: #eef2f5;
+}
+
+.hero-discovery__suggestion-icon{
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: #dfe4ea;
+    color: #274160;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    font-size: 20px;
+}
+
+.hero-discovery__suggestion-label{
+    display: block;
+    font-size: 20px;
+    line-height: 1.15;
+    color: #13233a;
+    font-weight: 700;
+}
+
+.hero-discovery__suggestion-sub{
+    display: block;
+    font-size: 14px;
+    color: #607086;
+    margin-top: 4px;
+}
+
 #home-content-1 {
     padding: 90px 0 40px;
+    position: relative;
+    z-index: 1;
 }
 
 #home-content-1 .welcome-intro-row {
@@ -143,24 +303,32 @@
 @media (min-width: 991px) {
     #home-content-1 .welcome-intro-row {
         min-height: 520px;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1380px;
     }
 
     #home-content-1 .welcome-intro-copy {
-        flex: 0 0 42%;
-        max-width: 42%;
+        flex: 0 0 38%;
+        max-width: 38%;
+        padding-right: 36px;
     }
 
     #home-content-1 .welcome-intro-image {
-        flex: 0 0 29%;
-        max-width: 29%;
+        flex: 0 0 22%;
+        max-width: 22%;
+        padding-left: 18px;
+        padding-right: 18px;
     }
 
     #home-content-1 .welcome-intro-image-a {
         margin-left: 0;
+        margin-right: 14px;
     }
 
     #home-content-1 .welcome-intro-copy .alignc {
-        text-align: center;
+        text-align: right;
         margin-left: 0;
         margin-right: auto;
         max-width: 500px;
@@ -192,6 +360,7 @@
 
     #home-content-1 .welcome-intro-image-b {
         margin-top: -24px;
+        margin-left: 14px;
     }
 }
 
@@ -230,6 +399,61 @@
 }
 
 @media (max-width: 767px) {
+    .hero-discovery{
+        width: calc(100% - 24px);
+        bottom: 34px;
+    }
+
+    .hero-discovery__title{
+        font-size: 34px;
+        margin-bottom: 14px;
+    }
+
+    .hero-discovery__search{
+        flex-direction: column;
+        align-items: stretch;
+        border-radius: 24px;
+        padding: 16px;
+        gap: 10px;
+    }
+
+    .hero-discovery__field{
+        font-size: 15px;
+        padding: 2px 0;
+    }
+
+    .hero-discovery__button{
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 15px;
+    }
+
+    .hero-discovery__autocomplete{
+        border-radius: 20px;
+        padding: 12px;
+    }
+
+    .hero-discovery__suggestion{
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .hero-discovery__suggestion-icon{
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        border-radius: 12px;
+        font-size: 18px;
+    }
+
+    .hero-discovery__suggestion-label{
+        font-size: 16px;
+    }
+
+    .hero-discovery__suggestion-sub{
+        font-size: 12px;
+    }
+
     #home-content-1 {
         padding: 56px 0 10px;
     }
@@ -322,6 +546,7 @@
         'v2.home.reviews.background',
         'https://www.phuketelephantsanctuary.org/wp-content/uploads/sites/7659/2025/03/phuketelephantsanctuary_faq_updated_1876a9.jpg'
     );
+    $heroSearchValue = request()->query('q', '');
 @endphp
  
     <section class="hero-slider hero-style">
@@ -330,18 +555,52 @@
                     @if($heroPoster) poster="{{ $heroPoster }}" @endif
                     id="index-video" type="video/mp4">
                 </video>
-                <article class="text-swiper">
-                    <div class="slide-title">
-                        <label>{{ \App\Models\SiteText::getValue('home.hero.slide_title', 'Small Elephants') }}</label>
-                    </div>
-                    <div class="slide-text">
-                        <p>{{ \App\Models\SiteText::getValue('home.hero.slide_subtitle', 'บ้านที่ปลอดภัยสำหรับช้างที่ได้รับการช่วยเหลือ — และประสบการณ์ที่ทำให้คุณรักช้างมากขึ้นในทุกก้าวที่เดิน') }}</p>
-                    </div>
-                </article>
+               
                 
-                
+
+                <div class="hero-discovery">
+                    <div class="hero-discovery__inner">
+                        <h1 class="hero-discovery__title">{{ \App\Models\SiteText::getValue('home.hero.slide_title', 'Small Elephants') }}</h1>
+                        <form class="hero-discovery__search" method="GET" action="{{ route('frontend.program') }}">
+                            <input type="hidden" name="tags[]" id="hero-tag-slug" value="">
+                            <input
+                                id="hero-search-input"
+                                class="hero-discovery__field"
+                                type="text"
+                                name="q"
+                                value="{{ $heroSearchValue }}"
+                                placeholder="{{ \App\Models\SiteText::getValue('home.hero.discovery_placeholder', 'Find places and things to do') }}"
+                                autocomplete="off"
+                                aria-label="Search programs"
+                            >
+                            <button class="hero-discovery__button" type="submit">
+                                {{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <div class="hero-discovery__autocomplete" id="hero-autocomplete" hidden>
+            <div class="hero-discovery__autocomplete-title">{{ app()->getLocale() === 'en' ? 'Suggestions' : 'คำแนะนำ' }}</div>
+            <div class="hero-discovery__suggestions" id="hero-suggestions">
+                @foreach(($heroTags ?? collect()) as $tag)
+                    <button
+                        type="button"
+                        class="hero-discovery__suggestion"
+                        data-tag-slug="{{ $tag->slug }}"
+                        data-tag-label="{{ $tag->label }}"
+                    >
+                        <span class="hero-discovery__suggestion-icon">⌖</span>
+                        <span>
+                            <span class="hero-discovery__suggestion-label">{{ $tag->label }}</span>
+                            <span class="hero-discovery__suggestion-sub">{{ app()->getLocale() === 'en' ? 'Tour category' : 'หมวดหมู่กิจกรรม' }}</span>
+                        </span>
+                    </button>
+                @endforeach
+            </div>
+        </div>
 
         <main>
             <section class="box_primary description">
@@ -552,6 +811,135 @@
         @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+  const heroSearchInput = document.getElementById('hero-search-input');
+  const heroAutocomplete = document.getElementById('hero-autocomplete');
+  const heroSuggestions = Array.from(document.querySelectorAll('.hero-discovery__suggestion'));
+  const heroTagSlug = document.getElementById('hero-tag-slug');
+  const heroSearchForm = heroSearchInput ? heroSearchInput.closest('form') : null;
+  let activeSuggestionIndex = -1;
+  let heroAutoSubmitTimer = null;
+
+  const positionHeroAutocomplete = () => {
+    if (!heroAutocomplete || !heroSearchForm || heroAutocomplete.hidden) return;
+    const rect = heroSearchForm.getBoundingClientRect();
+    const viewportPadding = window.innerWidth <= 767 ? 12 : 20;
+    const width = Math.min(rect.width, window.innerWidth - (viewportPadding * 2));
+    const left = Math.min(
+      Math.max(rect.left + window.scrollX, window.scrollX + viewportPadding),
+      window.scrollX + window.innerWidth - width - viewportPadding
+    );
+
+    heroAutocomplete.style.top = `${rect.bottom + window.scrollY + 12}px`;
+    heroAutocomplete.style.left = `${left}px`;
+    heroAutocomplete.style.width = `${width}px`;
+  };
+
+  const closeHeroAutocomplete = () => {
+    if (!heroAutocomplete) return;
+    heroAutocomplete.hidden = true;
+    activeSuggestionIndex = -1;
+    heroSuggestions.forEach((suggestion) => suggestion.classList.remove('is-active'));
+  };
+
+  const openHeroAutocomplete = () => {
+    if (!heroAutocomplete) return;
+    heroAutocomplete.hidden = false;
+    positionHeroAutocomplete();
+  };
+
+  const updateHeroSuggestions = () => {
+    if (!heroSearchInput || !heroAutocomplete) return;
+    const keyword = heroSearchInput.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    heroSuggestions.forEach((suggestion) => {
+      const label = (suggestion.dataset.tagLabel || '').toLowerCase();
+      const slug = (suggestion.dataset.tagSlug || '').toLowerCase();
+      const matched = keyword === '' || label.includes(keyword) || slug.includes(keyword);
+      suggestion.hidden = !matched;
+      suggestion.classList.remove('is-active');
+      if (matched) visibleCount += 1;
+    });
+
+    heroAutocomplete.hidden = visibleCount === 0;
+    activeSuggestionIndex = -1;
+    positionHeroAutocomplete();
+  };
+
+  const selectHeroSuggestion = (suggestion) => {
+    if (!heroSearchInput || !heroTagSlug || !suggestion) return;
+    heroSearchInput.value = suggestion.dataset.tagLabel || '';
+    heroTagSlug.value = suggestion.dataset.tagSlug || '';
+    closeHeroAutocomplete();
+
+    if (heroAutoSubmitTimer) {
+      window.clearTimeout(heroAutoSubmitTimer);
+    }
+
+    heroAutoSubmitTimer = window.setTimeout(() => {
+      heroSearchForm?.submit();
+    }, 350);
+  };
+
+  if (heroSearchInput && heroAutocomplete && heroTagSlug && heroSearchForm) {
+    heroSearchInput.addEventListener('focus', () => {
+      updateHeroSuggestions();
+      openHeroAutocomplete();
+    });
+
+    heroSearchInput.addEventListener('input', () => {
+      heroTagSlug.value = '';
+      updateHeroSuggestions();
+    });
+
+    heroSearchInput.addEventListener('keydown', (event) => {
+      const visibleSuggestions = heroSuggestions.filter((suggestion) => !suggestion.hidden);
+      if (!visibleSuggestions.length) return;
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        activeSuggestionIndex = (activeSuggestionIndex + 1) % visibleSuggestions.length;
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        activeSuggestionIndex = activeSuggestionIndex <= 0 ? visibleSuggestions.length - 1 : activeSuggestionIndex - 1;
+      } else if (event.key === 'Enter' && activeSuggestionIndex >= 0) {
+        event.preventDefault();
+        selectHeroSuggestion(visibleSuggestions[activeSuggestionIndex]);
+        return;
+      } else if (event.key === 'Escape') {
+        closeHeroAutocomplete();
+        return;
+      } else {
+        return;
+      }
+
+      visibleSuggestions.forEach((suggestion, index) => {
+        suggestion.classList.toggle('is-active', index === activeSuggestionIndex);
+      });
+    });
+
+    heroSuggestions.forEach((suggestion) => {
+      suggestion.addEventListener('click', () => selectHeroSuggestion(suggestion));
+    });
+
+    heroSearchForm.addEventListener('submit', () => {
+      if (!heroTagSlug.value.trim()) {
+        heroSearchForm.querySelectorAll('input[name="tags[]"]').forEach((input) => {
+          if (input !== heroTagSlug) input.remove();
+        });
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!heroSearchForm.contains(event.target) && !heroAutocomplete.contains(event.target)) {
+        closeHeroAutocomplete();
+      }
+    });
+
+    window.addEventListener('resize', positionHeroAutocomplete);
+    window.addEventListener('scroll', positionHeroAutocomplete, { passive: true });
+  }
+
   const sliderEl = document.getElementById('google-review-slider');
   const reviewButton = document.getElementById('gr-btn');
   if (!sliderEl) return;

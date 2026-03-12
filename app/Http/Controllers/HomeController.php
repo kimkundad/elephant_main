@@ -53,6 +53,7 @@ class HomeController extends Controller
 
     public function programV2(Request $request)
     {
+        $searchTerm = trim((string) $request->query('q', ''));
         $selectedTags = collect($request->query('tags', []))
             ->filter(fn ($tag) => is_string($tag) && $tag !== '')
             ->values()
@@ -67,10 +68,22 @@ class HomeController extends Controller
         $tours = Tour::query()
             ->where('is_active', 1)
             ->with('tags')
+            ->when($searchTerm !== '', function ($query) use ($searchTerm) {
+                $query->where(function ($inner) use ($searchTerm) {
+                    $inner->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                        ->orWhereHas('tags', function ($tagQuery) use ($searchTerm) {
+                            $tagQuery->where('name_th', 'like', '%' . $searchTerm . '%')
+                                ->orWhere('name_en', 'like', '%' . $searchTerm . '%')
+                                ->orWhere('slug', 'like', '%' . $searchTerm . '%');
+                        });
+                });
+            })
             ->orderByDesc('id')
             ->get();
 
-        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags'));
+        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags', 'searchTerm'));
     }
 
     public function home()
@@ -98,7 +111,13 @@ class HomeController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('frontend_v2.pages.home', compact('tours', 'elephants'));
+        $heroTags = TourTag::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        return view('frontend_v2.pages.home', compact('tours', 'elephants', 'heroTags'));
     }
 
 
