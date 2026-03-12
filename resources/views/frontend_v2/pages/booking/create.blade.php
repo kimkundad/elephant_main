@@ -38,13 +38,16 @@
   background:#f7f5f1;
   padding:70px 0 90px;
 }
+.booking-v2 .container{
+  padding: 0 16px;
+}
 .booking-hero{
   display:flex;
   gap:24px;
   align-items:center;
   background:#fff;
   border-radius:18px;
-  padding:18px;
+  padding:15px;
   box-shadow:0 18px 40px rgba(0,0,0,.08);
   border:1px solid rgba(0,0,0,.06);
   margin-bottom:24px;
@@ -73,6 +76,10 @@
   border:1px solid rgba(0,0,0,.06);
   box-shadow:0 14px 30px rgba(0,0,0,.06);
   margin-bottom:18px;
+}
+.booking-left .card,
+.booking-right .card{
+  padding: 12px;
 }
 .card-title{
   font-weight:800;
@@ -107,7 +114,26 @@
   display:grid; grid-template-columns: 1fr 1fr; gap:14px;
 }
 .checkbox{
-  display:flex; align-items:center; gap:8px; margin-top:10px; font-size:14px; color:#6b6156;
+  display:flex; align-items:flex-start; gap:8px; margin-top:10px; font-size:14px; color:#6b6156;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: 25px
+}
+.checkbox input{
+  flex: 0 0 auto;
+  margin-top: 3px;
+  width: 14px;
+  height: 14px;
+}
+.checkbox span,
+.checkbox .checkbox-label{
+  min-width: 0;
+  flex: 1 1 auto;
+  display: block;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.5;
 }
 .booking-right .sticky{
   position:sticky; top:90px;
@@ -130,6 +156,11 @@
   .booking-hero-img{ width:100%; height:200px; }
   .booking-grid{ grid-template-columns: 1fr; }
   .grid-2{ grid-template-columns: 1fr; }
+}
+@media (max-width: 575px){
+  .booking-hero-title{ font-size:20px; }
+  .booking-hero-sub{ font-size:12px; }
+  .booking-hero-desc{ font-size:10px; }
 }
 @media (min-width: 1200px) {
     .container, .elementor-section.elementor-section-boxed > .elementor-container {

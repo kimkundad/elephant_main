@@ -7,6 +7,308 @@
 @push('styles')
 <style>
 .elephant-history{max-height:72px; overflow:hidden;}
+
+#home-content-1 {
+    padding: 90px 0 40px;
+}
+
+#home-content-1 .welcome-intro-row {
+    align-items: center;
+}
+
+#home-content-1 .welcome-intro-copy {
+    order: 1;
+}
+
+#home-content-1 .welcome-intro-copy .alignc {
+    text-align: right;
+    max-width: 460px;
+    margin-left: auto;
+}
+
+#home-content-1 .welcome-intro-copy .smalltitle {
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: #b49a72;
+    font-size: 12px;
+}
+
+#home-content-1 .welcome-intro-copy .home-title {
+    font-size: 56px !important;
+    line-height: 1.08;
+    margin-bottom: 24px;
+}
+
+#home-content-1 .welcome-intro-copy p {
+    font-size: 18px;
+    line-height: 1.9;
+    color: #6f6b66;
+    margin-bottom: 0;
+}
+
+#home-content-1 .welcome-intro-actions {
+    display: flex;
+        justify-content: end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 34px;
+}
+
+#home-content-1 .welcome-intro-about {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+    padding: 15px 26px;
+    border-radius: 8px;
+    background: #c49a5a;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 18px;
+    transition: background .2s ease;
+}
+
+#home-content-1 .welcome-intro-about:hover {
+    background: #b48949;
+    color: #fff;
+}
+
+#home-content-1 .welcome-intro-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    color: #1c1a17;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+#home-content-1 .welcome-intro-phone:hover {
+    color: #1c1a17;
+    text-decoration: none;
+}
+
+#home-content-1 .welcome-intro-phone-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    line-height: 1;
+    flex: 0 0 58px;
+}
+
+#home-content-1 .welcome-intro-phone-icon svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+#home-content-1 .welcome-intro-phone-label {
+    font-size: 18px;
+    letter-spacing: .01em;
+}
+
+#home-content-1 .welcome-intro-image {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+#home-content-1 .welcome-intro-image img {
+    width: 100%;
+    max-width: 290px;
+    height: 440px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+#home-content-1 .welcome-intro-image-a {
+    order: 2;
+}
+
+#home-content-1 .welcome-intro-image-b {
+    order: 3;
+}
+
+@media (min-width: 991px) {
+    #home-content-1 .welcome-intro-row {
+        min-height: 520px;
+    }
+
+    #home-content-1 .welcome-intro-copy {
+        flex: 0 0 42%;
+        max-width: 42%;
+    }
+
+    #home-content-1 .welcome-intro-image {
+        flex: 0 0 29%;
+        max-width: 29%;
+    }
+
+    #home-content-1 .welcome-intro-image-a {
+        margin-left: 0;
+    }
+
+    #home-content-1 .welcome-intro-copy .alignc {
+        text-align: center;
+        margin-left: 0;
+        margin-right: auto;
+        max-width: 500px;
+    }
+
+    #home-content-1 .welcome-intro-copy .home-title {
+        font-size: 64px !important;
+        line-height: 1.02;
+    }
+
+    #home-content-1 .welcome-intro-copy p {
+        max-width: 460px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #home-content-1 .welcome-intro-actions {
+        justify-content: center;
+    }
+
+    #home-content-1 .welcome-intro-image img {
+        max-width: 250px;
+        height: 440px;
+    }
+
+    #home-content-1 .welcome-intro-image-a {
+        margin-top: 72px;
+    }
+
+    #home-content-1 .welcome-intro-image-b {
+        margin-top: -24px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 990px) {
+    #home-content-1 {
+        padding: 72px 0 24px;
+    }
+
+    #home-content-1 .welcome-intro-copy {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 36px;
+    }
+
+    #home-content-1 .welcome-intro-copy .alignc {
+        max-width: 100%;
+    }
+
+    #home-content-1 .welcome-intro-copy .home-title {
+        font-size: 46px !important;
+    }
+
+    #home-content-1 .welcome-intro-image {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    #home-content-1 .welcome-intro-image img {
+        max-width: 100%;
+        height: 340px;
+    }
+
+    #home-content-1 .welcome-intro-image-a {
+        margin-top: 36px;
+    }
+}
+
+@media (max-width: 767px) {
+    #home-content-1 {
+        padding: 56px 0 10px;
+    }
+     .gr-title {
+    font-size: 32px;
+}
+
+    #home-content-1 .welcome-intro-copy,
+    #home-content-1 .welcome-intro-image {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    #home-content-1 .welcome-intro-copy {
+        margin-bottom: 28px;
+    }
+
+    #home-content-1 .welcome-intro-copy .alignc {
+        max-width: 100%;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #home-content-1 .welcome-intro-copy .home-title {
+        font-size: 34px !important;
+        margin-bottom: 16px;
+    }
+
+    #home-content-1 .welcome-intro-copy p {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    #home-content-1 .welcome-intro-actions {
+        gap: 14px;
+        margin-top: 24px;
+    }
+
+    #home-content-1 .welcome-intro-about {
+        min-width: 136px;
+        padding: 13px 20px;
+        font-size: 16px;
+    }
+
+    #home-content-1 .welcome-intro-phone {
+        font-size: 16px;
+    }
+
+    #home-content-1 .welcome-intro-phone-icon {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+        font-size: 20px;
+    }
+
+    #home-content-1 .welcome-intro-image {
+        margin-bottom: 18px;
+    }
+
+    #home-content-1 .welcome-intro-image img {
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 5;
+    }
+
+    .single-post-content img,
+    .custom-page-template img {
+        width: 100%;
+        border-radius: 0.375rem;
+        box-sizing: border-box;
+    }
+
+}
+
+.elephant-history{
+    overflow: hidden;
+    height: 70px;
+}
 </style>
 @endpush
 
@@ -49,33 +351,41 @@
                   
                   <div id="home-content-1" class="home-section home-section-1">
                     <div class="">
-                        <div class="row align-items-center" style="display: flex; flex-wrap: wrap;">
+                        <div class="row align-items-center welcome-intro-row" style="display: flex; flex-wrap: wrap;">
 
-                          <div class="col-md-6 mobile-order2">
-                              <div class="row">
-                                <div class="col-6 col-md-6 margin-tn-30">
+                          
+
+                          <div class="col-lg-3 offset-lg-1 col-md-6 mb-20 mt-45 welcome-intro-image welcome-intro-image-a">
                                     <img src="{{ $welcomeImageOne }}" alt="Welcome 1">
                                 </div>
                                 <!-- /col-md-6 -->
-                                <div class="col-6 col-md-6">
+                                <div class="col-lg-3 col-md-6 mb-20 welcome-intro-image welcome-intro-image-b">
                                     <img src="{{ $welcomeImageTwo }}" alt="Welcome 2">
                                 </div>
-                                <!-- /col-md-6 -->
-                              </div>
-                              <!-- /row -->
-                          </div>
 
 
                           <!-- <div class="col-md-3">
                               <img src="./index_files/images/welcome-2.png" alt="Welcome 1">
                           </div> -->
                           <!-- /col-md-3 -->
-                          <div class="col-md-6 mobile-order1">
+                          <div class="col-lg-5 col-md-12 mb-15 welcome-intro-copy">
                               <div class="alignc">
                                 <div class="smalltitle margin-b16">{{ \App\Models\SiteText::getValue('home.welcome.kicker', 'Welcome') }}</div>
                                 <h2 class="home-title" style="font-size: 40px;">{{ \App\Models\SiteText::getValue('home.welcome.title', 'Elephants in Phuket') }}</h2>
                                 <p>{{ \App\Models\SiteText::getValue('home.welcome.body', 'Experience an unforgettable moment with elephants, learning their lives and ethical care up close.') }}</p>
-                                
+                                <div class="welcome-intro-actions">
+                                    <a href="{{ route('frontend.about.v2') }}" class="welcome-intro-about">
+                                        {{ \App\Models\SiteText::getValue('home.welcome.about_cta', 'About') }}
+                                    </a>
+                                    <a href="tel:{{ $siteSetting->phone ?? '' }}" class="welcome-intro-phone">
+                                        <span class="welcome-intro-phone-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none">
+                                                <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20a1 1 0 0 1-1 1C10.06 21 3 13.94 3 5a1 1 0 0 1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.12.35.03.74-.24 1.02l-2.21 2.2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                        <span class="welcome-intro-phone-label">{{ $siteSetting->phone ?? '+1 800 000 111' }}</span>
+                                    </a>
+                                </div>
                               </div>
                           </div>
                           <!-- /col-md-6 -->
@@ -222,9 +532,7 @@
                     </div>
                   </div>
 
-                  <a id="gr-btn" href="#" target="_blank" class="gr-btn">
-                    Review us on Google
-                  </a>
+                  <a id="gr-btn" href="#" target="_blank" class="gr-btn">Review us on Google</a>
                 </div>
 
                 {{-- Slider --}}
@@ -245,7 +553,16 @@
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   const sliderEl = document.getElementById('google-review-slider');
+  const reviewButton = document.getElementById('gr-btn');
   if (!sliderEl) return;
+
+  const syncReviewButtonLabel = () => {
+    if (!reviewButton) return;
+    reviewButton.textContent = window.innerWidth <= 767 ? 'Review' : 'Review us on Google';
+  };
+
+  syncReviewButtonLabel();
+  window.addEventListener('resize', syncReviewButtonLabel);
 
   try {
     const res = await fetch('/api/google-reviews');

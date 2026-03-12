@@ -1,14 +1,20 @@
-<div class="book-mobile">
-        <a href="https://hotels.cloudbeds.com/reservation/5tFGZz" aria-label="Book Now" target="_blank">
-            Book Now <i class="icon-arrow-right"></i>
-        </a>
-    </div>
 @php
+    $hideBookMobile = request()->routeIs('frontend.booking.create')
+        || request()->routeIs('frontend.booking.create.v2')
+        || request()->is('booking')
+        || request()->is('v2/booking');
     $menuActiveImage = \App\Models\PageMedia::url('v2.header.menu.active_image', asset('samet/assets/cover-active.jpg'));
     $menuHoverImage = \App\Models\PageMedia::url('v2.header.menu.hover_image', asset('samet/assets/gallery.jpg'));
     $menuActiveAlt = \App\Models\PageMedia::alt('v2.header.menu.active_image', 'Small Elephants');
     $menuHoverAlt = \App\Models\PageMedia::alt('v2.header.menu.hover_image', 'Small Elephants');
 @endphp
+@unless($hideBookMobile)
+<div class="book-mobile">
+        <a href="{{ url('/programs') }}" aria-label="Book Now" >
+            Book Now
+        </a>
+    </div>
+@endunless
 <header class="scroll_nonefix  v2-header">
     <article class="navbar-header">
         <div class="pull-left">
@@ -58,7 +64,7 @@
                     <nav>
                         <ul>
                             <li class="nav-link " data-src="/assets/images/cover-menu/room.jpg">
-                                <a href="{{ route('frontend.about.v2') }}">
+                                <a href="{{ route('frontend.about') }}">
                                     <div class="real">About</div>
                                     <div class="hover">
                                         <span>About</span>
@@ -67,7 +73,7 @@
                                 </a>
                             </li>
                             <li class="nav-link " data-src="/assets/images/cover-menu/experience.jpg">
-                                <a href="{{ route('frontend.program.v2') }}">
+                                <a href="{{ route('frontend.program') }}">
                                     <div class="real">Programs</div>
                                     <div class="hover">
                                         <span>Programs</span>
@@ -76,7 +82,7 @@
                                 </a>
                             </li>
                             <li class="nav-link " data-src="/assets/images/cover-menu/contact.jpg">
-                                <a href="{{ route('frontend.contact.v2') }}">
+                                <a href="{{ route('frontend.contact') }}">
                                     <div class="real">Contact</div>
                                     <div class="hover">
                                         <span>Contact</span>

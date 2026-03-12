@@ -77,6 +77,7 @@
 @media (max-width: 575px){
   .about-hero{ min-height: 480px; }
   .about-hero__title{ font-size:34px; }
+  .program-title{ font-size:24px; }
 }
 
 @media (min-width: 1200px) {
@@ -308,7 +309,7 @@
   .program-item:nth-child(even) .program-content{
     order:unset;
   }
-  .program-title{ font-size:28px; }
+  .program-title{ font-size:22px; }
   .program-filter__result{ font-size:16px; }
 }
 </style>

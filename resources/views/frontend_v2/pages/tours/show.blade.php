@@ -157,6 +157,20 @@
 @media (max-width: 575px){
   .tour-gallery{ grid-template-columns: 1fr; }
   .tour-gimg{ height:200px; }
+  .tour-title{ font-size: 26px; }
+  .session-card.session-card-link{
+    padding: 10px 12px;
+  }
+  .session-time{
+    min-width: 68px;
+    font-size: 13px;
+  }
+  .session-title{ font-size:15px; }
+  .session-sub{ font-size: 11px; }
+  .session-card.session-card-link .session-btn{
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
 @media (min-width: 1200px) {
     .container, .elementor-section.elementor-section-boxed > .elementor-container {
@@ -238,7 +252,7 @@
       </div>
 
       {{-- RIGHT: Details --}}
-      <div style="padding: 15px">
+      <div >
         <div class="tour-detail-head">
           <div class="tour-date-line">
             {{ \Carbon\Carbon::parse($selectedDate)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}
