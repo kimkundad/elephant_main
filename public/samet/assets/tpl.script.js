@@ -207,17 +207,24 @@ $(document).ready(function () {
 
         if ($slickElement.children('.item').length) {
             $slickElement.slick({
-                infinite: false,
-                dots: false,
+                infinite: true,
+                dots: true,
                 arrows: true,
-                autoplay: false,
-                autoplaySpeed: 3000,
-                speed: 2000,
-                slidesToShow: 1,
+                autoplay: true,
+                autoplaySpeed: 4200,
+                speed: 900,
+                slidesToShow: 3,
                 slidesToScroll: 1,
                 prevArrow: '<div><span class="slick-icon slick-prev" aria-hidden="true">&#8592;</span></div>',
                 nextArrow: '<div><span class="slick-icon slick-next" aria-hidden="true">&#8594;</span></div>',
                 responsive: [
+                    {
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1,
+                        }
+                    },
                     {
                         breakpoint: 992,
                         settings: {

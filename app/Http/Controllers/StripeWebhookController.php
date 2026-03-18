@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use App\Support\IntegrationLogger;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Encoding\Encoding;
 use App\Mail\BookingConfirmedMail;
-use Illuminate\Support\Facades\Log;
+use App\Providers\LineServiceProvider;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
@@ -20,6 +22,11 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
+        IntegrationLogger::info('stripe', 'webhook_received', 'STRIPE WEBHOOK RECEIVED', [
+            'has_signature' => !empty($sigHeader),
+            'payload_length' => strlen($payload),
+        ]);
+
         try {
             $event = Webhook::constructEvent(
                 $payload,
@@ -27,9 +34,13 @@ class StripeWebhookController extends Controller
                 env('STRIPE_WEBHOOK_SECRET')
             );
         } catch (\Throwable $e) {
-            Log::error('Stripe webhook invalid signature', ['error' => $e->getMessage()]);
+            IntegrationLogger::error('stripe', 'invalid_signature', 'Stripe webhook invalid signature', ['error' => $e->getMessage()]);
             return response('Invalid signature', 400);
         }
+
+        IntegrationLogger::info('stripe', 'webhook_event', 'STRIPE WEBHOOK EVENT', [
+            'type' => $event->type,
+        ]);
 
         $isTestMode = str_starts_with((string) env('STRIPE_SECRET'), 'sk_test_');
 
@@ -41,8 +52,14 @@ class StripeWebhookController extends Controller
             $session = $event->data->object;
             $bookingId = $session->metadata->booking_id ?? null;
 
+            IntegrationLogger::info('stripe', 'checkout_session_completed', 'STRIPE WEBHOOK MATCHED', [
+                'type' => 'checkout.session.completed',
+                'booking_id' => $bookingId,
+                'stripe_session_id' => $session->id ?? null,
+            ]);
+
             if (!$bookingId) {
-                Log::warning('checkout.session.completed missing booking_id', [
+                IntegrationLogger::warning('stripe', 'checkout_missing_booking_id', 'checkout.session.completed missing booking_id', [
                     'stripe_session_id' => $session->id ?? null
                 ]);
                 return response('ok', 200);
@@ -51,7 +68,7 @@ class StripeWebhookController extends Controller
             $booking = Booking::find($bookingId);
 
             if (!$booking) {
-                Log::warning('Booking not found', [
+                IntegrationLogger::warning('stripe', 'booking_not_found', 'Booking not found', [
                     'booking_id' => $bookingId,
                     'stripe_session_id' => $session->id ?? null
                 ]);
@@ -73,10 +90,15 @@ class StripeWebhookController extends Controller
         if ($isTestMode && $event->type === 'payment_intent.requires_action') {
             $pi = $event->data->object;
 
+            IntegrationLogger::info('stripe', 'payment_intent_requires_action', 'STRIPE WEBHOOK MATCHED', [
+                'type' => 'payment_intent.requires_action',
+                'pi_id' => $pi->id ?? null,
+            ]);
+
             $booking = Booking::where('stripe_payment_intent_id', $pi->id)->first();
 
             if (!$booking) {
-                Log::warning('Test requires_action: Booking not found by stripe_payment_intent_id', [
+                IntegrationLogger::warning('stripe', 'test_requires_action_booking_not_found', 'Test requires_action: Booking not found by stripe_payment_intent_id', [
                     'pi_id' => $pi->id ?? null
                 ]);
                 return response('ok', 200);
@@ -99,6 +121,12 @@ class StripeWebhookController extends Controller
 
             $bookingId = $pi->metadata->booking_id ?? null;
 
+            IntegrationLogger::info('stripe', 'payment_intent_succeeded', 'STRIPE WEBHOOK MATCHED', [
+                'type' => 'payment_intent.succeeded',
+                'booking_id' => $bookingId,
+                'pi_id' => $pi->id ?? null,
+            ]);
+
             $booking = null;
 
             if ($bookingId) {
@@ -111,7 +139,7 @@ class StripeWebhookController extends Controller
             }
 
             if (!$booking) {
-                Log::warning('payment_intent.succeeded: Booking not found', [
+                IntegrationLogger::warning('stripe', 'payment_intent_succeeded_booking_not_found', 'payment_intent.succeeded: Booking not found', [
                     'booking_id' => $bookingId,
                     'pi_id' => $pi->id ?? null
                 ]);
@@ -134,6 +162,12 @@ class StripeWebhookController extends Controller
             $pi = $event->data->object;
             $bookingId = $pi->metadata->booking_id ?? null;
 
+            IntegrationLogger::info('stripe', 'payment_intent_failed', 'STRIPE WEBHOOK MATCHED', [
+                'type' => 'payment_intent.payment_failed',
+                'booking_id' => $bookingId,
+                'pi_id' => $pi->id ?? null,
+            ]);
+
             $booking = null;
 
             if ($bookingId) {
@@ -151,7 +185,7 @@ class StripeWebhookController extends Controller
                     $booking->save();
                 }
             } else {
-                Log::warning('payment_failed: Booking not found', [
+                IntegrationLogger::warning('stripe', 'payment_failed_booking_not_found', 'payment_failed: Booking not found', [
                     'booking_id' => $bookingId,
                     'pi_id' => $pi->id ?? null
                 ]);
@@ -186,6 +220,7 @@ class StripeWebhookController extends Controller
         // ถ้าเคยส่งเมลแล้ว -> save update แล้วจบ
         if ($booking->confirmation_email_sent_at) {
             $booking->save();
+            $this->notifyLinePaymentOnce($booking);
             return;
         }
 
@@ -211,9 +246,10 @@ class StripeWebhookController extends Controller
         $to = $booking->customer_email ?? null;
 
         if (!$to) {
-            Log::error('Cannot send email: customer_email is null', [
+            IntegrationLogger::error('stripe', 'confirmation_email_missing', 'Cannot send email: customer_email is null', [
                 'booking_id' => $booking->id
             ]);
+            $this->notifyLinePaymentOnce($booking);
             return;
         }
 
@@ -227,10 +263,94 @@ class StripeWebhookController extends Controller
             $booking->save();
         } catch (\Throwable $e) {
             // ถ้าส่งเมลไม่สำเร็จ อย่า mark ว่าส่งแล้ว
-            Log::error('Send email failed', [
+            IntegrationLogger::error('stripe', 'confirmation_email_failed', 'Send email failed', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage()
             ]);
         }
+        $this->notifyLinePaymentOnce($booking);
+    }
+
+    private function notifyLinePaymentOnce(Booking $booking): void
+    {
+        if (!config('services.line.enabled')) {
+            IntegrationLogger::info('line', 'payment_notify_skipped', 'LINE PAYMENT NOTIFY SKIPPED', [
+                'booking_id' => $booking->id,
+                'reason' => 'line_disabled',
+            ]);
+            return;
+        }
+
+        $groupId = trim((string) config('services.line.payment_group_id'));
+        if ($groupId === '') {
+            IntegrationLogger::warning('line', 'payment_notify_skipped', 'LINE PAYMENT NOTIFY SKIPPED', [
+                'booking_id' => $booking->id,
+                'reason' => 'missing_target',
+            ]);
+            return;
+        }
+
+        $cacheKey = 'booking_paid_line_notified:' . $booking->id;
+        if (Cache::has($cacheKey)) {
+            IntegrationLogger::info('line', 'payment_notify_skipped', 'LINE PAYMENT NOTIFY SKIPPED', [
+                'booking_id' => $booking->id,
+                'reason' => 'already_notified',
+                'cache_key' => $cacheKey,
+            ]);
+            return;
+        }
+
+        $booking->loadMissing(['tour', 'session']);
+
+        $message = $this->buildLinePaymentMessage($booking);
+        IntegrationLogger::info('line', 'payment_notify_attempt', 'LINE PAYMENT NOTIFY ATTEMPT', [
+            'booking_id' => $booking->id,
+            'target_type' => 'group',
+            'target_value' => $groupId,
+            'payment_status' => $booking->payment_status,
+            'payment_channel' => $booking->payment_channel,
+        ]);
+
+        $result = LineServiceProvider::sendToGroupId($groupId, $message);
+
+        if ($result === null) {
+            IntegrationLogger::warning('line', 'payment_notify_failed', 'LINE PAYMENT NOTIFY FAILED', [
+                'booking_id' => $booking->id,
+                'target_type' => 'group',
+            ]);
+            return;
+        }
+
+        Cache::put($cacheKey, now()->toDateTimeString(), now()->addYear());
+
+        IntegrationLogger::info('line', 'payment_notify_success', 'LINE PAYMENT NOTIFY SUCCESS', [
+            'booking_id' => $booking->id,
+            'cache_key' => $cacheKey,
+            'result' => $result,
+        ]);
+    }
+
+    private function buildLinePaymentMessage(Booking $booking): string
+    {
+        $tourName = $booking->tour?->name ?: '-';
+        $sessionName = $booking->session?->title ?: ($booking->session?->name ?: '-');
+        $guestCount = (int) ($booking->total_guests ?: (($booking->adults ?? 0) + ($booking->children ?? 0) + ($booking->infants ?? 0)));
+        $travelDate = $booking->date ? \Carbon\Carbon::parse($booking->date)->format('d/m/Y') : '-';
+        $paidAt = $booking->paid_at ? \Carbon\Carbon::parse($booking->paid_at)->format('d/m/Y H:i') : now()->format('d/m/Y H:i');
+        $amount = number_format((float) $booking->grand_total, 2);
+
+        return implode("\n", [
+            'Payment received',
+            'Booking #' . $booking->id,
+            'Customer: ' . ($booking->customer_name ?: '-'),
+            'Phone: ' . ($booking->customer_phone ?: '-'),
+            'Tour: ' . $tourName,
+            'Session: ' . $sessionName,
+            'Date: ' . $travelDate,
+            'Guests: ' . $guestCount,
+            'Amount: THB ' . $amount,
+            'Channel: ' . strtoupper((string) $booking->payment_channel),
+            'Paid at: ' . $paidAt,
+        ]);
     }
 }

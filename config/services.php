@@ -43,6 +43,12 @@ return [
         ))),
     ],
 
+    'line' => [
+        'enabled' => filter_var(env('LINE_NOTIFY_ENABLED', false), FILTER_VALIDATE_BOOL),
+        'endpoint' => env('LINE_NOTIFY_ENDPOINT', 'http://bot.ideavivat.com/send-message'),
+        'payment_group_id' => env('LINE_NOTIFY_PAYMENT_GROUP_ID'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],

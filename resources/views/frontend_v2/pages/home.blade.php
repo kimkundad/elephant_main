@@ -8,6 +8,299 @@
 <style>
 .elephant-history{max-height:72px; overflow:hidden;}
 
+.experience-section-v2{
+    padding: 70px 0 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.experience-section-v2 .container{
+    width: 100%;
+    max-width: 1170px;
+}
+
+.experience-section-v2 .elephants-title{
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #22223b;
+}
+
+.experience-section-v2 .experience-slider .item{
+    padding: 10px 8px 20px;
+}
+
+.experience-section-v2 .elephant-card{
+    background: #2f2f2f;
+    color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0,0,0,.18);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.experience-section-v2 .elephant-card__media{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.experience-section-v2 .elephant-card__media img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.experience-section-v2 .elephant-card__body{
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 220px;
+}
+
+.experience-section-v2 .elephant-name{
+height: 50px;
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.experience-section-v2 .elephant-rescued{
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #d7d7d7;
+    letter-spacing: .06em;
+}
+
+.experience-section-v2 .elephant-desc{
+    font-size: 13px;
+    line-height: 1.6;
+    color: #f1f1f1;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1 1 auto;
+}
+
+.experience-section-v2 .btn-book{
+    margin-top: 10px;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 36px);
+    min-height: 46px;
+    border-radius: 999px;
+    background: #b5db2a;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 13px;
+}
+
+.experience-section-v2 .btn-book:hover{
+    background: #a6cb24;
+    color: #fff;
+}
+
+.experience-section-v2 .experience-slider .owl-nav{
+    position: absolute;
+    top: 40%;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.experience-section-v2 .experience-slider .owl-nav button{
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: #fff !important;
+    color: #333 !important;
+    font-size: 26px;
+    font-weight: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.experience-section-v2 .experience-slider .owl-dots{
+    margin-top: 10px;
+}
+
+.experience-section-v2 .experience-slider .owl-dot span{
+    width: 8px;
+    height: 8px;
+}
+
+.meet-elephants-section-v2{
+    padding: 48px 0 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.meet-elephants-section-v2 .container{
+    width: 100%;
+    max-width: 1170px;
+}
+
+.meet-elephants-section-v2 .elephants-title{
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #22223b;
+}
+
+.meet-elephants-section-v2 .meet-elephants-slider .item{
+    padding: 10px 8px 20px;
+}
+
+.meet-elephants-section-v2 .elephant-card{
+    background: #2f2f2f;
+    color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0,0,0,.18);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.meet-elephants-section-v2 .elephant-card__media{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.meet-elephants-section-v2 .elephant-card__media img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.meet-elephants-section-v2 .elephant-card__body{
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 320px;
+}
+
+.meet-elephants-section-v2 .elephant-name{
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.meet-elephants-section-v2 .elephant-rescued{
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #d7d7d7;
+    letter-spacing: .06em;
+}
+
+.meet-elephants-section-v2 .elephant-desc{
+    font-size: 13px;
+    line-height: 1.6;
+    color: #f1f1f1;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 125px;
+    flex: 1 1 auto;
+}
+
+.meet-elephants-section-v2 .btn-book{
+    margin-top: 10px;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 36px);
+    min-height: 46px;
+    border-radius: 999px;
+    background: #b5db2a;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 13px;
+}
+
+.meet-elephants-section-v2 .btn-book:hover{
+    background: #a6cb24;
+    color: #fff;
+}
+
+.meet-elephants-section-v2 .meet-elephants-slider .owl-nav{
+    position: absolute;
+    top: 40%;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.meet-elephants-section-v2 .meet-elephants-slider .owl-nav button{
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: #fff !important;
+    color: #333 !important;
+    font-size: 26px;
+    font-weight: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+.meet-elephants-section-v2 .meet-elephants-slider .owl-dots{
+    margin-top: 10px;
+}
+
+.meet-elephants-section-v2 .meet-elephants-slider .owl-dot span{
+    width: 8px;
+    height: 8px;
+}
+
+@media (max-width: 767px){
+    .experience-section-v2{
+        padding: 48px 0 24px;
+    }
+
+    .experience-section-v2 .elephant-card__body{
+        min-height: 0;
+    }
+
+    .meet-elephants-section-v2{
+        padding: 32px 0 24px;
+    }
+
+    .meet-elephants-section-v2 .elephant-card__body{
+        min-height: 0;
+    }
+}
+
 .hero-slider.hero-style{
     position: relative;
     z-index: 1;
@@ -167,7 +460,7 @@
 }
 
 #home-content-1 {
-    padding: 90px 0 40px;
+    padding: 60px 0 40px;
     position: relative;
     z-index: 1;
 }
@@ -533,6 +826,12 @@
     overflow: hidden;
     height: 70px;
 }
+.box_primary {
+    position: relative;
+    padding: 20px 150px;
+    display: block;
+    width: 100%;
+}
 </style>
 @endpush
 
@@ -661,111 +960,87 @@
                 </article>
             </section>
 
-            <section class="main ">
-                <div class="our-facilities">
-                    <article class="container">
-                        <h2 data-scroll="" data-scroll-speed="1">{{ \App\Models\SiteText::getValue('home.experience.title', 'Experience') }}</h2>
-                        <div class="container-content">
-                            <p data-scroll="" data-scroll-speed="1"></p>
+            <div class="home-section experience-section-v2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2 class="elephants-title">{{ \App\Models\SiteText::getValue('home.experience.title', 'Experience') }}</h2>
                         </div>
-                    </article>
-                </div>
-                <div class="detail-facilities">
-                    <div class="col-xs-10">
-                        <div class="slider_facilities">
+                    </div>
+                    @if($tours->count() > 0)
+                        <div class="owl-carousel owl-theme experience-slider">
                             @foreach($tours as $tour)
                                 <div class="item">
-                                    <div class="box-facilities">
-                                        <div class="col-xs-5">
-                                            <figure>
-                                                <img
-                                                    src="{{ $tour->thumbnail ? asset($tour->thumbnail) : asset('images/placeholder-tour.jpg') }}"
-                                                    alt="{{ $tour->name }}"
-                                                >
-                                            </figure>
+                                    <div class="elephant-card">
+                                        <div class="elephant-card__media">
+                                            <img
+                                                src="{{ $tour->thumbnail ? asset($tour->thumbnail) : asset('images/placeholder-tour.jpg') }}"
+                                                alt="{{ $tour->name }}"
+                                            >
                                         </div>
-                                        <div class="col-xs-7">
-                                            <div class="content-facilities">
-                                                <hgroup>
-                                                    <h3>{{ $tour->name }}</h3>
-                                                    <h4>{{ $tour->duration ?? '' }}</h4>
-                                                </hgroup>
-                                                <p>{{ $tour->excerpt ?? '' }}</p>
-                                                <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-primary" aria-label="Discover">
-                                                    {{ \App\Models\SiteText::getValue('home.actions.book_now', 'Book Now') }}
-                                                </a>
-                                            </div>
+                                        <div class="elephant-card__body">
+                                            <div class="elephant-name">{{ $tour->name }}</div>
+                                            <div class="elephant-rescued">{{ strtoupper($tour->duration ?? 'PROGRAM') }}</div>
+                                            <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
+                                            <div class="elephant-desc">{{ \Illuminate\Support\Str::limit(strip_tags($tour->excerpt ?? $tour->short_description ?? $tour->description ?? ''), 170) }}</div>
+                                            <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-book" aria-label="Read more">Book Now</a>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
+                    @else
+                        <div class="alignc">
+                            <p>No experiences available right now.</p>
+                        </div>
+                    @endif
                 </div>
-            </section>
-            <br><br><br><br>
+            </div>
+            <br>
 
-                        <section class="main ">
-                <article class="our-offers">
-                    <div class="container">
-                        <div class="box_primary">
-                            <h2 data-scroll="" data-scroll-speed="1">{{ \App\Models\SiteText::getValue('home.meet.title', 'Meet Our Elephants') }}</h2>
-                            <div class="detail-offers">
-                                <div class="slide_item1">
-                                    @if($elephants->count() > 0)
-                                        @foreach($elephants as $elephant)
-                                            <div class="item">
-                                                <figure>
-                                                    <img class="image-offers" src="{{ $elephant->images[0] ?? '' }}" alt="{{ $elephant->name }}">
-                                                    <figcaption class="content-offers">
-                                                        <div class="col-xs-4">
-                                                            <hgroup>
-                                                                <h3>{{ strtoupper($elephant->getTranslated('name', $elephant->name)) }}</h3>
-                                                                <h4>
-                                                                    @if($elephant->rescued_at)
-                                                                        {{ __('common.rescued') }} {{ $elephant->rescued_at->format('d F Y') }}
-                                                                    @else
-                                                                        {{ __('common.rescued') }} DATE UNKNOWN
-                                                                    @endif
-                                                                </h4>
-                                                            </hgroup>
-                                                        </div>
-                                                        <div class="col-xs-8">
-                                                            <p class="elephant-history">{{ $elephant->getTranslated('history', $elephant->history) }}</p>
-                                                            <a href="{{ route('frontend.elephants.v2') }}#{{ $elephant->slug ?? '' }}" class="btn-book" aria-label="Read more" style="margin-top: 10px">
-                                                                <span>{{ \App\Models\SiteText::getValue('home.actions.read_more', 'Read more') }}</span>
-                                                            </a>
-                                                        </div>
-                                                    </figcaption>
-                                                </figure>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div class="item">
-                                            <figure>
-                                                <img class="image-offers" src="https://www.sametnangsheboutique.com/assets/images/offers/img-1.jpg?v=0.1" alt="No elephants">
-                                                <figcaption class="content-offers">
-                                                    <div class="col-xs-4">
-                                                        <hgroup>
-                                                            <h3>No Elephants</h3>
-                                                        </hgroup>
-                                                    </div>
-                                                    <div class="col-xs-8">
-                                                        <p>No elephants available at the moment.</p>
-                                                    </div>
-                                                </figcaption>
-                                            </figure>
-                                        </div>
-                                    @endif
+            <div class="home-section meet-elephants-section-v2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2 class="elephants-title">{{ \App\Models\SiteText::getValue('home.meet.title', 'Meet Our Elephants') }}</h2>
+                        </div>
+                    </div>
+                    @if($elephants->count() > 0)
+                    <div class="owl-carousel owl-theme meet-elephants-slider">
+                        @foreach($elephants as $elephant)
+                        <div class="item">
+                            <div class="elephant-card">
+                                <div class="elephant-card__media">
+                                    <img src="{{ $elephant->images[0] ?? '' }}" alt="{{ $elephant->name }}">
+                                </div>
+                                <div class="elephant-card__body">
+                                    <div class="elephant-name">{{ $elephant->getTranslated('name', $elephant->name) }}</div>
+                                    <div class="elephant-rescued">
+                                        @if($elephant->rescued_at)
+                                            {{ __('common.rescued') }} {{ $elephant->rescued_at->format('d F Y') }}
+                                        @else
+                                            {{ __('common.rescued') }} DATE UNKNOWN
+                                        @endif
+                                    </div>
+                                    <div class="elephant-desc">{{ $elephant->getTranslated('history', $elephant->history) }}</div>
+                                    <a href="{{ route('frontend.elephants.v2') }}#{{ $elephant->slug ?? '' }}" class="btn-book" aria-label="Read more">
+                                        {{ \App\Models\SiteText::getValue('home.actions.read_more', 'Read more') }}
+                                    </a>
                                 </div>
                             </div>
                         </div>
+                        @endforeach
                     </div>
-                </article>
-            </section>
+                    @else
+                    <div class="alignc">
+                        <p>No elephants available at the moment.</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
 
 
-            <section class="box_primary google-reviews-section parallax" id="home-content-6" style="background-image:url('{{ $reviewsBackground }}');">
+            <section class="box_primary google-reviews-section parallax" id="home-content-6" style="background-image:url('{{ $reviewsBackground }}'); padding: 150px 0 80px;">
                 <article class="container custom-page-template" style=" max-width: 1350px;">
 
                   {{-- About Small Elephants --}}
@@ -1036,12 +1311,72 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (false && window.jQuery && window.jQuery.fn && window.jQuery.fn.slick) {
+    const $experience = window.jQuery('.detail-facilities.experience-cards .slider_facilities');
+
+    if ($experience.length) {
+      if ($experience.hasClass('slick-initialized')) {
+        $experience.slick('unslick');
+      }
+
+      $experience.slick({
+        infinite: true,
+        dots: true,
+        arrows: true,
+        autoplay: true,
+        autoplaySpeed: 4200,
+        speed: 900,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        adaptiveHeight: false,
+        prevArrow: '<div><span class="slick-icon slick-prev" aria-hidden="true">&#8592;</span></div>',
+        nextArrow: '<div><span class="slick-icon slick-next" aria-hidden="true">&#8594;</span></div>',
+        responsive: [
+          {
+            breakpoint: 1200,
+            settings: {
+              slidesToShow: 2,
+              slidesToScroll: 1
+            }
+          },
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 1,
+              slidesToScroll: 1
+            }
+          }
+        ]
+      });
+    }
+  }
+
   if (!window.jQuery || !window.jQuery.fn || !window.jQuery.fn.owlCarousel) {
     return;
   }
 
-  const $elephant = window.jQuery('.elephant-slider');
-  if (!$elephant.length) return;
+  const $facilities = window.jQuery('.slider_facilities--disabled');
+  if ($facilities.length) {
+    $facilities.owlCarousel({
+      loop: true,
+      margin: 26,
+      autoplay: true,
+      autoplayTimeout: 4200,
+      autoplayHoverPause: true,
+      smartSpeed: 850,
+      nav: true,
+      dots: true,
+      navText: ['<span>‹</span>', '<span>›</span>'],
+      responsive: {
+        0: { items: 1, margin: 18, stagePadding: 18, nav: false },
+        768: { items: 2, margin: 22, stagePadding: 26, nav: true },
+        1200: { items: 3, margin: 26, stagePadding: 0, nav: true }
+      }
+    });
+  }
+
+  const $elephant = window.jQuery('.experience-slider');
+  if ($elephant.length) {
 
   $elephant.owlCarousel({
     loop: true,
@@ -1061,6 +1396,29 @@ document.addEventListener("DOMContentLoaded", () => {
       1024: { items: 3 }
     }
   });
+  }
+
+  const $meetElephants = window.jQuery('.meet-elephants-slider');
+  if ($meetElephants.length) {
+    $meetElephants.owlCarousel({
+      loop: true,
+      margin: 24,
+      autoplay: true,
+      autoplayTimeout: 5000,
+      autoplayHoverPause: true,
+      nav: true,
+      dots: true,
+      navText: [
+        '<span class="gr-nav gr-prev">&lsaquo;</span>',
+        '<span class="gr-nav gr-next">&rsaquo;</span>'
+      ],
+      responsive: {
+        0: { items: 1 },
+        768: { items: 2 },
+        1024: { items: 3 }
+      }
+    });
+  }
 });
 
 document.addEventListener('click', function(e){

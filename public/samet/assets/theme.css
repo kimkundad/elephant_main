@@ -1746,10 +1746,8 @@ footer {
 }
 
 .title-footer {
-    position: relative;
-    padding: 100px  150px 50px 150px;
-    border-bottom: 1px solid rgba(61, 61, 61, 0.15);;
-    z-index: 2;
+    border-bottom: 1px solid rgba(var(--hg-rgba-color-secondary), 0.25);
+    padding: 30px 150px 20px 150px;
 }
 
 .title-footer div {
@@ -1803,7 +1801,7 @@ footer {
 
 .contact-footer {
     position: relative;
-    padding: 100px 150px;
+    padding: 40px 150px;
     z-index: 2;
     display: inline-block;
     width: 100%;
@@ -1861,7 +1859,7 @@ footer {
 
 .copy-right {
     position: relative;
-    padding: 80px 0 0;
+    padding: 50px 0 0;
     z-index: 2;
     display: inline-block;
     width: 100%;
