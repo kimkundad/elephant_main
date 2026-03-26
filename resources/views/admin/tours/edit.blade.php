@@ -76,12 +76,12 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Minimum Price *</label>
+                                    <label class="form-label">ราคาเด็ก *</label>
                                     <input type="number" name="min_price" class="form-control" value="{{ $tour->min_price }}" required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Maximum Price *</label>
+                                    <label class="form-label">ราคาผู้ใหญ่ *</label>
                                     <input type="number" name="max_price" class="form-control" value="{{ $tour->max_price }}" required>
                                 </div>
                             </div>

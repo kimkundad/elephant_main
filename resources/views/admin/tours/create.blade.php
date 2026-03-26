@@ -72,12 +72,12 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Minimum Price *</label>
+                                    <label class="form-label">ราคาเด็ก *</label>
                                     <input type="number" name="min_price" class="form-control" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Maximum Price *</label>
+                                    <label class="form-label">ราคาผู้ใหญ่ *</label>
                                     <input type="number" name="max_price" class="form-control" required>
                                 </div>
 

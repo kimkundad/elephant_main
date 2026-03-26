@@ -45,13 +45,15 @@
 
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Start Time</label>
-                                    <input type="time" name="start_time" class="form-control">
+                                    <label class="form-label">Start Time (Thailand / Asia-Bangkok)</label>
+                                    <input type="text" name="start_time" class="form-control js-session-time" inputmode="numeric" maxlength="5" placeholder="__:__">
+                                    <div class="form-text">เวลาประเทศไทย (UTC+7) พิมพ์ 1230 ระบบจะแปลงเป็น 12:30 ให้</div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">End Time</label>
-                                    <input type="time" name="end_time" class="form-control">
+                                    <label class="form-label">End Time (Thailand / Asia-Bangkok)</label>
+                                    <input type="text" name="end_time" class="form-control js-session-time" inputmode="numeric" maxlength="5" placeholder="__:__">
+                                    <div class="form-text">เวลาประเทศไทย (UTC+7) พิมพ์ 1825 ระบบจะแปลงเป็น 18:25 ให้</div>
                                 </div>
                             </div>
 
@@ -86,4 +88,28 @@
 
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function formatTime(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 4);
+
+        if (digits.length <= 2) {
+            return digits;
+        }
+
+        return digits.slice(0, 2) + ':' + digits.slice(2, 4);
+    }
+
+    document.querySelectorAll('.js-session-time').forEach(function (input) {
+        input.value = formatTime(input.value);
+
+        input.addEventListener('input', function () {
+            this.value = formatTime(this.value);
+        });
+    });
+});
+</script>
 @endsection
