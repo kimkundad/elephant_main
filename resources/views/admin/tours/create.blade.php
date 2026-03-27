@@ -83,7 +83,8 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">Thumbnail (upload to DigitalOcean Spaces) *</label>
-                                    <input type="file" name="thumbnail" class="form-control" required accept="image/*">
+                                    <input type="file" name="thumbnail" class="form-control js-tour-thumbnail" required accept="image/*">
+                                    <div class="form-text js-thumbnail-help">ระบบจะย่อรูปให้อัตโนมัติก่อนอัปโหลด เพื่อลดปัญหาไฟล์จากมือถือใหญ่เกินไป</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -109,3 +110,80 @@
     </div>
 @endsection
 
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('.js-tour-thumbnail');
+    const help = document.querySelector('.js-thumbnail-help');
+
+    if (!input || typeof DataTransfer === 'undefined') {
+        return;
+    }
+
+    function loadImage(file) {
+        return new Promise(function (resolve, reject) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const image = new Image();
+                image.onload = function () { resolve(image); };
+                image.onerror = reject;
+                image.src = event.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function compressImage(file) {
+        const image = await loadImage(file);
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const maxWidth = 2000;
+        const maxHeight = 2000;
+        let { width, height } = image;
+
+        const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(image, 0, 0, width, height);
+
+        return new Promise(function (resolve) {
+            canvas.toBlob(function (blob) {
+                const baseName = file.name.replace(/\.[^.]+$/, '');
+                resolve(new File([blob], baseName + '.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.82);
+        });
+    }
+
+    input.addEventListener('change', async function () {
+        const file = this.files && this.files[0];
+
+        if (!file || !file.type.startsWith('image/')) {
+            return;
+        }
+
+        if (help) {
+            help.textContent = 'กำลังย่อรูปก่อนอัปโหลด...';
+        }
+
+        try {
+            const resizedFile = await compressImage(file);
+            const transfer = new DataTransfer();
+            transfer.items.add(resizedFile);
+            this.files = transfer.files;
+
+            if (help) {
+                help.textContent = 'ย่อรูปแล้ว พร้อมอัปโหลด';
+            }
+        } catch (error) {
+            if (help) {
+                help.textContent = 'ย่อรูปไม่สำเร็จ ใช้ไฟล์เดิมแทน';
+            }
+        }
+    });
+});
+</script>
+@endsection

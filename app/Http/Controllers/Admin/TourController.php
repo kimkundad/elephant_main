@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tour;
 use App\Models\TourTag;
 use App\Models\TourTranslation;
+use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -35,7 +36,7 @@ class TourController extends Controller
             'short_description_en' => 'nullable|string',
             'description_th' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'thumbnail' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'thumbnail' => 'required|image|mimes:jpg,jpeg,png,webp|max:25600',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
             'tag_ids' => 'nullable|array',
@@ -46,15 +47,8 @@ class TourController extends Controller
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $filename = 'tour_' . time() . '.' . $file->getClientOriginalExtension();
-
-            Storage::disk('spaces')->put(
-                'elephant/tours/' . $filename,
-                file_get_contents($file),
-                'public'
-            );
-
-            $thumbnailPath = Storage::disk('spaces')->url('elephant/tours/' . $filename);
+            $path = SpacesImageUploader::store($file, 'elephant/tours', 'tour_' . time());
+            $thumbnailPath = Storage::disk('spaces')->url($path);
         }
 
         $slugBase = $data['name_en'] ?: $data['name_th'];
@@ -100,7 +94,7 @@ class TourController extends Controller
             'description_en' => 'nullable|string',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:25600',
             'tag_ids' => 'nullable|array',
             'tag_ids.*' => 'integer|exists:tour_tags,id',
             'is_active' => 'nullable|boolean',
@@ -117,9 +111,7 @@ class TourController extends Controller
             }
 
             $file = $request->file('thumbnail');
-            $filename = 'tour_' . time() . '.' . $file->getClientOriginalExtension();
-            $uploadPath = 'elephant/tours/' . $filename;
-            $disk->put($uploadPath, file_get_contents($file), 'public');
+            $uploadPath = SpacesImageUploader::store($file, 'elephant/tours', 'tour_' . time());
             $newThumbnailUrl = $disk->url($uploadPath);
         }
 

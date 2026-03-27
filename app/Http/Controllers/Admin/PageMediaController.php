@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PageMedia;
+use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -141,7 +142,7 @@ class PageMediaController extends Controller
     {
         $locale = (string) $request->input('locale', '');
         $type = (string) $request->input('type', 'image');
-        $fileRules = ['file', 'max:51200'];
+        $fileRules = ['file', 'max:' . ($type === 'image' ? '25600' : '51200')];
 
         if ($type === 'image') {
             $fileRules[] = 'mimetypes:image/jpeg,image/png,image/webp,image/gif,image/svg+xml';
@@ -189,6 +190,12 @@ class PageMediaController extends Controller
 
         $safeKey = str_replace(['.', ' '], ['/', '-'], strtolower($key));
         $folder = 'page-media/' . trim($safeKey, '/');
+        $type = (string) $request->input('type', 'image');
+
+        if ($type === 'image') {
+            return SpacesImageUploader::store($file, $folder, 'media_' . time() . '_' . uniqid());
+        }
+
         $path = $file->storePublicly($folder, 'spaces');
 
         return $path;

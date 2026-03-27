@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Elephant;
+use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -36,7 +37,7 @@ class ElephantController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'images' => ['required', 'array', 'min:1', 'max:3'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6096'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:25600'],
         ]);
 
         $imageUrls = $this->uploadImages($request->file('images', []));
@@ -84,7 +85,7 @@ class ElephantController extends Controller
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array', 'min:1', 'max:3'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6096'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:25600'],
         ]);
 
         $imageUrls = $elephant->images ?? [];
@@ -141,9 +142,7 @@ class ElephantController extends Controller
         $disk = Storage::disk('spaces');
 
         foreach ($files as $file) {
-            $filename = 'elephant_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $path = 'elephant/elephants/' . $filename;
-            $disk->put($path, file_get_contents($file), 'public');
+            $path = SpacesImageUploader::store($file, 'elephant/elephants', 'elephant_' . time() . '_' . uniqid());
             $urls[] = $disk->url($path);
         }
 

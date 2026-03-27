@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,9 +36,9 @@ class SiteSettingController extends Controller
             'contact_whatsapp_line' => ['nullable', 'string', 'max:255'],
             'map_embed_url' => ['nullable', 'string'],
             'copyright_text' => ['nullable', 'string', 'max:255'],
-            'logo_header' => ['nullable', 'image', 'max:2048'],
-            'logo_footer' => ['nullable', 'image', 'max:2048'],
-            'og_image' => ['nullable', 'image', 'max:4096'],
+            'logo_header' => ['nullable', 'image', 'max:25600'],
+            'logo_footer' => ['nullable', 'image', 'max:25600'],
+            'og_image' => ['nullable', 'image', 'max:25600'],
         ]);
 
         foreach (['facebook_url', 'instagram_url'] as $key) {
@@ -65,7 +66,11 @@ class SiteSettingController extends Controller
                 Storage::disk('spaces')->delete($setting->logo_path);
             }
 
-            $data['logo_header_path'] = $request->file('logo_header')->storePublicly('site', 'spaces');
+            $data['logo_header_path'] = SpacesImageUploader::store(
+                $request->file('logo_header'),
+                'site',
+                'logo_header_' . time()
+            );
         }
 
         if ($request->hasFile('logo_footer')) {
@@ -73,7 +78,11 @@ class SiteSettingController extends Controller
                 Storage::disk('spaces')->delete($setting->logo_footer_path);
             }
 
-            $data['logo_footer_path'] = $request->file('logo_footer')->storePublicly('site', 'spaces');
+            $data['logo_footer_path'] = SpacesImageUploader::store(
+                $request->file('logo_footer'),
+                'site',
+                'logo_footer_' . time()
+            );
         }
 
         if ($request->hasFile('og_image')) {
@@ -81,7 +90,11 @@ class SiteSettingController extends Controller
                 Storage::disk('spaces')->delete($setting->og_image_path);
             }
 
-            $data['og_image_path'] = $request->file('og_image')->storePublicly('site', 'spaces');
+            $data['og_image_path'] = SpacesImageUploader::store(
+                $request->file('og_image'),
+                'site',
+                'og_image_' . time()
+            );
         }
 
         SiteSetting::updateOrCreate(['id' => $setting?->id], $data);
