@@ -383,9 +383,12 @@ height: 50px;
 @endpush
 
 @section('content')
+@php
+  $programHeroBackground = \App\Models\PageMedia::url('v2.program.hero.background', Vite::asset('resources/frontend/images/bg-chang.webp'));
+@endphp
 
 {{-- HERO --}}
-<section class="about-hero" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}')">
+<section class="about-hero" style="background-image:url('{{ $programHeroBackground }}')">
   <div class="about-hero__overlay"></div>
   <div class="container about-hero__inner">
     <div class="about-hero__kicker">SMALL ELEPHANTS</div>

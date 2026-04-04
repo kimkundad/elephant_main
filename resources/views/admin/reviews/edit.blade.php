@@ -6,7 +6,7 @@
     <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
       <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-          <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Edit Page Media</h1>
+          <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Edit Review</h1>
         </div>
       </div>
     </div>
@@ -23,15 +23,11 @@
           </div>
         @endif
 
-        <div class="card">
-          <div class="card-body">
-            <form method="POST" action="{{ route('admin.page-media.update', $media) }}" enctype="multipart/form-data">
-              @csrf
-              @method('PUT')
-              @include('admin.page_media._form', ['media' => $media, 'presetKeys' => $presetKeys, 'keyDescriptions' => $keyDescriptions ?? []])
-            </form>
-          </div>
-        </div>
+        <form method="POST" action="{{ route('admin.reviews.update', $review) }}">
+          @csrf
+          @method('PUT')
+          @include('admin.reviews.partials.form', ['review' => $review])
+        </form>
       </div>
     </div>
   </div>

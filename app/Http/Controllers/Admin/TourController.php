@@ -10,6 +10,7 @@ use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class TourController extends Controller
 {
@@ -37,6 +38,8 @@ class TourController extends Controller
             'description_th' => 'nullable|string',
             'description_en' => 'nullable|string',
             'thumbnail' => 'required|image|mimes:jpg,jpeg,png,webp|max:25600',
+            'gallery_images' => 'nullable|array|max:10',
+            'gallery_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
             'tag_ids' => 'nullable|array',
@@ -51,6 +54,8 @@ class TourController extends Controller
             $thumbnailPath = Storage::disk('spaces')->url($path);
         }
 
+        $galleryImages = $this->uploadGalleryImages($request->file('gallery_images', []));
+
         $slugBase = $data['name_en'] ?: $data['name_th'];
         $tour = Tour::create([
             'name' => $data['name_th'],
@@ -61,6 +66,7 @@ class TourController extends Controller
             'max_price' => $data['max_price'],
             'is_active' => (bool) ($data['is_active'] ?? true),
             'thumbnail' => $thumbnailPath,
+            'gallery_images' => $galleryImages,
         ]);
 
         $this->syncTranslations($tour, $data);
@@ -95,6 +101,10 @@ class TourController extends Controller
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:25600',
+            'gallery_images' => 'nullable|array|max:10',
+            'gallery_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
+            'remove_gallery_images' => 'nullable|array',
+            'remove_gallery_images.*' => 'string',
             'tag_ids' => 'nullable|array',
             'tag_ids.*' => 'integer|exists:tour_tags,id',
             'is_active' => 'nullable|boolean',
@@ -105,14 +115,35 @@ class TourController extends Controller
 
         if ($request->hasFile('thumbnail')) {
             if (!empty($tour->thumbnail)) {
-                $rootUrl = rtrim($disk->url(''), '/');
-                $oldPath = str_replace($rootUrl . '/', '', $tour->thumbnail);
-                $disk->delete($oldPath);
+                $this->deleteFileByUrl($tour->thumbnail, $disk);
             }
 
             $file = $request->file('thumbnail');
             $uploadPath = SpacesImageUploader::store($file, 'elephant/tours', 'tour_' . time());
             $newThumbnailUrl = $disk->url($uploadPath);
+        }
+
+        $existingGalleryImages = collect($tour->gallery_images ?? []);
+        $removedGalleryImages = collect($data['remove_gallery_images'] ?? []);
+
+        if ($removedGalleryImages->isNotEmpty()) {
+            $existingGalleryImages
+                ->intersect($removedGalleryImages)
+                ->each(fn (string $url) => $this->deleteFileByUrl($url, $disk));
+        }
+
+        $remainingGalleryImages = $existingGalleryImages
+            ->reject(fn (string $url) => $removedGalleryImages->contains($url))
+            ->values()
+            ->all();
+
+        $newGalleryImages = $this->uploadGalleryImages($request->file('gallery_images', []));
+        $galleryImages = array_values(array_merge($remainingGalleryImages, $newGalleryImages));
+
+        if (count($galleryImages) > 10) {
+            throw ValidationException::withMessages([
+                'gallery_images' => 'You can keep up to 10 gallery images per tour.',
+            ]);
         }
 
         $slugBase = $data['name_en'] ?: $data['name_th'];
@@ -125,12 +156,13 @@ class TourController extends Controller
             'max_price' => $data['max_price'],
             'is_active' => (bool) ($data['is_active'] ?? false),
             'thumbnail' => $newThumbnailUrl,
+            'gallery_images' => $galleryImages,
         ]);
 
         $this->syncTranslations($tour, $data);
         $tour->tags()->sync($data['tag_ids'] ?? []);
 
-        return redirect()->route('admin.tours.index')
+        return redirect()->route('admin.tours.edit', $tour->id)
             ->with('success', 'Tour program updated successfully.');
     }
 
@@ -140,9 +172,10 @@ class TourController extends Controller
 
         if ($tour->thumbnail) {
             $disk = Storage::disk('spaces');
-            $rootUrl = rtrim($disk->url(''), '/');
-            $path = str_replace($rootUrl . '/', '', $tour->thumbnail);
-            $disk->delete($path);
+            $this->deleteFileByUrl($tour->thumbnail, $disk);
+            foreach (($tour->gallery_images ?? []) as $galleryImage) {
+                $this->deleteFileByUrl($galleryImage, $disk);
+            }
         }
 
         $tour->delete();
@@ -187,5 +220,35 @@ class TourController extends Controller
                 'description' => $data['description_en'] ?? null,
             ]
         );
+    }
+
+    private function uploadGalleryImages(array $files): array
+    {
+        $disk = Storage::disk('spaces');
+
+        return collect($files)
+            ->filter()
+            ->map(function ($file, int $index) use ($disk) {
+                $path = SpacesImageUploader::store(
+                    $file,
+                    'elephant/tours/gallery',
+                    'tour_gallery_' . time() . '_' . $index . '_' . Str::random(6)
+                );
+
+                return $disk->url($path);
+            })
+            ->values()
+            ->all();
+    }
+
+    private function deleteFileByUrl(?string $url, $disk): void
+    {
+        if (!$url) {
+            return;
+        }
+
+        $rootUrl = rtrim($disk->url(''), '/');
+        $path = str_replace($rootUrl . '/', '', $url);
+        $disk->delete($path);
     }
 }

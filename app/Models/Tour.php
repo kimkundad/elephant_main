@@ -15,7 +15,13 @@ class Tour extends Model
         'min_price',
         'max_price',
         'thumbnail',
+        'gallery_images',
         'is_active',
+    ];
+
+    protected $casts = [
+        'gallery_images' => 'array',
+        'is_active' => 'boolean',
     ];
 
     public function sessions()

@@ -315,6 +315,20 @@
                 </div>
 
                 <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.reviews.index') }}">
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M12 3L14.6 8.27L20.42 9.12L16.21 13.23L17.2 19.02L12 16.29L6.8 19.02L7.79 13.23L3.58 9.12L9.4 8.27L12 3Z" fill="currentColor"/>
+                                    <path d="M12 5.84L13.45 8.77L16.68 9.24L14.34 11.52L14.89 14.73L12 13.21L9.11 14.73L9.66 11.52L7.32 9.24L10.55 8.77L12 5.84Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="menu-title">Reviews</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
                     <!--begin:Menu link-->
                     <a class="menu-link" href="{{ url('admin/logout') }}">
                         <span class="menu-icon">
@@ -345,6 +359,5 @@
     <!--end::sidebar menu-->
 
 </div>
-
 
 

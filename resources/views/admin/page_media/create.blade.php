@@ -27,7 +27,7 @@
           <div class="card-body">
             <form method="POST" action="{{ route('admin.page-media.store') }}" enctype="multipart/form-data">
               @csrf
-              @include('admin.page_media._form', ['media' => $media, 'presetKeys' => $presetKeys])
+              @include('admin.page_media._form', ['media' => $media, 'presetKeys' => $presetKeys, 'keyDescriptions' => $keyDescriptions ?? []])
             </form>
           </div>
         </div>
@@ -36,4 +36,3 @@
   </div>
 </div>
 @endsection
-

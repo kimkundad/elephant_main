@@ -30,6 +30,25 @@ class PageMediaController extends Controller
         'v2.policy.hero.background',
     ];
 
+    private const KEY_DESCRIPTIONS = [
+        'v2.header.menu.active_image' => 'ใช้ในรูปฝั่งซ้ายของเมนู hamburger ตอนเปิดเมนู',
+        'v2.header.menu.hover_image' => 'ใช้เป็นอีกรูปในเมนู hamburger ฝั่งซ้าย เวลาเมนูเปิด',
+        'v2.home.hero.video' => 'วิดีโอใหญ่สุดบนหน้า Home ส่วน hero แรกของหน้า',
+        'v2.home.hero.video_poster' => 'รูป poster หรือภาพปกของวิดีโอ hero บนหน้า Home',
+        'v2.home.welcome.image_1' => 'รูปซ้ายใน section Welcome ของหน้า Home',
+        'v2.home.welcome.image_2' => 'รูปขวาใน section Welcome ของหน้า Home',
+        'v2.home.reviews.background' => 'รูปพื้นหลังของ section รีวิวบนหน้า Home',
+        'v2.about.hero.background' => 'รูปพื้นหลัง hero ด้านบนสุดของหน้า About',
+        'v2.about.story.image_1_big' => 'รูปใหญ่สุดใน section Our Story หน้า About',
+        'v2.about.story.image_2' => 'รูปย่อยรูปที่ 2 ใน section Our Story หน้า About',
+        'v2.about.story.image_3' => 'รูปย่อยรูปที่ 3 ใน section Our Story หน้า About',
+        'v2.about.story.image_4_wide' => 'รูปแนวนอนด้านล่างใน section Our Story หน้า About',
+        'v2.about.experience.background' => 'รูปพื้นหลัง section Your Experience หน้า About',
+        'v2.program.hero.background' => 'ตั้งใจใช้เป็นรูปพื้นหลัง hero ด้านบนของหน้า Program',
+        'v2.contact.hero.background' => 'ตั้งใจใช้เป็นรูปพื้นหลัง hero ด้านบนของหน้า Contact',
+        'v2.policy.hero.background' => 'ตั้งใจใช้เป็นรูปพื้นหลัง hero ด้านบนของหน้า Policy',
+    ];
+
     public function index(Request $request)
     {
         $query = PageMedia::query();
@@ -64,6 +83,7 @@ class PageMediaController extends Controller
         return view('admin.page_media.index', [
             'mediaItems' => $mediaItems,
             'presetKeys' => self::PRESET_KEYS,
+            'keyDescriptions' => self::KEY_DESCRIPTIONS,
             'filters' => [
                 'q' => $keyword,
                 'locale' => $locale,
@@ -77,6 +97,7 @@ class PageMediaController extends Controller
         return view('admin.page_media.create', [
             'media' => new PageMedia(['locale' => '', 'type' => 'image', 'is_active' => true]),
             'presetKeys' => self::PRESET_KEYS,
+            'keyDescriptions' => self::KEY_DESCRIPTIONS,
         ]);
     }
 
@@ -99,6 +120,7 @@ class PageMediaController extends Controller
         return view('admin.page_media.edit', [
             'media' => $pageMedia,
             'presetKeys' => self::PRESET_KEYS,
+            'keyDescriptions' => self::KEY_DESCRIPTIONS,
         ]);
     }
 

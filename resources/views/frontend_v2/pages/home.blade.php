@@ -89,6 +89,7 @@ height: 50px;
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 1 1 auto;
+    height: 62px;
 }
 
 .experience-section-v2 .btn-book{
@@ -1222,6 +1223,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     reviewButton.textContent = window.innerWidth <= 767 ? 'Review' : 'Review us on Google';
   };
 
+  const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  const avatarSvgs = {
+    classic: '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="22" r="12" fill="currentColor" opacity=".96"/><path d="M13 54c0-10.493 8.507-19 19-19s19 8.507 19 19" fill="currentColor" opacity=".96"/></svg>',
+    soft: '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="21" r="11" fill="currentColor" opacity=".96"/><path d="M17 53c1.8-8.8 8.1-14 15-14s13.2 5.2 15 14" fill="currentColor" opacity=".96"/></svg>',
+    round: '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="21.5" r="10.5" fill="currentColor" opacity=".96"/><path d="M15 53c0-9.4 7.6-17 17-17s17 7.6 17 17" fill="currentColor" opacity=".96"/></svg>',
+  };
+
+  const buildAvatarMarkup = (review) => {
+    if (review.profile_photo_url) {
+      return `<img src="${escapeHtml(review.profile_photo_url)}" alt="${escapeHtml(review.author_name ?? 'Review avatar')}">`;
+    }
+
+    const color = escapeHtml(review.avatar_color ?? '#A678A6');
+    const variant = review.avatar_variant ?? 'classic';
+    const svg = avatarSvgs[variant] || avatarSvgs.classic;
+
+    return `<div class="gr-avatar-fallback" style="background:${color};">${svg}</div>`;
+  };
+
   syncReviewButtonLabel();
   window.addEventListener('resize', syncReviewButtonLabel);
 
@@ -1263,15 +1289,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     <div class="testimonial-box">
       <div class="testimonial-author">
         <div class="gr-avatar-wrap">
-          <img src="${r.profile_photo_url ?? ''}" alt="">
+          ${buildAvatarMarkup(r)}
         </div>
         <div>
-          <h5>${r.author_name ?? ''}</h5>
-          <span>${r.relative_time_description ?? ''}</span>
+          <h5>${escapeHtml(r.author_name ?? '')}</h5>
+          <span>${escapeHtml(r.relative_time_description ?? '')}</span>
         </div>
       </div>
       <div class="testimonial-rating">${stars}</div>
-      <p>${r.text ?? ''}</p>
+      <p>${escapeHtml(r.text ?? '')}</p>
     </div>
   </div>
 `;

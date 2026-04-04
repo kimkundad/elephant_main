@@ -1,5 +1,6 @@
 @php
   $isEdit = isset($media) && $media->exists;
+  $selectedKey = old('key', $media->key);
 @endphp
 
 <div class="row mb-6">
@@ -81,3 +82,56 @@
   <button class="btn btn-primary" type="submit">{{ $isEdit ? 'Update' : 'Create' }}</button>
 </div>
 
+@if(!empty($keyDescriptions ?? []))
+  <div class="card mt-10 border-0 shadow-sm">
+    <div class="card-header border-0 pb-0">
+      <div>
+        <br><br>
+        <h3 class="card-title fw-bold m-0">Key Reference</h3>
+        <div class="text-muted fs-7 mt-1">คำอธิบายว่าแต่ละ key อยู่ตรงไหนของหน้าเว็บ</div>
+      </div>
+    </div>
+    <div class="card-body pt-6">
+      <div class="row g-4">
+        @foreach($keyDescriptions as $key => $description)
+          <div class="col-md-6 col-xl-4">
+            <div
+              class="border rounded-3 h-100 px-4 py-4 key-reference-card {{ $selectedKey === $key ? 'border-primary bg-light-primary' : 'border-gray-200' }}"
+              data-key-reference-card
+              data-key="{{ $key }}"
+            >
+              <div class="fw-bold text-gray-900 mb-2" style="word-break: break-word;">{{ $key }}</div>
+              <div class="text-muted fs-7">{{ $description }}</div>
+            </div>
+          </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const keyInput = document.querySelector('input[name="key"]');
+      const cards = Array.from(document.querySelectorAll('[data-key-reference-card]'));
+
+      if (!keyInput || cards.length === 0) {
+        return;
+      }
+
+      const syncActiveCard = () => {
+        const currentKey = (keyInput.value || '').trim();
+
+        cards.forEach((card) => {
+          const isActive = card.dataset.key === currentKey;
+          card.classList.toggle('border-primary', isActive);
+          card.classList.toggle('bg-light-primary', isActive);
+          card.classList.toggle('border-gray-200', !isActive);
+        });
+      };
+
+      keyInput.addEventListener('input', syncActiveCard);
+      keyInput.addEventListener('change', syncActiveCard);
+      syncActiveCard();
+    });
+  </script>
+@endif

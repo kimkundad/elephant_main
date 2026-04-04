@@ -3,6 +3,17 @@
 @php
   $tourTranslation = optional($booking->tour)->translation(app()->getLocale());
   $tourName = $tourTranslation->name ?? optional($booking->tour)->name ?? '-';
+  $pickupLabel = '-';
+
+  if ($booking->self_drive) {
+      $pickupLabel = app()->getLocale() === 'th' ? 'เดินทางไปเอง' : 'Traveling by myself';
+  } elseif (optional($booking->pickupLocation)->name) {
+      $pickupLabel = $booking->pickupLocation->name;
+  } elseif ($booking->pickup_place_name) {
+      $pickupLabel = $booking->pickup_place_name;
+  }
+
+  $pickupAddressLabel = app()->getLocale() === 'th' ? 'ที่อยู่รับส่ง' : 'Pickup address';
 @endphp
 
 @section('title', __('booking.confirmed.title'))
@@ -111,7 +122,12 @@
             <div class="value">{{ $booking->customer_email }}</div>
 
             <div class="label">{{ __('booking.confirmed.pickup_location') }}</div>
-            <div class="value">{{ optional($booking->pickupLocation)->name ?? '-' }}</div>
+            <div class="value">{{ $pickupLabel }}</div>
+
+            @if(!$booking->self_drive && $booking->pickup_place_address)
+              <div class="label">{{ $pickupAddressLabel }}</div>
+              <div class="value">{{ $booking->pickup_place_address }}</div>
+            @endif
           </div>
         </div>
       </div>

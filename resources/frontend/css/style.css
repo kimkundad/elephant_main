@@ -4025,6 +4025,19 @@ margin-left:0;margin-top:8px;}
   border-radius: 999px !important;
   object-fit: cover !important;
 }
+#google-review-slider .gr-avatar-fallback{
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+#google-review-slider .gr-avatar-fallback svg{
+  width: 28px;
+  height: 28px;
+}
 #google-review-slider .gr-gbadge{
   position: absolute;
   right: -2px;

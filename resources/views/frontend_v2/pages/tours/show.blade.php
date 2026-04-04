@@ -5,6 +5,10 @@
   $tourName = $tourTranslation->name ?? $tour->name ?? __('tour_show.page_title');
   $tourShortDescription = $tourTranslation->short_description ?? $tour->short_description;
   $tourDescription = $tourTranslation->description ?? $tour->description;
+  $tourGalleryImages = collect($tour->gallery_images ?? [])->filter()->values();
+  if ($tourGalleryImages->isEmpty() && $tour->thumbnail) {
+      $tourGalleryImages = collect([$tour->thumbnail, $tour->thumbnail, $tour->thumbnail]);
+  }
 @endphp
 
 @section('title', $tourName)
@@ -122,16 +126,90 @@
   letter-spacing:.08em;
 }
 .tour-gallery{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:12px;
+  column-count:3;
+  column-gap:14px;
   margin:26px 0;
+}
+.tour-gallery-item{
+  display:block;
+  position:relative;
+  overflow:hidden;
+  border-radius:16px;
+  background:#ebe4db;
+  box-shadow:0 14px 34px rgba(0,0,0,.08);
+  margin:0 0 14px;
+  break-inside:avoid;
+  -webkit-column-break-inside:avoid;
+  page-break-inside:avoid;
+}
+.tour-gallery-item::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.18) 100%);
+  opacity:0;
+  transition:opacity .25s ease;
+  pointer-events:none;
+}
+.tour-gallery-item:hover::after{
+  opacity:1;
 }
 .tour-gimg{
   width:100%;
-  height:160px;
+  height:auto;
   object-fit:cover;
-  border-radius:12px;
+  display:block;
+  transition:transform .35s ease;
+}
+.tour-gallery-item:hover .tour-gimg{
+  transform:scale(1.04);
+}
+.tour-lightbox{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(20, 16, 12, .82);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .25s ease, visibility .25s ease;
+}
+.tour-lightbox.is-open{
+  opacity:1;
+  visibility:visible;
+}
+.tour-lightbox__dialog{
+  position:relative;
+  width:min(92vw, 980px);
+  max-height:90vh;
+}
+.tour-lightbox__image{
+  width:100%;
+  max-height:90vh;
+  object-fit:contain;
+  display:block;
+  border-radius:18px;
+  background:#fff;
+}
+.tour-lightbox__close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#2b2621;
+  font-size:28px;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
 }
 .tour-details-box{
   background:#fff;
@@ -152,11 +230,10 @@
 @media (max-width: 992px){
   .tour-grid{ grid-template-columns: 1fr; }
   .tour-title{ font-size:34px; }
-  .tour-gallery{ grid-template-columns: 1fr 1fr; }
+  .tour-gallery{ column-count:2; }
 }
 @media (max-width: 575px){
-  .tour-gallery{ grid-template-columns: 1fr; }
-  .tour-gimg{ height:200px; }
+  .tour-gallery{ column-count:1; }
   .tour-title{ font-size: 26px; }
   .session-card.session-card-link{
     padding: 10px 12px;
@@ -228,15 +305,24 @@
                 $isSelected = $date === $selectedDate;
                 $isToday = $date === now()->toDateString();
                 $isPast = $d->lt(now()->startOfDay());
+                $todayHasBookableSessions = !$isToday || $tour->sessions()
+                  ->where('is_active', 1)
+                  ->get()
+                  ->contains(function ($session) use ($date) {
+                    $sessionStart = \Carbon\Carbon::parse($date . ' ' . $session->start_time);
+
+                    return $sessionStart->gt(now()) && (int) $session->remainingCapacity($date) > 0;
+                  });
+                $isClosedToday = $isToday && !$todayHasBookableSessions;
 
                 $cls = 'cal-day';
                 if(!$inMonth) $cls .= ' is-out';
-                if($isPast) $cls .= ' is-disabled';
+                if($isPast || $isClosedToday) $cls .= ' is-disabled';
                 if($isToday) $cls .= ' is-today';
                 if($isSelected) $cls .= ' is-selected';
               @endphp
 
-              @if(!$inMonth || $isPast)
+              @if(!$inMonth || $isPast || $isClosedToday)
                 <span class="{{ $cls }}">{{ $d->day }}</span>
               @else
                 <a class="{{ $cls }}"
@@ -278,9 +364,11 @@
         </div>
 
         <div class="tour-gallery">
-          <img src="{{ $tour->thumbnail }}" class="tour-gimg" alt="{{ $tourName }}">
-          <img src="{{ $tour->thumbnail }}" class="tour-gimg" alt="{{ $tourName }}">
-          <img src="{{ $tour->thumbnail }}" class="tour-gimg" alt="{{ $tourName }}">
+          @foreach($tourGalleryImages as $galleryImage)
+            <a href="{{ $galleryImage }}" class="tour-gallery-item js-tour-gallery-item" data-image="{{ $galleryImage }}" aria-label="{{ $tourName }}">
+              <img src="{{ $galleryImage }}" class="tour-gimg" alt="{{ $tourName }}">
+            </a>
+          @endforeach
         </div>
 
         <div class="tour-details-box">
@@ -291,4 +379,55 @@
     </div>
   </div>
 </section>
+
+<div class="tour-lightbox" id="tour-lightbox" aria-hidden="true">
+  <div class="tour-lightbox__dialog">
+    <button type="button" class="tour-lightbox__close" id="tour-lightbox-close" aria-label="Close">&times;</button>
+    <img src="" alt="{{ $tourName }}" class="tour-lightbox__image" id="tour-lightbox-image">
+  </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const lightbox = document.getElementById('tour-lightbox');
+  const lightboxImage = document.getElementById('tour-lightbox-image');
+  const lightboxClose = document.getElementById('tour-lightbox-close');
+  const galleryItems = document.querySelectorAll('.js-tour-gallery-item');
+
+  if (!lightbox || !lightboxImage || !lightboxClose || !galleryItems.length) {
+    return;
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  galleryItems.forEach(function (item) {
+    item.addEventListener('click', function (event) {
+      event.preventDefault();
+      lightboxImage.src = item.getAttribute('data-image') || '';
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (event) {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+    }
+  });
+});
+</script>
+@endpush

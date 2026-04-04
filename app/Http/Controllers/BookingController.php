@@ -125,6 +125,7 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+      //  dd($request->all());
         $availablePaymentChannels = $this->availablePaymentChannels();
 
         $data = $request->validate([
@@ -139,13 +140,14 @@ class BookingController extends Controller
             'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:50',
             'email' => 'required|email|max:255',
+            'self_drive' => 'nullable|boolean',
 
             'google_place_id' => 'nullable|string|max:255',
             'google_place_name' => 'nullable|string|max:255',
             'google_place_address' => 'nullable|string|max:255',
             'google_lat' => 'nullable|numeric',
             'google_lng' => 'nullable|numeric',
-            'pickup_source' => 'nullable|in:google,manual',
+            'pickup_source' => 'nullable|in:google,manual,meeting_point,self_drive',
             'manual_address' => 'nullable|string|max:500',
 
             'meeting_point_id' => 'nullable|integer|exists:pickup_locations,id',
@@ -161,25 +163,42 @@ class BookingController extends Controller
         $children = (int) $data['qty_child'];
         $infants = (int) $data['qty_infant'];
         $totalGuests = $adults + $children + $infants;
+        $selfDrive = $request->boolean('self_drive');
 
         $lat = isset($data['google_lat']) ? (float) $data['google_lat'] : null;
         $lng = isset($data['google_lng']) ? (float) $data['google_lng'] : null;
         $hasLatLng = ($lat !== null && $lng !== null);
+        $selectedMeetingPointId = !empty($data['meeting_point_id']) ? (int) $data['meeting_point_id'] : null;
 
-        if (!$hasLatLng) {
+        if (!$selfDrive && !$hasLatLng && !$selectedMeetingPointId) {
             return back()->withErrors([
                 'google_place_name' => __('booking.errors.pickup_required'),
             ])->withInput();
         }
 
-        $inBounds = $this->isWithinChiangMaiBounds($lat, $lng);
-        if (!$inBounds && empty($data['meeting_point_id'])) {
+        $inBounds = (!$selfDrive && $hasLatLng) ? $this->isWithinChiangMaiBounds($lat, $lng) : false;
+        if (!$selfDrive && !$selectedMeetingPointId && !$inBounds) {
             return back()->withErrors([
                 'meeting_point_id' => __('booking.errors.meeting_point_required'),
             ])->withInput();
         }
 
-        $pickupLocationId = $inBounds ? null : (int) $data['meeting_point_id'];
+        $pickupLocationId = $selfDrive ? null : $selectedMeetingPointId;
+        $pickupSource = null;
+        $pickupPlaceName = null;
+        $pickupPlaceAddress = null;
+
+        if ($selfDrive) {
+            $pickupSource = 'self_drive';
+        } elseif ($pickupLocationId) {
+            $meetingPoint = PickupLocation::find($pickupLocationId);
+            $pickupSource = 'meeting_point';
+            $pickupPlaceName = $meetingPoint?->name;
+        } else {
+            $pickupSource = $data['pickup_source'] ?? 'google';
+            $pickupPlaceName = $data['google_place_name'] ?? null;
+            $pickupPlaceAddress = $data['google_place_address'] ?? null;
+        }
 
         $priceAdult = (int) ($tour->min_price ?? 0);
         $priceChild = (int) round($priceAdult * 0.5);
@@ -231,7 +250,11 @@ class BookingController extends Controller
                 $discountAmount,
                 $discountCode,
                 $agentId,
-                $pickupLocationId
+                $pickupLocationId,
+                $selfDrive,
+                $pickupSource,
+                $pickupPlaceName,
+                $pickupPlaceAddress
             ) {
                 if ($discountCode) {
                     $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
@@ -269,6 +292,10 @@ class BookingController extends Controller
                     'discount_amount' => $discountAmount,
                     'agent_id' => $agentId,
                     'pickup_location_id' => $pickupLocationId,
+                    'self_drive' => $selfDrive,
+                    'pickup_source' => $pickupSource,
+                    'pickup_place_name' => $pickupPlaceName,
+                    'pickup_place_address' => $pickupPlaceAddress,
 
                     'status' => 'pending',
                     'created_by' => null,

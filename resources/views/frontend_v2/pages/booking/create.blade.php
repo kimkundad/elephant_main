@@ -126,8 +126,38 @@
   width: 14px;
   height: 14px;
 }
+.self-drive-check{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:4px 0 16px 28px;
+      padding: 12px 26px;
+  border:1px solid #e6ddd0;
+  border-radius:14px;
+  background:#faf6ef;
+  width:fit-content;
+  max-width:100%;
+  box-shadow:0 6px 16px rgba(0,0,0,.04);
+}
+.self-drive-check input{
+  flex:0 0 auto;
+  width:20px;
+  height:20px;
+  margin-top:0;
+  accent-color:#2b2621;
+  cursor:pointer;
+}
+.self-drive-check span{
+  min-width:0;
+  display:block;
+  font-size:15px;
+  font-weight:600;
+  color:#4b4238;
+  line-height:1.5;
+}
 .checkbox span,
 .checkbox .checkbox-label{
+      padding-left: 10px;
   min-width: 0;
   flex: 1 1 auto;
   display: block;
@@ -161,6 +191,10 @@
   .booking-hero-title{ font-size:20px; }
   .booking-hero-sub{ font-size:12px; }
   .booking-hero-desc{ font-size:10px; }
+  .self-drive-check{
+    margin-left:12px;
+    width:calc(100% - 12px);
+  }
 }
 @media (min-width: 1200px) {
     .container, .elementor-section.elementor-section-boxed > .elementor-container {
@@ -253,12 +287,16 @@
 
         <div class="card">
           <div class="card-title">{{ __('booking.create.additional_info') }}</div>
-          <label class="f-label">{{ __('booking.create.hotel_pickup') }}</label>
+          <label class="checkbox self-drive-check">
+            <input type="checkbox" name="self_drive" id="self_drive" value="1" >
+            <span>{{ __('booking.create.self_drive') }}</span>
+          </label>
+          <label class="f-label" id="pickupLabel">{{ __('booking.create.hotel_pickup') }}</label>
 
-          <div class="mb-3" style="position:relative;">
+          <div class="mb-3" id="pickupFields" style="position:relative;">
             <label class="form-label">{{ __('booking.create.search_hotel_label') }}</label>
             <input id="searchInput" type="text" class="f-input" placeholder="{{ __('booking.create.search_hotel_placeholder') }}" autocomplete="off" required>
-            <div class="tiny" style="margin-top:8px;">{{ __('booking.create.search_hotel_help') }}</div>
+          <div class="tiny" style="margin-top:8px;">{{ __('booking.create.search_hotel_help') }}</div>
           </div>
 
           <input type="hidden" name="google_place_id" id="google_place_id" value="">
@@ -271,20 +309,18 @@
 
           <div id="pickupFound" class="tiny" style="display:none; margin-top:8px;">{{ __('booking.create.pickup_found') }}</div>
 
-          <div id="manualWrap" style="display:none; margin-top:12px;">
-            <label class="f-label">{{ __('booking.create.manual_address_label') }}</label>
-            <input type="text" name="manual_address" id="manual_address" class="f-input" placeholder="{{ __('booking.create.manual_address_placeholder') }}">
-            <div class="tiny" style="margin-top:8px;">{{ __('booking.create.manual_address_help') }}</div>
-            <div id="manualMap" style="height:260px; border-radius:12px; overflow:hidden; margin-top:10px; border:1px solid #e6e6e6;"></div>
-            <div class="tiny" style="margin-top:8px;">{{ __('booking.create.manual_latlng') }} <span id="manualLatLngText">-</span></div>
-          </div>
-
           <div id="meetingWrap" style="display:none; margin-top:12px;">
             <label class="f-label">{{ __('booking.create.meeting_label') }}</label>
+            <div class="tiny" style="margin-top:8px;">{{ __('booking.create.meeting_map_help') }}</div>
+            <div id="meetingMap" style="height:300px; border-radius:12px; overflow:hidden; margin-top:10px; border:1px solid #e6e6e6;"></div>
             <select name="meeting_point_id" id="meeting_point_id" class="f-input">
               <option value="">{{ __('booking.create.meeting_placeholder') }}</option>
               @foreach($meetingPoints as $mp)
-                <option value="{{ $mp->id }}">{{ $mp->name }}</option>
+                <option
+                  value="{{ $mp->id }}"
+                  data-lat="{{ $mp->latitude }}"
+                  data-lng="{{ $mp->longitude }}"
+                >{{ $mp->name }}</option>
               @endforeach
             </select>
           </div>
@@ -362,41 +398,26 @@ const BOOKING_I18N = @json($bookingI18n);
 
   form.addEventListener('submit', (e) => {
     const searchInput = document.getElementById('searchInput');
+    const selfDrive = document.getElementById('self_drive');
     const fullName = form.querySelector('input[name="full_name"]');
     const phone = form.querySelector('input[name="phone"]');
     const email = form.querySelector('input[name="email"]');
     const discountCode = document.getElementById('discount_code');
 
-    const manualWrap = document.getElementById('manualWrap');
-    const manualAddress = document.getElementById('manual_address');
     const meetingWrap = document.getElementById('meetingWrap');
     const meetingSelect = document.getElementById('meeting_point_id');
     const latEl = document.getElementById('google_lat');
     const lngEl = document.getElementById('google_lng');
     const outEl = document.getElementById('pickup_out_of_bounds');
 
-    if (!searchInput || !searchInput.value.trim()) {
+    if (!selfDrive?.checked && (!searchInput || !searchInput.value.trim())) {
       e.preventDefault();
       alert(BOOKING_I18N.errors.selectHotel);
       searchInput?.focus();
       return;
     }
 
-    if (manualWrap && manualWrap.style.display !== 'none') {
-      if (!manualAddress || !manualAddress.value.trim()) {
-        e.preventDefault();
-        alert(BOOKING_I18N.errors.selectManualAddress);
-        manualAddress?.focus();
-        return;
-      }
-      if (!latEl || !lngEl || !latEl.value || !lngEl.value) {
-        e.preventDefault();
-        alert(BOOKING_I18N.errors.pinLocation);
-        return;
-      }
-    }
-
-    if ((meetingWrap && meetingWrap.style.display !== 'none') || (outEl && outEl.value === '1')) {
+    if (!selfDrive?.checked && ((meetingWrap && meetingWrap.style.display !== 'none') || (outEl && outEl.value === '1'))) {
       if (!meetingSelect || !meetingSelect.value) {
         e.preventDefault();
         alert(BOOKING_I18N.errors.selectMeetingPoint);
@@ -592,13 +613,13 @@ window.initHotelAutocomplete = function () {
   const input = document.getElementById('searchInput');
   if (!input) return;
 
-  const manualWrap = document.getElementById('manualWrap');
-  const manualAddress = document.getElementById('manual_address');
-  const manualLatLngText = document.getElementById('manualLatLngText');
-
+  const selfDrive = document.getElementById('self_drive');
+  const pickupFields = document.getElementById('pickupFields');
+  const pickupLabel = document.getElementById('pickupLabel');
   const pickupFound = document.getElementById('pickupFound');
   const meetingWrap = document.getElementById('meetingWrap');
   const meetingSelect = document.getElementById('meeting_point_id');
+  const meetingMapEl = document.getElementById('meetingMap');
 
   const placeIdEl = document.getElementById('google_place_id');
   const placeNameEl = document.getElementById('google_place_name');
@@ -607,6 +628,15 @@ window.initHotelAutocomplete = function () {
   const lngEl = document.getElementById('google_lng');
   const sourceEl = document.getElementById('pickup_source');
   const outEl = document.getElementById('pickup_out_of_bounds');
+  const meetingPointOptions = Array.from(meetingSelect?.options || [])
+    .filter(opt => opt.value && opt.dataset.lat && opt.dataset.lng)
+    .map(opt => ({
+      id: opt.value,
+      name: opt.textContent.trim(),
+      lat: parseFloat(opt.dataset.lat),
+      lng: parseFloat(opt.dataset.lng),
+    }))
+    .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng));
 
   const bounds = new google.maps.LatLngBounds(
     new google.maps.LatLng(18.760, 98.955),
@@ -624,6 +654,33 @@ window.initHotelAutocomplete = function () {
     meetingWrap.style.display = 'none';
   };
 
+  const resetPickupFields = () => {
+    input.value = '';
+    if (meetingSelect) meetingSelect.value = '';
+    clearGoogle();
+    clearLatLng();
+    hideAllStatus();
+    setHidden(sourceEl, '');
+  };
+
+  const syncPickupMode = () => {
+    const isSelfDrive = !!selfDrive?.checked;
+    input.required = !isSelfDrive;
+
+    if (pickupFields) {
+      pickupFields.style.display = isSelfDrive ? 'none' : '';
+    }
+    if (pickupLabel) {
+      pickupLabel.style.display = isSelfDrive ? 'none' : '';
+    }
+
+    if (isSelfDrive) {
+      resetPickupFields();
+      setHidden(sourceEl, 'self_drive');
+      return;
+    }
+  };
+
   const clearGoogle = () => {
     setHidden(placeIdEl, '');
     setHidden(placeNameEl, '');
@@ -634,7 +691,6 @@ window.initHotelAutocomplete = function () {
     setHidden(latEl, '');
     setHidden(lngEl, '');
     setHidden(outEl, '0');
-    if (manualLatLngText) manualLatLngText.textContent = '-';
   };
 
   const applyLatLng = (lat, lng) => {
@@ -653,7 +709,6 @@ window.initHotelAutocomplete = function () {
       setHidden(outEl, '1');
     }
 
-    if (manualLatLngText) manualLatLngText.textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
   };
 
   const autocomplete = new google.maps.places.Autocomplete(input, {
@@ -665,6 +720,8 @@ window.initHotelAutocomplete = function () {
   });
 
   autocomplete.addListener('place_changed', () => {
+    if (selfDrive?.checked) return;
+
     const place = autocomplete.getPlace();
     if (!place || !place.geometry || !place.geometry.location) return;
 
@@ -674,13 +731,11 @@ window.initHotelAutocomplete = function () {
       clearGoogle();
       clearLatLng();
       hideAllStatus();
-      manualWrap.style.display = 'none';
-      if (manualAddress) manualAddress.required = false;
       return;
     }
 
-    manualWrap.style.display = 'none';
-    if (manualAddress) manualAddress.required = false;
+    meetingWrap.style.display = 'none';
+    if (meetingSelect) meetingSelect.value = '';
 
     setHidden(sourceEl, 'google');
     setHidden(placeIdEl, place.place_id || '');
@@ -693,13 +748,13 @@ window.initHotelAutocomplete = function () {
   });
 
   let map = null;
-  let marker = null;
-  const geocoder = new google.maps.Geocoder();
+  let meetingMarkers = [];
+  let infoWindow = null;
 
   const ensureMap = () => {
     if (map) return;
-    const mapEl = document.getElementById('manualMap');
-    map = new google.maps.Map(mapEl, {
+    if (!meetingMapEl) return;
+    map = new google.maps.Map(meetingMapEl, {
       center: { lat: 18.7883, lng: 98.9853 },
       zoom: 13,
       mapTypeControl: false,
@@ -715,80 +770,116 @@ window.initHotelAutocomplete = function () {
       fillOpacity: 0,
       clickable: false,
     });
-    map.addListener('click', (e) => {
-      placeMarker(e.latLng);
+    infoWindow = new google.maps.InfoWindow();
+  };
+
+  const focusMeetingPoint = (point, openInfo = false) => {
+    if (!map || !point) return;
+    map.panTo({ lat: point.lat, lng: point.lng });
+    map.setZoom(15);
+    setHidden(sourceEl, 'meeting_point');
+    applyLatLng(point.lat, point.lng);
+    setHidden(outEl, '1');
+    pickupFound.style.display = 'none';
+    meetingWrap.style.display = 'block';
+    if (meetingSelect) meetingSelect.value = String(point.id);
+
+    if (openInfo && infoWindow) {
+      const marker = meetingMarkers.find(item => String(item.point.id) === String(point.id))?.marker;
+      if (marker) {
+        infoWindow.setContent(`<strong>${point.name}</strong>`);
+        infoWindow.open({ anchor: marker, map });
+      }
+    }
+  };
+
+  const renderMeetingMarkers = () => {
+    if (!map) return;
+    meetingMarkers.forEach(item => item.marker.setMap(null));
+    meetingMarkers = meetingPointOptions.map(point => {
+      const marker = new google.maps.Marker({
+        position: { lat: point.lat, lng: point.lng },
+        map,
+        title: point.name,
+      });
+
+      marker.addListener('click', () => {
+        focusMeetingPoint(point, true);
+      });
+
+      return { point, marker };
     });
   };
 
-  const placeMarker = (latLng) => {
-    if (!marker) {
-      marker = new google.maps.Marker({ position: latLng, map: map, draggable: true });
-      marker.addListener('dragend', () => {
-        const p = marker.getPosition();
-        applyLatLng(p.lat(), p.lng());
-      });
-    } else {
-      marker.setPosition(latLng);
-    }
-    map.panTo(latLng);
-    applyLatLng(latLng.lat(), latLng.lng());
-  };
-
-  const showManual = () => {
-    manualWrap.style.display = 'block';
-    if (manualAddress) manualAddress.required = true;
+  const showMeetingMap = () => {
     hideAllStatus();
     clearGoogle();
     clearLatLng();
-    setHidden(sourceEl, 'manual');
     ensureMap();
+    renderMeetingMarkers();
+    meetingWrap.style.display = 'block';
+    setHidden(sourceEl, 'meeting_point');
+    setHidden(outEl, '1');
+
+    if (meetingSelect?.value) {
+      const selectedPoint = meetingPointOptions.find(point => String(point.id) === String(meetingSelect.value));
+      if (selectedPoint) {
+        focusMeetingPoint(selectedPoint);
+        return;
+      }
+    }
+
+    if (meetingPointOptions.length > 0) {
+      const mapBounds = new google.maps.LatLngBounds();
+      meetingPointOptions.forEach(point => mapBounds.extend({ lat: point.lat, lng: point.lng }));
+      map.fitBounds(mapBounds);
+    }
   };
 
   let t = null;
   input.addEventListener('input', () => {
+    if (selfDrive?.checked) return;
+
     hideAllStatus();
     clearGoogle();
     setHidden(sourceEl, '');
     clearLatLng();
+    if (meetingSelect) meetingSelect.value = '';
 
     if (t) clearTimeout(t);
     t = setTimeout(() => {
       const val = (input.value || '').trim();
       if (val.length >= 2) {
-        if (!placeIdEl.value) showManual();
+        if (!placeIdEl.value) showMeetingMap();
       } else {
-        manualWrap.style.display = 'none';
-        if (manualAddress) manualAddress.required = false;
+        meetingWrap.style.display = 'none';
       }
     }, 600);
   });
 
   input.addEventListener('blur', () => {
+    if (selfDrive?.checked) return;
+
     const val = (input.value || '').trim();
     if (val.length >= 2 && !placeIdEl.value) {
-      showManual();
+      showMeetingMap();
     }
   });
 
-  let gTimer = null;
-  manualAddress?.addEventListener('input', () => {
-    if (gTimer) clearTimeout(gTimer);
-    gTimer = setTimeout(() => {
-      const addr = (manualAddress.value || '').trim();
-      if (!addr) return;
-      geocoder.geocode({
-        address: addr,
-        componentRestrictions: { country: 'TH' },
-      }, (results, status) => {
-        if (status !== 'OK' || !results || !results[0]) return;
-        const loc = results[0].geometry.location;
-        ensureMap();
-        map.setCenter(loc);
-        map.setZoom(15);
-        placeMarker(loc);
-      });
-    }, 700);
+  meetingSelect?.addEventListener('change', () => {
+    const selectedPoint = meetingPointOptions.find(point => String(point.id) === String(meetingSelect.value));
+    if (!selectedPoint) {
+      clearLatLng();
+      setHidden(outEl, '1');
+      return;
+    }
+
+    showMeetingMap();
+    focusMeetingPoint(selectedPoint, true);
   });
+
+  selfDrive?.addEventListener('change', syncPickupMode);
+  syncPickupMode();
 };
 </script>
 

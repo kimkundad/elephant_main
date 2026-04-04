@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AgentReportController;
 use App\Http\Controllers\Admin\SiteTextController;
 use App\Http\Controllers\Admin\TourTagController;
 use App\Http\Controllers\Admin\PageMediaController;
+use App\Http\Controllers\Admin\ReviewController;
 
 Route::get('/api/google-reviews', [GoogleReviewsController::class, 'index']);
 
@@ -215,6 +216,7 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::resource('page-media', PageMediaController::class)
             ->parameters(['page-media' => 'pageMedia'])
             ->except(['show']);
+        Route::resource('reviews', ReviewController::class)->except(['show']);
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
         Route::resource('bookings', BookingController::class)->only([
             'index', 'create', 'store'

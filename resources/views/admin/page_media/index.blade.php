@@ -76,6 +76,9 @@
                   <tr>
                     <td>
                       <div class="fw-bold">{{ $item->key }}</div>
+                      @if(!empty($keyDescriptions[$item->key] ?? null))
+                        <div class="text-muted fs-7">{{ $keyDescriptions[$item->key] }}</div>
+                      @endif
                       @if($item->title)
                         <div class="text-muted fs-7">{{ $item->title }}</div>
                       @endif
