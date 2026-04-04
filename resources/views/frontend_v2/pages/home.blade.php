@@ -1057,15 +1057,13 @@ height: 50px;
                 {{-- แถบสรุปด้านบน --}}
                 <div class="gr-summary">
                   <div class="gr-summary-left">
-                    <div class="gr-google">Google <span>Reviews</span></div>
+                    <div class="gr-google">Customer <span>Reviews</span></div>
                     <div class="gr-score">
                       <span id="gr-rating" class="gr-rating">0.0</span>
                       <span id="gr-stars" class="gr-stars">☆☆☆☆☆</span>
                       <span id="gr-total" class="gr-total">(0)</span>
                     </div>
                   </div>
-
-                  <a id="gr-btn" href="#" target="_blank" class="gr-btn">Review us on Google</a>
                 </div>
 
                 {{-- Slider --}}
@@ -1215,13 +1213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const sliderEl = document.getElementById('google-review-slider');
-  const reviewButton = document.getElementById('gr-btn');
   if (!sliderEl) return;
-
-  const syncReviewButtonLabel = () => {
-    if (!reviewButton) return;
-    reviewButton.textContent = window.innerWidth <= 767 ? 'Review' : 'Review us on Google';
-  };
 
   const escapeHtml = (value) => String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -1248,9 +1240,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `<div class="gr-avatar-fallback" style="background:${color};">${svg}</div>`;
   };
 
-  syncReviewButtonLabel();
-  window.addEventListener('resize', syncReviewButtonLabel);
-
   try {
     const res = await fetch('/api/google-reviews');
     const data = await res.json();
@@ -1258,11 +1247,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // summary
     const rating = data.rating ?? 0;
     const total = data.user_ratings_total ?? 0;
-    const googleUrl = data.google_url ?? 'https://g.page/r/Cde9V0h9AFuTEAI/review';
 
     document.getElementById('gr-rating').textContent = Number(rating).toFixed(1);
     document.getElementById('gr-total').textContent = `(${total.toLocaleString()})`;
-    document.getElementById('gr-btn').href = googleUrl;
 
     const fullStars = Math.round(rating);
     document.getElementById('gr-stars').textContent =
@@ -1273,10 +1260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       sliderEl.innerHTML = `
         <div class="item">
           <div class="testimonial-box" style="text-align:center;">
-            <h4 style="margin:0 0 10px;font-weight:900;">Be the first to review us ⭐</h4>
-            <a href="${googleUrl}" target="_blank" class="gr-btn" style="display:inline-block;">
-              Write Review
-            </a>
+            <h4 style="margin:0;font-weight:900;">Our first customer review will appear here soon ⭐</h4>
           </div>
         </div>
       `;

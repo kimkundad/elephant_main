@@ -2,14 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Review;
 use App\Models\Tour;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\TourAvailability; // ✅ เพิ่มบรรทัดนี้
 
 class TourController extends Controller
 {
+    private function createReviewCaptcha(string $tourSlug): array
+    {
+        $a = random_int(1, 9);
+        $b = random_int(1, 9);
+
+        session([
+            "tour_review_captcha_answer.{$tourSlug}" => $a + $b,
+            "tour_review_captcha_question.{$tourSlug}" => "{$a} + {$b}",
+        ]);
+
+        return ['question' => "{$a} + {$b}"];
+    }
+
+    private function approvedReviewsForTour(Tour $tour)
+    {
+        return Review::query()
+            ->active()
+            ->where('tour_id', $tour->id)
+            ->orderBy('sort_order')
+            ->orderByDesc('reviewed_at')
+            ->orderByDesc('id')
+            ->get();
+    }
+
     private function getBookableSessionsForDate($sessions, string $selectedDate, Carbon $now)
     {
         $isToday = ($selectedDate === $now->toDateString());
@@ -103,6 +129,9 @@ public function show(string $slug, Request $request)
             ->where('is_active', 1)
             ->firstOrFail();
 
+        $tourReviews = $this->approvedReviewsForTour($tour);
+        $reviewCaptcha = $this->createReviewCaptcha($tour->slug);
+
         $selectedDate = $request->query('date', now()->toDateString());
         $month = $request->query('month', now()->format('Y-m'));
 
@@ -120,7 +149,7 @@ public function show(string $slug, Request $request)
             $sessionsForSelected = $this->getBookableSessionsForDate($sessions, $selectedDate, $fallbackNow);
 
             return view('frontend_v2.pages.tours.show', compact(
-                'tour', 'selectedDate', 'month', 'sessionsForSelected'
+                'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha'
             ));
         }
 
@@ -142,8 +171,69 @@ public function show(string $slug, Request $request)
             ->values();
 
         return view('frontend_v2.pages.tours.show', compact(
-            'tour', 'selectedDate', 'month', 'sessionsForSelected'
+            'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha'
         ));
+    }
+
+    public function storeReviewV2(string $slug, Request $request)
+    {
+        $tour = Tour::query()
+            ->where('slug', $slug)
+            ->where('is_active', 1)
+            ->firstOrFail();
+
+        $rateKey = 'tour-review:' . $request->ip() . ':' . $tour->id;
+
+        if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+            return back()
+                ->withErrors(['review_form' => 'Too many review attempts. Please try again later.'])
+                ->withInput();
+        }
+
+        $data = $request->validate([
+            'author_name' => ['required', 'string', 'max:255'],
+            'author_email' => ['nullable', 'email', 'max:255'],
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'review_text' => ['required', 'string', 'min:20', 'max:5000'],
+            'captcha_answer' => ['required', 'integer'],
+            'website' => ['nullable', 'max:0'],
+        ]);
+
+        $expectedAnswer = (int) session("tour_review_captcha_answer.{$tour->slug}", -1);
+
+        if ((int) $data['captcha_answer'] !== $expectedAnswer) {
+            RateLimiter::hit($rateKey, 3600);
+
+            return back()
+                ->withErrors(['captcha_answer' => 'Incorrect captcha answer. Please try again.'])
+                ->withInput();
+        }
+
+        Review::create([
+            'tour_id' => $tour->id,
+            'author_name' => $data['author_name'],
+            'author_email' => $data['author_email'] ?? null,
+            'source' => Review::SOURCE_CUSTOMER,
+            'rating' => (int) $data['rating'],
+            'review_text' => $data['review_text'],
+            'avatar_color' => Review::randomAvatarColor(),
+            'avatar_variant' => Review::randomAvatarVariant(),
+            'reviewed_at' => now(),
+            'sort_order' => 0,
+            'is_active' => false,
+            'ip_address' => $request->ip(),
+            'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
+        ]);
+
+        RateLimiter::clear($rateKey);
+
+        return redirect()
+            ->route('frontend.tours.show.v2', [
+                'slug' => $tour->slug,
+                'month' => $request->query('month', now()->format('Y-m')),
+                'date' => $request->query('date', now()->toDateString()),
+            ])
+            ->with('review_success', 'Thank you. Your review has been submitted and is waiting for approval.');
     }
 
 

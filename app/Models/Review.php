@@ -9,6 +9,9 @@ class Review extends Model
 {
     use HasFactory;
 
+    public const SOURCE_ADMIN = 'admin';
+    public const SOURCE_CUSTOMER = 'customer';
+
     public const AVATAR_COLORS = [
         '#A678A6',
         '#6F98C9',
@@ -25,7 +28,10 @@ class Review extends Model
     ];
 
     protected $fillable = [
+        'tour_id',
         'author_name',
+        'author_email',
+        'source',
         'rating',
         'review_text',
         'avatar_color',
@@ -33,12 +39,19 @@ class Review extends Model
         'reviewed_at',
         'sort_order',
         'is_active',
+        'ip_address',
+        'user_agent',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    public function tour()
+    {
+        return $this->belongsTo(Tour::class);
+    }
 
     public function scopeActive($query)
     {

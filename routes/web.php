@@ -113,6 +113,7 @@ Route::name('frontend.')->group(function () {
     Route::get('/tours', fn () => redirect()->route('frontend.program'))->name('tours.index');
     Route::get('/tours/{slug}', [FrontTourController::class, 'showV2'])->name('tours.show');
     Route::get('/v2/tours/{slug}', [FrontTourController::class, 'showV2'])->name('tours.show.v2');
+    Route::post('/v2/tours/{slug}/reviews', [FrontTourController::class, 'storeReviewV2'])->name('tours.reviews.store.v2');
 
     // ดึงรอบตามวันที่ (ไว้ทำเปลี่ยนวันแบบในรูป)
     Route::get('/tours/{slug}/sessions', [FrontTourController::class, 'sessionsForDate'])
@@ -217,6 +218,7 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
             ->parameters(['page-media' => 'pageMedia'])
             ->except(['show']);
         Route::resource('reviews', ReviewController::class)->except(['show']);
+        Route::post('reviews/{review}/toggle-status', [ReviewController::class, 'toggleStatus'])->name('reviews.toggle-status');
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
         Route::resource('bookings', BookingController::class)->only([
             'index', 'create', 'store'

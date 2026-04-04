@@ -226,11 +226,179 @@
   color:#4b4238;
   line-height:1.9;
 }
+.tour-reviews-card,
+.tour-review-form-card{
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 18px 40px rgba(0,0,0,.06);
+  margin-top:22px;
+}
+.tour-reviews-list{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.tour-review-item{
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+  padding-bottom:18px;
+  border-bottom:1px solid #eee7dd;
+}
+.tour-review-item:last-child{
+  padding-bottom:0;
+  border-bottom:0;
+}
+.tour-review-avatar{
+  width:54px;
+  height:54px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  flex:0 0 auto;
+  overflow:hidden;
+}
+.tour-review-avatar svg{
+  width:34px;
+  height:34px;
+}
+.tour-review-head{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:4px;
+}
+.tour-review-name{
+  font-weight:700;
+  color:#2b2621;
+}
+.tour-review-date{
+  font-size:12px;
+  color:#8a7f73;
+}
+.tour-review-stars{
+  color:#e07a20;
+  letter-spacing:.08em;
+  font-size:14px;
+  margin-bottom:8px;
+}
+.tour-review-text{
+  color:#4b4238;
+  line-height:1.75;
+  white-space:pre-line;
+}
+.tour-review-empty{
+  color:#7e756b;
+  line-height:1.7;
+}
+.tour-review-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:16px;
+}
+.tour-form-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.tour-form-group label{
+  font-size:13px;
+  font-weight:700;
+  color:#2b2621;
+}
+.tour-form-control{
+  width:100%;
+  border:1px solid #ddd3c7;
+  border-radius:12px;
+  padding:12px 14px;
+  background:#fcfbf8;
+  color:#2b2621;
+}
+textarea.tour-form-control{
+  min-height:150px;
+  resize:vertical;
+}
+.tour-rating-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.tour-rating-option{
+  position:relative;
+}
+.tour-rating-option input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.tour-rating-option span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:54px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #ddd3c7;
+  background:#fcfbf8;
+  color:#6b6156;
+  font-weight:700;
+  cursor:pointer;
+}
+.tour-rating-option input:checked + span{
+  background:#2b2621;
+  color:#fff;
+  border-color:#2b2621;
+}
+.tour-review-submit{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:999px;
+  background:#2b2621;
+  color:#fff;
+  padding:12px 22px;
+  font-weight:700;
+}
+.tour-review-note{
+  font-size:12px;
+  color:#8a7f73;
+}
+.tour-alert{
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:16px;
+  font-size:14px;
+}
+.tour-alert-success{
+  background:#edf8ee;
+  color:#256b32;
+}
+.tour-alert-error{
+  background:#fff2f2;
+  color:#a63d3d;
+}
+.tour-field-error{
+  color:#b53d3d;
+  font-size:12px;
+}
+.tour-honeypot{
+  position:absolute;
+  left:-9999px;
+  opacity:0;
+  pointer-events:none;
+}
 
 @media (max-width: 992px){
   .tour-grid{ grid-template-columns: 1fr; }
   .tour-title{ font-size:34px; }
   .tour-gallery{ column-count:2; }
+  .tour-review-grid{ grid-template-columns: 1fr; }
 }
 @media (max-width: 575px){
   .tour-gallery{ column-count:1; }
@@ -374,6 +542,107 @@
         <div class="tour-details-box">
           <div class="tour-details-title">{{ __('tour_show.details') }}</div>
           <div class="tour-details-body">{!! $tourDescription !!}</div>
+        </div>
+
+        <div class="tour-reviews-card">
+          <div class="tour-details-title">Customer Reviews</div>
+          @if($tourReviews->isEmpty())
+            <div class="tour-review-empty">No reviews yet. Be the first guest to share your experience for this tour.</div>
+          @else
+            <div class="tour-reviews-list">
+              @foreach($tourReviews as $review)
+                <div class="tour-review-item">
+                  <div class="tour-review-avatar" style="background:{{ $review->avatar_color ?: '#A678A6' }};">
+                    @php($variant = $review->avatar_variant ?: 'classic')
+                    @if($variant === 'soft')
+                      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="21" r="11" fill="currentColor" opacity=".95"/><path d="M17 53c1.8-8.8 8.1-14 15-14s13.2 5.2 15 14" fill="currentColor" opacity=".95"/></svg>
+                    @elseif($variant === 'round')
+                      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="21.5" r="10.5" fill="currentColor" opacity=".95"/><path d="M15 53c0-9.4 7.6-17 17-17s17 7.6 17 17" fill="currentColor" opacity=".95"/></svg>
+                    @else
+                      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="22" r="12" fill="currentColor" opacity=".95"/><path d="M13 54c0-10.493 8.507-19 19-19s19 8.507 19 19" fill="currentColor" opacity=".95"/></svg>
+                    @endif
+                  </div>
+                  <div class="tour-review-content">
+                    <div class="tour-review-head">
+                      <div class="tour-review-name">{{ $review->author_name }}</div>
+                      <div class="tour-review-date">{{ optional($review->reviewed_at)->format('d M Y H:i') ?: optional($review->created_at)->format('d M Y H:i') }}</div>
+                    </div>
+                    <div class="tour-review-stars">{{ str_repeat('★', (int) $review->rating) }}{{ str_repeat('☆', 5 - (int) $review->rating) }}</div>
+                    <div class="tour-review-text">{{ $review->review_text }}</div>
+                  </div>
+                </div>
+              @endforeach
+            </div>
+          @endif
+        </div>
+
+        <div class="tour-review-form-card" id="tour-review-form">
+          <div class="tour-details-title">Write a Review</div>
+
+          @if(session('review_success'))
+            <div class="tour-alert tour-alert-success">{{ session('review_success') }}</div>
+          @endif
+
+          @if($errors->has('review_form'))
+            <div class="tour-alert tour-alert-error">{{ $errors->first('review_form') }}</div>
+          @endif
+
+          <form method="POST" action="{{ route('frontend.tours.reviews.store.v2', ['slug' => $tour->slug, 'month' => $month, 'date' => $selectedDate]) }}">
+            @csrf
+
+            <div class="tour-honeypot" aria-hidden="true">
+              <label for="website">Website</label>
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="tour-review-grid">
+              <div class="tour-form-group">
+                <label for="author_name">Your Name</label>
+                <input id="author_name" type="text" name="author_name" class="tour-form-control" value="{{ old('author_name') }}" required>
+                @error('author_name')<div class="tour-field-error">{{ $message }}</div>@enderror
+              </div>
+
+              <div class="tour-form-group">
+                <label for="author_email">Email</label>
+                <input id="author_email" type="email" name="author_email" class="tour-form-control" value="{{ old('author_email') }}">
+                @error('author_email')<div class="tour-field-error">{{ $message }}</div>@enderror
+              </div>
+            </div>
+
+            <div class="tour-form-group" style="margin-top:16px;">
+              <label>Your Rating</label>
+              <div class="tour-rating-row">
+                @for($i = 5; $i >= 1; $i--)
+                  <label class="tour-rating-option">
+                    <input type="radio" name="rating" value="{{ $i }}" {{ (int) old('rating', 5) === $i ? 'checked' : '' }}>
+                    <span>{{ $i }}★</span>
+                  </label>
+                @endfor
+              </div>
+              @error('rating')<div class="tour-field-error">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="tour-form-group" style="margin-top:16px;">
+              <label for="review_text">Your Review</label>
+              <textarea id="review_text" name="review_text" class="tour-form-control" required>{{ old('review_text') }}</textarea>
+              @error('review_text')<div class="tour-field-error">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="tour-review-grid" style="margin-top:16px;">
+              <div class="tour-form-group">
+                <label for="captcha_answer">Anti-spam: {{ $reviewCaptcha['question'] }} = ?</label>
+                <input id="captcha_answer" type="number" name="captcha_answer" class="tour-form-control" required>
+                @error('captcha_answer')<div class="tour-field-error">{{ $message }}</div>@enderror
+              </div>
+              <div class="tour-form-group" style="justify-content:flex-end;">
+                <div class="tour-review-note">New reviews are saved first, then shown on the website after admin approval.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:18px;">
+              <button type="submit" class="tour-review-submit">Submit Review</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

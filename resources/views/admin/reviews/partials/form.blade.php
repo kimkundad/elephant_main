@@ -31,9 +31,24 @@
       <div class="card-body">
         <div class="row g-4">
           <div class="col-md-6">
+            <label class="form-label">Tour</label>
+            <select class="form-select @error('tour_id') is-invalid @enderror" name="tour_id">
+              <option value="">All tours / general</option>
+              @foreach(($tours ?? []) as $tour)
+                <option value="{{ $tour->id }}" @selected((int) old('tour_id', $review->tour_id ?? 0) === (int) $tour->id)>{{ $tour->name }}</option>
+              @endforeach
+            </select>
+            @error('tour_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+          <div class="col-md-6">
             <label class="form-label">Reviewer Name</label>
             <input type="text" class="form-control @error('author_name') is-invalid @enderror" name="author_name" value="{{ old('author_name', $review->author_name ?? '') }}" required>
             @error('author_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Reviewer Email</label>
+            <input type="email" class="form-control @error('author_email') is-invalid @enderror" name="author_email" value="{{ old('author_email', $review->author_email ?? '') }}">
+            @error('author_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="col-md-3">
             <label class="form-label">Stars</label>

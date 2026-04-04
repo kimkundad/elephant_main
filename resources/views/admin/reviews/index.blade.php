@@ -27,10 +27,11 @@
                 <tr class="fw-bold text-muted">
                   <th>ID</th>
                   <th>Reviewer</th>
+                  <th>Source</th>
+                  <th>Tour</th>
                   <th>Rating</th>
                   <th>Review</th>
                   <th>Date</th>
-                  <th>Sort</th>
                   <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>
@@ -46,22 +47,41 @@
                         </div>
                         <div>
                           <div class="fw-bold">{{ $review->author_name }}</div>
-                          <div class="text-muted fs-7">{{ ucfirst($review->avatar_variant ?: 'classic') }}</div>
+                          <div class="text-muted fs-7">{{ $review->author_email ?: ucfirst($review->avatar_variant ?: 'classic') }}</div>
                         </div>
                       </div>
+                    </td>
+                    <td>
+                      @if($review->source === \App\Models\Review::SOURCE_CUSTOMER)
+                        <span class="badge badge-light-warning">Customer</span>
+                      @else
+                        <span class="badge badge-light-primary">Admin</span>
+                      @endif
+                    </td>
+                    <td>
+                      @if($review->tour)
+                        <div class="fw-semibold">{{ $review->tour->name }}</div>
+                      @else
+                        <span class="text-muted">All tours / general</span>
+                      @endif
                     </td>
                     <td style="color:#f97316;">{{ str_repeat('★', $review->rating) }}</td>
                     <td><div class="text-gray-700">{{ \Illuminate\Support\Str::limit($review->review_text, 110) }}</div></td>
                     <td>{{ optional($review->reviewed_at)->format('d M Y H:i') ?: '-' }}</td>
-                    <td>{{ $review->sort_order }}</td>
                     <td>
                       @if($review->is_active)
-                        <span class="badge badge-light-success">Active</span>
+                        <span class="badge badge-light-success">Approved</span>
                       @else
-                        <span class="badge badge-light-secondary">Hidden</span>
+                        <span class="badge badge-light-secondary">Pending / Hidden</span>
                       @endif
                     </td>
                     <td class="text-end">
+                      <form action="{{ route('admin.reviews.toggle-status', $review) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm {{ $review->is_active ? 'btn-light-warning' : 'btn-light-success' }}">
+                          {{ $review->is_active ? 'Hide' : 'Approve' }}
+                        </button>
+                      </form>
                       <a href="{{ route('admin.reviews.edit', $review) }}" class="btn btn-sm btn-light-primary">Edit</a>
                       <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this review?')">
                         @csrf
@@ -72,7 +92,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="8" class="text-center text-muted py-8">No reviews found.</td>
+                    <td colspan="9" class="text-center text-muted py-8">No reviews found.</td>
                   </tr>
                 @endforelse
               </tbody>
