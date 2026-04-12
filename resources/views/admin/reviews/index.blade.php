@@ -65,7 +65,7 @@
                         <span class="text-muted">All tours / general</span>
                       @endif
                     </td>
-                    <td style="color:#f97316;">{{ str_repeat('★', $review->rating) }}</td>
+                    <td style="color:#f97316;">{!! str_repeat('&starf;', $review->rating) !!}</td>
                     <td><div class="text-gray-700">{{ \Illuminate\Support\Str::limit($review->review_text, 110) }}</div></td>
                     <td>{{ optional($review->reviewed_at)->format('d M Y H:i') ?: '-' }}</td>
                     <td>
