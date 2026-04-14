@@ -164,7 +164,10 @@
           </div>
 
           <div class="single-form">
-            <label class="mb-2 d-block">คำถามยืนยัน: {{ $captchaQuestion ?? session('contact_captcha_question') }} = ?</label>
+            <label class="mb-2 d-block">คำถามยืนยัน: {{ $captchaQuestion }} = ?</label>
+            <input type="hidden" name="captcha_left" value="{{ $captchaLeft }}">
+            <input type="hidden" name="captcha_right" value="{{ $captchaRight }}">
+            <input type="hidden" name="captcha_signature" value="{{ $captchaSignature }}">
             <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" placeholder="ใส่คำตอบเพื่อยืนยันว่าไม่ใช่บอท" required>
             @error('captcha_answer')
               <div class="text-danger mt-1">{{ $message }}</div>

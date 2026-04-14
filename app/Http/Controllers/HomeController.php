@@ -128,17 +128,13 @@ class HomeController extends Controller
 
     public function contactV2()
     {
-        $a = random_int(1, 9);
-        $b = random_int(1, 9);
-        $question = "{$a} + {$b}";
-
-        session([
-            'contact_captcha_answer' => $a + $b,
-            'contact_captcha_question' => $question,
-        ]);
+        $captcha = $this->makeCaptchaPayload('contact-v2');
 
         return view('frontend_v2.pages.contact', [
-            'captchaQuestion' => $question,
+            'captchaQuestion' => $captcha['question'],
+            'captchaLeft' => $captcha['left'],
+            'captchaRight' => $captcha['right'],
+            'captchaSignature' => $captcha['signature'],
         ]);
     }
 
@@ -151,10 +147,18 @@ class HomeController extends Controller
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
             'captcha_answer' => 'required|numeric',
+            'captcha_left' => 'required|integer|min:1|max:9',
+            'captcha_right' => 'required|integer|min:1|max:9',
+            'captcha_signature' => 'required|string|size:64',
         ]);
 
-        $expected = (int) session('contact_captcha_answer', -1);
-        if ((int) $data['captcha_answer'] !== $expected) {
+        if (!$this->captchaIsValid(
+            'contact-v2',
+            (int) $data['captcha_left'],
+            (int) $data['captcha_right'],
+            (int) $data['captcha_answer'],
+            (string) $data['captcha_signature']
+        )) {
             return back()
                 ->withErrors(['captcha_answer' => 'คำตอบไม่ถูกต้อง'])
                 ->withInput();
@@ -170,6 +174,26 @@ class HomeController extends Controller
         return redirect()
             ->route('frontend.contact.v2')
             ->with('success', 'ขอบคุณค่ะ เราได้รับข้อความของคุณแล้ว และจะติดต่อกลับโดยเร็วที่สุด');
+    }
+
+    private function makeCaptchaPayload(string $scope): array
+    {
+        $left = random_int(1, 9);
+        $right = random_int(1, 9);
+
+        return [
+            'left' => $left,
+            'right' => $right,
+            'question' => "{$left} + {$right}",
+            'signature' => hash_hmac('sha256', "{$scope}|{$left}|{$right}", (string) config('app.key')),
+        ];
+    }
+
+    private function captchaIsValid(string $scope, int $left, int $right, int $answer, string $signature): bool
+    {
+        $expectedSignature = hash_hmac('sha256', "{$scope}|{$left}|{$right}", (string) config('app.key'));
+
+        return hash_equals($expectedSignature, $signature) && $answer === ($left + $right);
     }
 
     public function elephants()
