@@ -135,9 +135,18 @@
         @if(session('success'))
           <div class="alert alert-success" style="margin-top:16px;">{{ session('success') }}</div>
         @endif
+        @error('form')
+          <div class="alert alert-danger" style="margin-top:16px;">{{ $message }}</div>
+        @enderror
 
         <form class="contact-form" method="POST" action="{{ route('frontend.contact.v2.store') }}">
           @csrf
+          <input type="hidden" name="form_issued_at" value="{{ $contactFormIssuedAt }}">
+          <input type="hidden" name="form_issued_signature" value="{{ $contactFormIssuedSignature }}">
+          <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+            <label for="contact_website">Website</label>
+            <input id="contact_website" type="text" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <div class="single-form">
             <input type="text" name="subject" value="{{ old('subject') }}" placeholder="Subject" required>
             @error('subject')<div class="text-danger mt-1">{{ $message }}</div>@enderror

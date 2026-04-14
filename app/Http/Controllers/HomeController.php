@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Contact;
 use App\Models\Elephant;
 use App\Models\TourTag;
+use Illuminate\Support\Facades\RateLimiter;
 
 class HomeController extends Controller
 {
@@ -135,11 +136,21 @@ class HomeController extends Controller
             'captchaLeft' => $captcha['left'],
             'captchaRight' => $captcha['right'],
             'captchaSignature' => $captcha['signature'],
+            'contactFormIssuedAt' => now()->timestamp,
+            'contactFormIssuedSignature' => $this->signContactFormTimestamp(now()->timestamp),
         ]);
     }
 
     public function contactStoreV2(Request $request)
     {
+        $rateKey = 'contact-form:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+            return back()
+                ->withErrors(['form' => 'ส่งข้อความเร็วเกินไป กรุณาลองใหม่อีกครั้งในภายหลัง'])
+                ->withInput();
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -150,7 +161,21 @@ class HomeController extends Controller
             'captcha_left' => 'required|integer|min:1|max:9',
             'captcha_right' => 'required|integer|min:1|max:9',
             'captcha_signature' => 'required|string|size:64',
+            'website' => 'nullable|max:0',
+            'form_issued_at' => 'required|integer',
+            'form_issued_signature' => 'required|string|size:64',
         ]);
+
+        if (!$this->contactFormTimingIsValid(
+            (int) $data['form_issued_at'],
+            (string) $data['form_issued_signature']
+        )) {
+            RateLimiter::hit($rateKey, 600);
+
+            return back()
+                ->withErrors(['form' => 'ไม่สามารถส่งแบบฟอร์มนี้ได้ กรุณาลองเปิดหน้าใหม่แล้วส่งอีกครั้ง'])
+                ->withInput();
+        }
 
         if (!$this->captchaIsValid(
             'contact-v2',
@@ -159,6 +184,8 @@ class HomeController extends Controller
             (int) $data['captcha_answer'],
             (string) $data['captcha_signature']
         )) {
+            RateLimiter::hit($rateKey, 600);
+
             return back()
                 ->withErrors(['captcha_answer' => 'คำตอบไม่ถูกต้อง'])
                 ->withInput();
@@ -170,6 +197,8 @@ class HomeController extends Controller
             'user_agent' => substr((string) $request->userAgent(), 0, 255),
             'submitted_at' => now(),
         ]);
+
+        RateLimiter::clear($rateKey);
 
         return redirect()
             ->route('frontend.contact.v2')
@@ -194,6 +223,23 @@ class HomeController extends Controller
         $expectedSignature = hash_hmac('sha256', "{$scope}|{$left}|{$right}", (string) config('app.key'));
 
         return hash_equals($expectedSignature, $signature) && $answer === ($left + $right);
+    }
+
+    private function signContactFormTimestamp(int $issuedAt): string
+    {
+        return hash_hmac('sha256', "contact-v2|{$issuedAt}", (string) config('app.key'));
+    }
+
+    private function contactFormTimingIsValid(int $issuedAt, string $signature): bool
+    {
+        $expectedSignature = $this->signContactFormTimestamp($issuedAt);
+        if (!hash_equals($expectedSignature, $signature)) {
+            return false;
+        }
+
+        $age = now()->timestamp - $issuedAt;
+
+        return $age >= 3 && $age <= 3600;
     }
 
     public function elephants()
