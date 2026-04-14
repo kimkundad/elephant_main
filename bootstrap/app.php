@@ -11,8 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->prependToGroup('web', \App\Http\Middleware\BypassSessionForBots::class);
 
-    $middleware->validateCsrfTokens(except: [
+        $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
         ]);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
