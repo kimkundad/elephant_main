@@ -631,6 +631,9 @@ textarea.tour-form-control{
             <div class="tour-review-grid" style="margin-top:16px;">
               <div class="tour-form-group">
                 <label for="captcha_answer">Anti-spam: {{ $reviewCaptcha['question'] }} = ?</label>
+                <input type="hidden" name="captcha_left" value="{{ $reviewCaptcha['left'] }}">
+                <input type="hidden" name="captcha_right" value="{{ $reviewCaptcha['right'] }}">
+                <input type="hidden" name="captcha_signature" value="{{ $reviewCaptcha['signature'] }}">
                 <input id="captcha_answer" type="number" name="captcha_answer" class="tour-form-control" required>
                 @error('captcha_answer')<div class="tour-field-error">{{ $message }}</div>@enderror
               </div>

@@ -135,9 +135,18 @@
         @if(session('success'))
           <div class="alert alert-success" style="margin-top:16px;">{{ session('success') }}</div>
         @endif
+        @error('form')
+          <div class="alert alert-danger" style="margin-top:16px;">{{ $message }}</div>
+        @enderror
 
         <form class="contact-form" method="POST" action="{{ route('frontend.contact.v2.store') }}">
           @csrf
+          <input type="hidden" name="form_issued_at" value="{{ $contactFormIssuedAt }}">
+          <input type="hidden" name="form_issued_signature" value="{{ $contactFormIssuedSignature }}">
+          <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+            <label for="contact_website">Website</label>
+            <input id="contact_website" type="text" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <div class="single-form">
             <input type="text" name="subject" value="{{ old('subject') }}" placeholder="Subject" required>
             @error('subject')<div class="text-danger mt-1">{{ $message }}</div>@enderror
@@ -164,7 +173,10 @@
           </div>
 
           <div class="single-form">
-            <label class="mb-2 d-block">คำถามยืนยัน: {{ $captchaQuestion ?? session('contact_captcha_question') }} = ?</label>
+            <label class="mb-2 d-block">คำถามยืนยัน: {{ $captchaQuestion }} = ?</label>
+            <input type="hidden" name="captcha_left" value="{{ $captchaLeft }}">
+            <input type="hidden" name="captcha_right" value="{{ $captchaRight }}">
+            <input type="hidden" name="captcha_signature" value="{{ $captchaSignature }}">
             <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" placeholder="ใส่คำตอบเพื่อยืนยันว่าไม่ใช่บอท" required>
             @error('captcha_answer')
               <div class="text-danger mt-1">{{ $message }}</div>

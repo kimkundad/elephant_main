@@ -14,15 +14,15 @@ class TourController extends Controller
 {
     private function createReviewCaptcha(string $tourSlug): array
     {
-        $a = random_int(1, 9);
-        $b = random_int(1, 9);
+        $left = random_int(1, 9);
+        $right = random_int(1, 9);
 
-        session([
-            "tour_review_captcha_answer.{$tourSlug}" => $a + $b,
-            "tour_review_captcha_question.{$tourSlug}" => "{$a} + {$b}",
-        ]);
-
-        return ['question' => "{$a} + {$b}"];
+        return [
+            'left' => $left,
+            'right' => $right,
+            'question' => "{$left} + {$right}",
+            'signature' => hash_hmac('sha256', "{$tourSlug}|{$left}|{$right}", (string) config('app.key')),
+        ];
     }
 
     private function approvedReviewsForTour(Tour $tour)
@@ -196,12 +196,22 @@ public function show(string $slug, Request $request)
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'review_text' => ['required', 'string', 'min:20', 'max:5000'],
             'captcha_answer' => ['required', 'integer'],
+            'captcha_left' => ['required', 'integer', 'min:1', 'max:9'],
+            'captcha_right' => ['required', 'integer', 'min:1', 'max:9'],
+            'captcha_signature' => ['required', 'string', 'size:64'],
             'website' => ['nullable', 'max:0'],
         ]);
 
-        $expectedAnswer = (int) session("tour_review_captcha_answer.{$tour->slug}", -1);
+        $expectedSignature = hash_hmac(
+            'sha256',
+            "{$tour->slug}|{$data['captcha_left']}|{$data['captcha_right']}",
+            (string) config('app.key')
+        );
 
-        if ((int) $data['captcha_answer'] !== $expectedAnswer) {
+        if (
+            !hash_equals($expectedSignature, (string) $data['captcha_signature'])
+            || (int) $data['captcha_answer'] !== ((int) $data['captcha_left'] + (int) $data['captcha_right'])
+        ) {
             RateLimiter::hit($rateKey, 3600);
 
             return back()
