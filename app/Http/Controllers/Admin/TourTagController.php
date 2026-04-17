@@ -12,6 +12,7 @@ class TourTagController extends Controller
     public function index()
     {
         $tags = TourTag::query()
+            ->withCount('tours')
             ->orderBy('sort_order')
             ->orderBy('id')
             ->paginate(20);

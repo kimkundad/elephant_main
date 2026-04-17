@@ -1195,10 +1195,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     heroSearchForm.addEventListener('submit', () => {
-      if (!heroTagSlug.value.trim()) {
-        heroSearchForm.querySelectorAll('input[name="tags[]"]').forEach((input) => {
-          if (input !== heroTagSlug) input.remove();
-        });
+      if (heroTagSlug.value.trim()) {
+        heroSearchInput.removeAttribute('name');
+      } else {
+        heroTagSlug.removeAttribute('name');
       }
     });
 

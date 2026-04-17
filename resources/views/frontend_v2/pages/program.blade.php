@@ -426,7 +426,7 @@ height: 50px;
 
     <div class="program-grid owl-carousel owl-theme js-program-slider">
       @forelse($tours as $tour)
-        <div class="program-item js-program-item" data-tour-tags="{{ $tour->tags->pluck('slug')->implode(',') }}">
+        <div class="program-item js-program-item" data-tour-tags="{{ json_encode($tour->tags->pluck('slug')->values()->all()) }}">
           <div class="program-media">
             <img src="{{ $tour->thumbnail }}" alt="{{ $tour->name }}">
           </div>
@@ -569,10 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var hasSearchQuery = !!(currentUrl.searchParams.get('q') || '').trim();
 
     items.forEach(function (item) {
-      var itemTags = (item.getAttribute('data-tour-tags') || '')
-        .split(',')
-        .map(function (tag) { return tag.trim(); })
-        .filter(Boolean);
+      var itemTags = JSON.parse(item.getAttribute('data-tour-tags') || '[]');
 
       var matched = selectedTags.length === 0 || selectedTags.some(function (tag) {
         return itemTags.indexOf(tag) !== -1;
@@ -586,26 +583,33 @@ document.addEventListener('DOMContentLoaded', function () {
     if (resultCountEl) resultCountEl.textContent = String(visibleCount);
     if (emptyState) emptyState.hidden = visibleCount !== 0;
 
-    if (hasSearchQuery && selectedTags.length === 0) {
-      clearQueryAndReload([]);
-      return;
-    }
-
     updateUrl(selectedTags);
     renderProgramSlider();
+  }
+
+  function hasSearchQuery() {
+    return !!(new URL(window.location.href).searchParams.get('q') || '').trim();
   }
 
   chips.forEach(function (chip) {
     chip.addEventListener('click', function () {
       chip.classList.toggle('is-active');
-      applyFilter();
+      if (hasSearchQuery()) {
+        clearQueryAndReload(getSelectedTags());
+      } else {
+        applyFilter();
+      }
     });
   });
 
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
       chips.forEach(function (chip) { chip.classList.remove('is-active'); });
-      applyFilter();
+      if (hasSearchQuery()) {
+        clearQueryAndReload([]);
+      } else {
+        applyFilter();
+      }
     });
   }
 

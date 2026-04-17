@@ -39,6 +39,7 @@
                   <th>English</th>
                   <th>Slug</th>
                   <th>Sort</th>
+                  <th>Tours</th>
                   <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>
@@ -51,6 +52,9 @@
                     <td>{{ $tag->name_en }}</td>
                     <td><code>{{ $tag->slug }}</code></td>
                     <td>{{ $tag->sort_order }}</td>
+                    <td>
+                      <span class="badge badge-light-primary">{{ $tag->tours_count }}</span>
+                    </td>
                     <td>
                       @if($tag->is_active)
                         <span class="badge badge-light-success">Active</span>
@@ -69,7 +73,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="7" class="text-center text-muted">No tags found.</td>
+                    <td colspan="8" class="text-center text-muted">No tags found.</td>
                   </tr>
                 @endforelse
               </tbody>

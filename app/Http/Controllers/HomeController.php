@@ -65,10 +65,12 @@ class HomeController extends Controller
             ->orderBy('id')
             ->get();
 
+        $filterByTags = count($selectedTags) > 0;
+
         $tours = Tour::query()
             ->where('is_active', 1)
             ->with('tags')
-            ->when($searchTerm !== '', function ($query) use ($searchTerm) {
+            ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
                 $query->where(function ($inner) use ($searchTerm) {
                     $inner->where('name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
@@ -78,6 +80,11 @@ class HomeController extends Controller
                                 ->orWhere('name_en', 'like', '%' . $searchTerm . '%')
                                 ->orWhere('slug', 'like', '%' . $searchTerm . '%');
                         });
+                });
+            })
+            ->when($filterByTags, function ($query) use ($selectedTags) {
+                $query->whereHas('tags', function ($tagQuery) use ($selectedTags) {
+                    $tagQuery->whereIn('slug', $selectedTags);
                 });
             })
             ->orderByDesc('id')
