@@ -4,11 +4,17 @@
   $tourTranslation = $tour->translation(app()->getLocale());
   $tourName = $tourTranslation->name ?? $tour->name ?? __('tour_show.page_title');
   $tourShortDescription = $tourTranslation->short_description ?? $tour->short_description;
-  $tourDescription = $tourTranslation->description ?? $tour->description;
   $tourGalleryImages = collect($tour->gallery_images ?? [])->filter()->values();
   if ($tourGalleryImages->isEmpty() && $tour->thumbnail) {
       $tourGalleryImages = collect([$tour->thumbnail, $tour->thumbnail, $tour->thumbnail]);
   }
+
+  $rawDescription = $tourTranslation->description ?? $tour->description ?? '';
+  $mdConverter = new \League\CommonMark\CommonMarkConverter([
+      'html_input'         => 'allow',
+      'allow_unsafe_links' => false,
+  ]);
+  $tourDescription = $mdConverter->convert($rawDescription)->getContent();
 @endphp
 
 @section('title', $tourName)
@@ -225,6 +231,26 @@
 .tour-details-body{
   color:#4b4238;
   line-height:1.9;
+}
+.tour-details-body p{
+  margin-bottom:10px;
+  font-size:14px;
+}
+.tour-details-body strong{
+  font-weight:700;
+  color:#2f2924;
+}
+.tour-details-body ul,.tour-details-body ol{
+  padding-left:20px;
+  margin-bottom:10px;
+}
+.tour-details-body li{
+  margin-bottom:4px;
+}
+.tour-details-body h1,.tour-details-body h2,.tour-details-body h3{
+  font-weight:700;
+  margin:16px 0 6px;
+  color:#2f2924;
 }
 .tour-reviews-card,
 .tour-review-form-card{

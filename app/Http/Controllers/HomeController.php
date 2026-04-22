@@ -70,7 +70,7 @@ class HomeController extends Controller
 
         $tours = Tour::query()
             ->where('is_active', 1)
-            ->with('tags')
+            ->with(['tags', 'translations'])
             ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
                 $query->where(function ($inner) use ($searchTerm) {
                     $inner->where('name', 'like', '%' . $searchTerm . '%')
@@ -103,14 +103,9 @@ class HomeController extends Controller
     {
         $tours = Tour::query()
             ->where('is_active', 1)
+            ->with('translations')
             ->orderByDesc('id')
-            ->get()
-            ->map(function ($tour) {
-                $desc = $tour->short_description ?? $tour->description ?? '';
-                $tour->excerpt = Str::limit(strip_tags($desc), 140);
-
-                return $tour;
-            });
+            ->get();
 
         $elephants = Elephant::query()
             ->where('is_active', 1)

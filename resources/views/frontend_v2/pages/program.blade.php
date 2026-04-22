@@ -392,8 +392,7 @@ height: 50px;
   <div class="about-hero__overlay"></div>
   <div class="container about-hero__inner">
     <div class="about-hero__kicker">SMALL ELEPHANTS</div>
-    <h1 class="about-hero__title">Our Elephant Tours</h1>
-
+    <h1 class="about-hero__title">{{ app()->getLocale() === 'en' ? 'Our Elephant Tours' : 'โปรแกรมท่องเที่ยว' }}</h1>
   </div>
 </section>
 
@@ -426,26 +425,27 @@ height: 50px;
 
     <div class="program-grid owl-carousel owl-theme js-program-slider">
       @forelse($tours as $tour)
+        @php($tr = $tour->translation())
         <div class="program-item js-program-item" data-tour-tags="{{ json_encode($tour->tags->pluck('slug')->values()->all()) }}">
           <div class="program-media">
-            <img src="{{ $tour->thumbnail }}" alt="{{ $tour->name }}">
+            <img src="{{ $tour->thumbnail }}" alt="{{ $tr?->name ?? $tour->name }}">
           </div>
           <div class="program-content">
-            <div class="program-title">{{ $tour->name }}</div>
+            <div class="program-title">{{ $tr?->name ?? $tour->name }}</div>
             <div class="program-meta">
               <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
             </div>
             <div class="program-desc">
-              {{ \Illuminate\Support\Str::limit(strip_tags($tour->short_description ?? $tour->description), 220) }}
+              {{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 220) }}
             </div>
-            <a class="btn-primary" href="{{ route('frontend.tours.show.v2', $tour->slug) }}">Book Now</a>
+            <a class="btn-primary" href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ __('common.book_now') }}</a>
           </div>
         </div>
       @empty
-        <p>No tours available at the moment.</p>
+        <p>{{ __('common.no_tours_list') }}</p>
       @endforelse
     </div>
-    <p class="program-empty js-program-empty" hidden>{{ app()->getLocale() === 'en' ? 'No matching tours found.' : 'ไม่พบโปรแกรมที่ตรงกับตัวกรอง' }}</p>
+    <p class="program-empty js-program-empty" hidden>{{ __('common.no_tours_filter') }}</p>
   </div>
 </section>
 

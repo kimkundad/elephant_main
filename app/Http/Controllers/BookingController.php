@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\DiscountCode;
 use App\Models\PickupLocation;
 use App\Models\Tour;
 use App\Models\TourSession;
+use App\Services\BookingNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -266,8 +268,20 @@ class BookingController extends Controller
                     }
                 }
 
+                $customer = Customer::firstOrCreate(
+                    ['email' => $data['email']],
+                    ['full_name' => $data['full_name'], 'phone' => $data['phone'], 'created_by' => null]
+                );
+                if (!$customer->wasRecentlyCreated) {
+                    try {
+                        $customer->update(['full_name' => $data['full_name'], 'phone' => $data['phone']]);
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        $customer->update(['full_name' => $data['full_name']]);
+                    }
+                }
+
                 $booking = Booking::create([
-                    'customer_id' => null,
+                    'customer_id' => $customer->id,
                     'customer_name' => $data['full_name'],
                     'customer_phone' => $data['phone'],
                     'customer_email' => $data['email'],
@@ -411,6 +425,10 @@ class BookingController extends Controller
 
     public function confirmedV2(\App\Models\Booking $booking)
     {
+        if (in_array($booking->payment_status, ['paid', 'confirmed'])) {
+            (new BookingNotificationService())->sendConfirmation($booking);
+        }
+
         return view('frontend_v2.pages.booking.confirmed', compact('booking'));
     }
 

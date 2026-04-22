@@ -138,11 +138,33 @@
         <div class="col-6">
             <div class="label">Bill to</div>
             <p>
-                {{ $booking->customer->full_name }}<br>
-                {{ $booking->customer->email }}<br>
-                {{ $booking->customer->phone }}<br>
+                {{ $booking->customer->full_name ?? $booking->customer_name }}<br>
+                {{ $booking->customer->email ?? $booking->customer_email }}<br>
+                {{ $booking->customer->phone ?? $booking->customer_phone }}<br>
                 Thailand
             </p>
+        </div>
+    </div>
+
+    {{-- PICKUP --}}
+    @php
+        if ($booking->self_drive) {
+            $pickupLabel = 'Self Drive (No pickup required)';
+        } elseif ($booking->pickupLocation) {
+            $pickupLabel = 'Meeting Point: ' . $booking->pickupLocation->name;
+        } elseif ($booking->pickup_place_name) {
+            $pickupLabel = $booking->pickup_place_name;
+            if ($booking->pickup_place_address) {
+                $pickupLabel .= "\n" . $booking->pickup_place_address;
+            }
+        } else {
+            $pickupLabel = '-';
+        }
+    @endphp
+    <div class="row" style="margin-top:20px;">
+        <div class="col-6">
+            <div class="label">Pickup Location</div>
+            <p style="white-space:pre-line;">{{ $pickupLabel }}</p>
         </div>
     </div>
 

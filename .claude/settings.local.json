@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/d/xampp/php/php artisan tinker '--execute= *)",
+      "Bash(/d/xampp/php/php artisan *)"
+    ]
+  }
+}

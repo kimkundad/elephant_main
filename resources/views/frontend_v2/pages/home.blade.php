@@ -971,20 +971,21 @@ height: 50px;
                     @if($tours->count() > 0)
                         <div class="owl-carousel owl-theme experience-slider">
                             @foreach($tours as $tour)
+                                @php($tr = $tour->translation())
                                 <div class="item">
                                     <div class="elephant-card">
                                         <div class="elephant-card__media">
                                             <img
                                                 src="{{ $tour->thumbnail ? asset($tour->thumbnail) : asset('images/placeholder-tour.jpg') }}"
-                                                alt="{{ $tour->name }}"
+                                                alt="{{ $tr?->name ?? $tour->name }}"
                                             >
                                         </div>
                                         <div class="elephant-card__body">
-                                            <div class="elephant-name">{{ $tour->name }}</div>
-                                            <div class="elephant-rescued">{{ strtoupper($tour->duration ?? 'PROGRAM') }}</div>
+                                            <div class="elephant-name">{{ $tr?->name ?? $tour->name }}</div>
+                                            <div class="elephant-rescued">{{ strtoupper(__('common.program')) }}</div>
                                             <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
-                                            <div class="elephant-desc">{{ \Illuminate\Support\Str::limit(strip_tags($tour->excerpt ?? $tour->short_description ?? $tour->description ?? ''), 170) }}</div>
-                                            <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-book" aria-label="Read more">Book Now</a>
+                                            <div class="elephant-desc">{{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 170) }}</div>
+                                            <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-book" aria-label="Read more">{{ __('common.book_now') }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -992,7 +993,7 @@ height: 50px;
                         </div>
                     @else
                         <div class="alignc">
-                            <p>No experiences available right now.</p>
+                            <p>{{ __('common.no_tours') }}</p>
                         </div>
                     @endif
                 </div>
