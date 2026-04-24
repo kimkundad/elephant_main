@@ -17,12 +17,71 @@
             </div>
 
             <div class="app-container container-xxl">
+
+                {{-- Filter --}}
+                <div class="card mb-5">
+                    <div class="card-body py-4">
+                        <form method="GET" action="{{ route('admin.bookings.index') }}" class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">วันที่เริ่มต้น</label>
+                                <input type="date" name="date_from" class="form-control"
+                                    value="{{ $dateFrom ?? '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">วันที่สิ้นสุด</label>
+                                <input type="date" name="date_to" class="form-control"
+                                    value="{{ $dateTo ?? '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">ทัวร์</label>
+                                <select name="tour_id" class="form-select">
+                                    <option value="">— ทุกทัวร์ —</option>
+                                    @foreach($tours as $tour)
+                                        <option value="{{ $tour->id }}" {{ ($tourId == $tour->id) ? 'selected' : '' }}>
+                                            {{ $tour->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="ki-duotone ki-magnifier fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                    ค้นหา
+                                </button>
+                                <a href="{{ route('admin.bookings.index') }}" class="btn btn-light">รีเซ็ต</a>
+                            </div>
+                        </form>
+
+                        {{-- Export button — ส่ง filter ปัจจุบันไปด้วย --}}
+                        <div class="mt-3">
+                            <a href="{{ route('admin.bookings.export', array_filter([
+                                    'date_from' => $dateFrom,
+                                    'date_to'   => $dateTo,
+                                    'tour_id'   => $tourId,
+                                ])) }}"
+                                class="btn btn-success">
+                                <i class="ki-duotone ki-file-down fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                Export Excel (.csv)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mb-7">
                     <div class="card-body">
 
                         @if (session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
+
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <span class="text-muted fs-6">
+                                พบทั้งหมด <strong class="text-dark">{{ number_format($totalCount) }}</strong> รายการ
+                                @if($dateFrom || $dateTo || $tourId)
+                                    <span class="badge badge-light-primary ms-2">กำลังกรองข้อมูล</span>
+                                @endif
+                            </span>
+                        </div>
 
                         <table class="table table-bordered align-middle">
                             <thead>
@@ -97,6 +156,7 @@
 
                     </div>
                 </div>
+
             </div>
 
         </div>

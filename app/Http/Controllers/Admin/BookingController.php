@@ -15,14 +15,104 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function export(Request $request)
     {
-        $bookings = Booking::with(['customer', 'tour', 'session', 'agent', 'discountCode'])
+        $dateFrom = $request->query('date_from');
+        $dateTo   = $request->query('date_to');
+        $tourId   = $request->query('tour_id');
+
+        $bookings = Booking::with(['customer', 'tour', 'session', 'agent', 'discountCode', 'pickupLocation'])
+            ->when($dateFrom, fn($q) => $q->whereDate('date', '>=', $dateFrom))
+            ->when($dateTo,   fn($q) => $q->whereDate('date', '<=', $dateTo))
+            ->when($tourId,   fn($q) => $q->where('tour_id', $tourId))
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->get();
 
-        return view('admin.bookings.index', compact('bookings'));
+        $filename = 'bookings-' . now()->format('Ymd-His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $columns = [
+            'ID', 'วันที่ไปทัวร์', 'ทัวร์', 'Session', 'เวลา',
+            'ชื่อลูกค้า', 'อีเมล', 'โทรศัพท์',
+            'ผู้ใหญ่', 'เด็ก', 'ทารก', 'รวม',
+            'ราคารวม', 'ส่วนลด', 'โค้ด',
+            'จุดรับส่ง', 'ประเภทการรับส่ง',
+            'พนักงานขาย', 'สถานะ', 'วันที่จอง',
+        ];
+
+        $callback = function () use ($bookings, $columns) {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+            fputcsv($file, $columns);
+
+            foreach ($bookings as $b) {
+                if ($b->self_drive) {
+                    $pickupLabel = 'มาเอง (Self Drive)';
+                    $pickupType  = 'Self Drive';
+                } elseif ($b->pickupLocation) {
+                    $pickupLabel = $b->pickupLocation->name;
+                    $pickupType  = 'Meeting Point';
+                } elseif ($b->pickup_place_name) {
+                    $pickupLabel = $b->pickup_place_name . ($b->pickup_place_address ? ' - ' . $b->pickup_place_address : '');
+                    $pickupType  = 'Hotel / Address';
+                } else {
+                    $pickupLabel = '-';
+                    $pickupType  = '-';
+                }
+
+                fputcsv($file, [
+                    $b->id,
+                    $b->date,
+                    $b->tour?->name ?? '-',
+                    $b->session?->title ?? $b->session?->name ?? '-',
+                    ($b->session?->start_time ?? '') . ' - ' . ($b->session?->end_time ?? ''),
+                    $b->customer?->full_name ?? $b->customer_name ?? '-',
+                    $b->customer?->email ?? $b->customer_email ?? '-',
+                    $b->customer?->phone ?? $b->customer_phone ?? '-',
+                    $b->adults ?? 0,
+                    $b->children ?? 0,
+                    $b->infants ?? 0,
+                    $b->total_guests ?? 0,
+                    number_format($b->total_price ?? 0, 2),
+                    number_format($b->discount_amount ?? 0, 2),
+                    $b->discount_code ?? '-',
+                    $pickupLabel,
+                    $pickupType,
+                    $b->agent?->name ?? '-',
+                    $b->status ?? '-',
+                    $b->created_at?->format('Y-m-d H:i:s') ?? '-',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function index(Request $request)
+    {
+        $dateFrom = $request->query('date_from');
+        $dateTo   = $request->query('date_to');
+        $tourId   = $request->query('tour_id');
+
+        $query = Booking::with(['customer', 'tour', 'session', 'agent', 'discountCode'])
+            ->when($dateFrom, fn($q) => $q->whereDate('date', '>=', $dateFrom))
+            ->when($dateTo,   fn($q) => $q->whereDate('date', '<=', $dateTo))
+            ->when($tourId,   fn($q) => $q->where('tour_id', $tourId))
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc');
+
+        $totalCount = $query->count();
+        $bookings   = $query->paginate(20)->withQueryString();
+        $tours      = Tour::where('is_active', 1)->orderBy('name')->get();
+
+        return view('admin.bookings.index', compact('bookings', 'tours', 'totalCount', 'dateFrom', 'dateTo', 'tourId'));
     }
 
     public function create()

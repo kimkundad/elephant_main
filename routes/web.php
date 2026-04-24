@@ -235,6 +235,9 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::get('/bookings/check-capacity', [BookingController::class, 'ajaxCapacity'])
             ->name('bookings.ajax-capacity');
 
+        Route::get('/bookings/export', [BookingController::class, 'export'])
+            ->name('bookings.export');
+
 
             // View booking
         Route::get('/bookings/{id}', [BookingController::class, 'show'])

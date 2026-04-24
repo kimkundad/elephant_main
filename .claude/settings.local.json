@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(/d/xampp/php/php artisan tinker '--execute= *)",
-      "Bash(/d/xampp/php/php artisan *)"
+      "Bash(/d/xampp/php/php artisan *)",
+      "Bash(/d/xampp/php/php composer.phar require maatwebsite/excel)",
+      "Bash(/d/xampp/php/php /d/composer/composer.phar require maatwebsite/excel)",
+      "Bash(/d/xampp/php/php -r \"echo PHP_EOL;\")",
+      "Bash(/d/xampp/php/php -r ' *)"
     ]
   }
 }
