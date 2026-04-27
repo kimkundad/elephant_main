@@ -35,6 +35,11 @@
                     .tour-gallery-file-remove { border: 0; background: transparent; color: #7e8299; font-size: 20px; line-height: 1; }
                     .tour-gallery-empty { color: #7e8299; font-size: 13px; padding: 14px 0 4px; }
                     .tour-gallery-current-thumb { width: 76px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid #e9edf3; }
+                    .tour-quill-editor:not(.ql-container) { display: none; }
+                    .tour-quill-editor { min-height: 260px; }
+                    .tour-quill-editor .ql-editor { min-height: 260px; font-family: 'Prompt', sans-serif; font-size: 14px; }
+                    .tour-quill-field .ql-toolbar.ql-snow { border-top-left-radius: .475rem; border-top-right-radius: .475rem; border-color: #e4e6ef; background: #fff; }
+                    .tour-quill-field .ql-container.ql-snow { border-bottom-left-radius: .475rem; border-bottom-right-radius: .475rem; border-color: #e4e6ef; background: #fff; }
                 </style>
 
                 <div class="card mb-7">
@@ -54,8 +59,20 @@
                             </div>
 
                             <div class="row g-4 mb-3">
-                                <div class="col-md-12"><label class="form-label">Full Description (TH)</label><textarea name="description_th" class="form-control" rows="6">{{ old('description_th', $translationTh->description ?? $tour->description) }}</textarea></div>
-                                <div class="col-md-12"><label class="form-label">Full Description (EN)</label><textarea name="description_en" class="form-control" rows="6">{{ old('description_en', $translationEn->description ?? $tour->description) }}</textarea></div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Full Description (TH)</label>
+                                    <div class="tour-quill-field">
+                                        <div class="tour-quill-editor js-tour-quill" data-target="description_th">{!! old('description_th', $translationTh->description ?? $tour->description) !!}</div>
+                                        <textarea name="description_th" class="form-control mt-3 js-tour-quill-input" rows="6">{{ old('description_th', $translationTh->description ?? $tour->description) }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Full Description (EN)</label>
+                                    <div class="tour-quill-field">
+                                        <div class="tour-quill-editor js-tour-quill" data-target="description_en">{!! old('description_en', $translationEn->description ?? $tour->description) !!}</div>
+                                        <textarea name="description_en" class="form-control mt-3 js-tour-quill-input" rows="6">{{ old('description_en', $translationEn->description ?? $tour->description) }}</textarea>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -142,6 +159,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const removeAllButton = document.querySelector('.js-gallery-remove-all');
     const form = document.querySelector('.js-tour-form');
     let galleryFiles = [];
+
+    const quillEditors = [];
+    const quillToolbar = [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['link', 'blockquote'],
+        ['clean']
+    ];
+
+    document.querySelectorAll('.js-tour-quill').forEach(function (editorEl) {
+        const targetName = editorEl.getAttribute('data-target');
+        const inputEl = document.querySelector(`textarea[name="${targetName}"]`);
+
+        if (!targetName || !inputEl || typeof Quill === 'undefined') return;
+
+        const editor = new Quill(editorEl, {
+            modules: {
+                toolbar: quillToolbar
+            },
+            placeholder: 'Type your full description here...',
+            theme: 'snow'
+        });
+
+        inputEl.classList.add('d-none');
+        quillEditors.push({ editor, inputEl });
+    });
+
+    function syncQuillEditors() {
+        quillEditors.forEach(function ({ editor, inputEl }) {
+            const html = editor.root.innerHTML.trim();
+            inputEl.value = html === '<p><br></p>' ? '' : html;
+        });
+    }
+
+    form?.addEventListener('submit', function () {
+        syncQuillEditors();
+    });
+
     if (!input || typeof DataTransfer === 'undefined') return;
     function loadImage(file) { return new Promise(function (resolve, reject) { const reader = new FileReader(); reader.onload = function (event) { const image = new Image(); image.onload = function () { resolve(image); }; image.onerror = reject; image.src = event.target.result; }; reader.onerror = reject; reader.readAsDataURL(file); }); }
     async function compressImage(file) { const image = await loadImage(file); const canvas = document.createElement('canvas'); const context = canvas.getContext('2d'); const ratio = Math.min(2000 / image.width, 2000 / image.height, 1); const width = Math.round(image.width * ratio); const height = Math.round(image.height * ratio); canvas.width = width; canvas.height = height; context.drawImage(image, 0, 0, width, height); return new Promise(function (resolve) { canvas.toBlob(function (blob) { const baseName = file.name.replace(/\.[^.]+$/, ''); resolve(new File([blob], baseName + '.jpg', { type: 'image/jpeg' })); }, 'image/jpeg', 0.82); }); }
@@ -178,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        syncQuillEditors();
         form?.submit();
     });
     removeAllButton?.addEventListener('click', function () { galleryFiles = []; syncGalleryInput(); renderGalleryFiles(); });
