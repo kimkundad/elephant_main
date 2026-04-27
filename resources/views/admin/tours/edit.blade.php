@@ -44,18 +44,18 @@
                             @method('PUT')
 
                             <div class="row g-4 mb-1">
-                                <div class="col-md-6"><label class="form-label">Program Name (TH) *</label><input type="text" name="name_th" class="form-control" value="{{ old('name_th', $translationTh->name ?? $tour->name) }}" required></div>
-                                <div class="col-md-6"><label class="form-label">Program Name (EN) *</label><input type="text" name="name_en" class="form-control" value="{{ old('name_en', $translationEn->name ?? $tour->name) }}" required></div>
+                                <div class="col-md-12"><label class="form-label">Program Name (TH) *</label><input type="text" name="name_th" class="form-control" value="{{ old('name_th', $translationTh->name ?? $tour->name) }}" required></div>
+                                <div class="col-md-12"><label class="form-label">Program Name (EN) *</label><input type="text" name="name_en" class="form-control" value="{{ old('name_en', $translationEn->name ?? $tour->name) }}" required></div>
                             </div>
 
                             <div class="row g-4 mb-1">
-                                <div class="col-md-6"><label class="form-label">Short Description (TH)</label><textarea name="short_description_th" class="form-control" rows="4">{{ old('short_description_th', $translationTh->short_description ?? $tour->short_description) }}</textarea></div>
-                                <div class="col-md-6"><label class="form-label">Short Description (EN)</label><textarea name="short_description_en" class="form-control" rows="4">{{ old('short_description_en', $translationEn->short_description ?? $tour->short_description) }}</textarea></div>
+                                <div class="col-md-12"><label class="form-label">Short Description (TH)</label><textarea name="short_description_th" class="form-control" rows="4">{{ old('short_description_th', $translationTh->short_description ?? $tour->short_description) }}</textarea></div>
+                                <div class="col-md-12"><label class="form-label">Short Description (EN)</label><textarea name="short_description_en" class="form-control" rows="4">{{ old('short_description_en', $translationEn->short_description ?? $tour->short_description) }}</textarea></div>
                             </div>
 
                             <div class="row g-4 mb-3">
-                                <div class="col-md-6"><label class="form-label">Full Description (TH)</label><textarea name="description_th" class="form-control" rows="6">{{ old('description_th', $translationTh->description ?? $tour->description) }}</textarea></div>
-                                <div class="col-md-6"><label class="form-label">Full Description (EN)</label><textarea name="description_en" class="form-control" rows="6">{{ old('description_en', $translationEn->description ?? $tour->description) }}</textarea></div>
+                                <div class="col-md-12"><label class="form-label">Full Description (TH)</label><textarea name="description_th" class="form-control" rows="6">{{ old('description_th', $translationTh->description ?? $tour->description) }}</textarea></div>
+                                <div class="col-md-12"><label class="form-label">Full Description (EN)</label><textarea name="description_en" class="form-control" rows="6">{{ old('description_en', $translationEn->description ?? $tour->description) }}</textarea></div>
                             </div>
 
                             <div class="mb-3">
