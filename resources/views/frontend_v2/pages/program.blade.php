@@ -91,6 +91,16 @@
   padding: 80px 0 40px;
   background:#f7f5f1;
 }
+.program-list.is-loading .program-grid,
+.program-list.is-loading .program-empty{
+  opacity:.22;
+  pointer-events:none;
+}
+.program-list.is-loading .program-chip,
+.program-list.is-loading .program-filter__prev,
+.program-list.is-loading .program-filter__next{
+  pointer-events:none;
+}
 .program-filter{
   margin-bottom: 26px;
 }
@@ -259,6 +269,43 @@
   font-size:16px;
   margin: 10px 0 0;
 }
+.program-loading{
+  display:none;
+  min-height:138px;
+  align-items:center;
+  justify-content:center;
+  padding: 18px 0 28px;
+}
+.program-list.is-loading .program-loading{
+  display:flex;
+}
+.program-loading__panel{
+  width:min(720px, 100%);
+  padding: 22px 28px;
+  border-radius:12px;
+  background:rgba(255,255,255,.48);
+  border:1px solid rgba(224,217,208,.85);
+}
+.program-loading__line{
+  height:15px;
+  border-radius:999px;
+  background:linear-gradient(90deg, #e8e2d9 0%, #f8f5f0 42%, #d8ccbd 74%, #e8e2d9 100%);
+  background-size:220% 100%;
+  animation: program-loading-shimmer 1.05s ease-in-out infinite;
+}
+.program-loading__line + .program-loading__line{
+  margin-top:14px;
+}
+.program-loading__line:nth-child(2){
+  width:76%;
+}
+.program-loading__line:nth-child(3){
+  width:54%;
+}
+@keyframes program-loading-shimmer{
+  0%{ background-position: 120% 0; }
+  100%{ background-position: -120% 0; }
+}
 .program-media{
   width:100%;
   aspect-ratio: 4 / 3;
@@ -423,6 +470,14 @@ height: 50px;
       </div>
     </div>
 
+    <div class="program-loading js-program-loading" hidden aria-live="polite" aria-label="{{ app()->getLocale() === 'en' ? 'Loading programs' : 'กำลังโหลดโปรแกรม' }}">
+      <div class="program-loading__panel">
+        <div class="program-loading__line"></div>
+        <div class="program-loading__line"></div>
+        <div class="program-loading__line"></div>
+      </div>
+    </div>
+
     <div class="program-grid owl-carousel owl-theme js-program-slider">
       @forelse($tours as $tour)
         @php($tr = $tour->translation())
@@ -452,6 +507,7 @@ height: 50px;
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  var programList = document.querySelector('.program-list');
   var row = document.querySelector('.program-filter__row');
   var prevBtn = document.querySelector('.js-filter-prev');
   var nextBtn = document.querySelector('.js-filter-next');
@@ -459,11 +515,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var resetBtn = document.querySelector('.js-filter-reset');
   var selectedCountEl = document.querySelector('.js-selected-count');
   var resultCountEl = document.querySelector('.js-result-count');
-  var items = Array.prototype.slice.call(document.querySelectorAll('.js-program-item'));
-  var emptyState = document.querySelector('.js-program-empty');
+  var loadingEl = document.querySelector('.js-program-loading');
   var sliderSelector = '.js-program-slider';
-  var sliderEl = document.querySelector(sliderSelector);
   var slider = window.jQuery ? window.jQuery(sliderSelector) : null;
+  var isNavigating = false;
 
   if (!row || !prevBtn || !nextBtn) return;
 
@@ -491,24 +546,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function renderProgramSlider() {
-    if (!sliderEl) return;
-
-    if (slider && slider.length && slider.hasClass('owl-loaded')) {
-      slider.trigger('destroy.owl.carousel');
-    }
-
-    sliderEl.innerHTML = '';
-    items.forEach(function (item) {
-      if (!item.hidden) {
-        sliderEl.appendChild(item);
-      }
-    });
-
-    slider = window.jQuery ? window.jQuery(sliderSelector) : null;
-    initProgramSlider();
-  }
-
   function syncButtons() {
     var hasOverflow = row.scrollWidth > row.clientWidth + 1;
     var atStart = row.scrollLeft <= 1;
@@ -531,7 +568,10 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('resize', syncButtons);
   syncButtons();
 
-  if (!chips.length || !items.length) return;
+  if (!chips.length) {
+    initProgramSlider();
+    return;
+  }
 
   function getSelectedTags() {
     return chips
@@ -540,18 +580,10 @@ document.addEventListener('DOMContentLoaded', function () {
       .filter(Boolean);
   }
 
-  function updateUrl(selectedTags) {
-    var url = new URL(window.location.href);
-    url.searchParams.delete('tags[]');
-    url.searchParams.delete('tags');
-    selectedTags.forEach(function (tag) {
-      url.searchParams.append('tags[]', tag);
-    });
-    window.history.replaceState({}, '', url.toString());
-    return url;
-  }
+  function navigateWithTags(selectedTags) {
+    if (isNavigating) return;
+    isNavigating = true;
 
-  function clearQueryAndReload(selectedTags) {
     var url = new URL(window.location.href);
     url.searchParams.delete('q');
     url.searchParams.delete('tags[]');
@@ -559,61 +591,35 @@ document.addEventListener('DOMContentLoaded', function () {
     selectedTags.forEach(function (tag) {
       url.searchParams.append('tags[]', tag);
     });
-    window.location.href = url.toString();
-  }
-
-  function applyFilter() {
-    var selectedTags = getSelectedTags();
-    var visibleCount = 0;
-    var currentUrl = new URL(window.location.href);
-    var hasSearchQuery = !!(currentUrl.searchParams.get('q') || '').trim();
-
-    items.forEach(function (item) {
-      var itemTags = JSON.parse(item.getAttribute('data-tour-tags') || '[]');
-
-      var matched = selectedTags.length === 0 || selectedTags.some(function (tag) {
-        return itemTags.indexOf(tag) !== -1;
-      });
-
-      item.hidden = !matched;
-      if (matched) visibleCount += 1;
-    });
+    url.hash = 'program-list';
 
     if (selectedCountEl) selectedCountEl.textContent = String(selectedTags.length);
-    if (resultCountEl) resultCountEl.textContent = String(visibleCount);
-    if (emptyState) emptyState.hidden = visibleCount !== 0;
+    if (resultCountEl) resultCountEl.textContent = '...';
+    if (programList) programList.classList.add('is-loading');
+    if (loadingEl) loadingEl.hidden = false;
 
-    updateUrl(selectedTags);
-    renderProgramSlider();
-  }
-
-  function hasSearchQuery() {
-    return !!(new URL(window.location.href).searchParams.get('q') || '').trim();
+    window.requestAnimationFrame(function () {
+      window.setTimeout(function () {
+        window.location.href = url.toString();
+      }, 80);
+    });
   }
 
   chips.forEach(function (chip) {
     chip.addEventListener('click', function () {
       chip.classList.toggle('is-active');
-      if (hasSearchQuery()) {
-        clearQueryAndReload(getSelectedTags());
-      } else {
-        applyFilter();
-      }
+      navigateWithTags(getSelectedTags());
     });
   });
 
   if (resetBtn) {
     resetBtn.addEventListener('click', function () {
       chips.forEach(function (chip) { chip.classList.remove('is-active'); });
-      if (hasSearchQuery()) {
-        clearQueryAndReload([]);
-      } else {
-        applyFilter();
-      }
+      navigateWithTags([]);
     });
   }
 
-  applyFilter();
+  initProgramSlider();
 });
 </script>
 @endpush
