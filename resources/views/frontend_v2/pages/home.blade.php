@@ -785,6 +785,7 @@ height: 50px;
     #home-content-1 .welcome-intro-actions {
         gap: 14px;
         margin-top: 24px;
+        justify-content: center;
     }
 
     #home-content-1 .welcome-intro-about {
@@ -809,9 +810,11 @@ height: 50px;
     }
 
     #home-content-1 .welcome-intro-image img {
-        max-width: 100%;
+        max-width: 320px;
         height: auto;
         aspect-ratio: 4 / 5;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .single-post-content img,
@@ -832,6 +835,24 @@ height: 50px;
     padding: 20px 150px;
     display: block;
     width: 100%;
+}
+
+@media (max-width: 1199px) {
+    .box_primary {
+        padding: 20px 60px;
+    }
+}
+
+@media (max-width: 991px) {
+    .box_primary {
+        padding: 20px 40px;
+    }
+}
+
+@media (max-width: 767px) {
+    .box_primary {
+        padding: 20px 16px;
+    }
 }
 </style>
 @endpush
