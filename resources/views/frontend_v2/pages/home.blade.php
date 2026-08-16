@@ -629,7 +629,7 @@ height: 50px;
     }
 
     #home-content-1 .welcome-intro-copy .home-title {
-        font-size: 64px !important;
+        font-size: 44px !important;
         line-height: 1.02;
     }
 
