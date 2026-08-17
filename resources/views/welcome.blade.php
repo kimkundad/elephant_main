@@ -40,8 +40,8 @@
          <h2 class="exp-title">LOBBY</h2>
          <div class="exp-sub">OPEN EVERYDAY 24 HR.</div>
          <p class="exp-body">
-            Experience the magic of Phang Nga Bay at Sametnangshe Boutique Hotel.
-            Book your stay and experience the difference.
+            Meet the herd up close at Small Elephants Sanctuary.
+            Book an ethical elephant experience and feel the difference.
          </p>
          <a class="exp-cta" href="#">DISCOVER</a>
          <div class="exp-right-ghost">

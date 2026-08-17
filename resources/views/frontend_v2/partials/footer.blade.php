@@ -10,7 +10,7 @@
                 @if(!empty($siteSetting?->logo_footer_url))
                     <img src="{{ $siteSetting->logo_footer_url }}" alt="Small Elephants">
                 @else
-                    <img src="{{ asset('samet/assets/logo.png') }}" alt="Small Elephants">
+                    <img src="{{ asset('img/logo.webp') }}" alt="Small Elephants">
                 @endif
             </a>
         </div>

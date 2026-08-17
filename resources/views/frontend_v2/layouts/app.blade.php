@@ -13,7 +13,7 @@
         $ogDescription = trim($__env->yieldContent('og_description', $metaDescription));
         $ogImage = trim($__env->yieldContent(
             'og_image',
-            $siteSetting?->og_image_url ?: asset('samet/assets/cover-active.jpg')
+            $siteSetting?->og_image_url ?: Vite::asset('resources/frontend/images/NEW-home-page-image.webp')
         ));
     @endphp
     <title>{{ $metaTitle }}</title>
@@ -26,7 +26,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <link rel="icon" href="{{ asset('samet/assets/favicon.png') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     <link rel="stylesheet" href="{{ asset('samet/assets/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('samet/assets/bootstrap.css') }}">
@@ -161,8 +161,8 @@
 <body class="v2-body loaded">
     <section id="loader">
         <div class="item-logo-loader">
-            <img src="./assets/logo.png"
-                alt="Sametnangshe Boutique" class="opacity">
+            <img src="{{ $siteSetting?->logo_header_url ?: asset('img/logo.webp') }}"
+                alt="Small Elephants" class="opacity">
         </div>
     </section>
     @include('frontend_v2.partials.header')

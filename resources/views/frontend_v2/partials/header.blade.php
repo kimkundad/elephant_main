@@ -3,8 +3,8 @@
         || request()->routeIs('frontend.booking.create.v2')
         || request()->is('booking')
         || request()->is('v2/booking');
-    $menuActiveImage = \App\Models\PageMedia::url('v2.header.menu.active_image', asset('samet/assets/cover-active.jpg'));
-    $menuHoverImage = \App\Models\PageMedia::url('v2.header.menu.hover_image', asset('samet/assets/gallery.jpg'));
+    $menuActiveImage = \App\Models\PageMedia::url('v2.header.menu.active_image', Vite::asset('resources/frontend/images/NEW-home-page-image.webp'));
+    $menuHoverImage = \App\Models\PageMedia::url('v2.header.menu.hover_image', Vite::asset('resources/frontend/images/bg-chang.webp'));
     $menuActiveAlt = \App\Models\PageMedia::alt('v2.header.menu.active_image', 'Small Elephants');
     $menuHoverAlt = \App\Models\PageMedia::alt('v2.header.menu.hover_image', 'Small Elephants');
 @endphp
@@ -25,7 +25,7 @@
                 @if(!empty($siteSetting?->logo_header_url))
                     <img src="{{ $siteSetting->logo_header_url }}" alt="Small Elephants" width="150" height="57">
                 @else
-                    <img src="{{ asset('samet/assets/logo.png') }}" alt="Small Elephants" width="150" height="57">
+                    <img src="{{ asset('img/logo.webp') }}" alt="Small Elephants" width="150" height="57">
                 @endif
             </a>
         </div>

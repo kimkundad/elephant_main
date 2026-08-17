@@ -5,12 +5,12 @@
                 <div class="image-hover-active">
                     <figure>
                         <div class="reveal-block"></div>
-                        <img src="{{ asset('samet/assets/cover-active.jpg') }}" alt="Small Elephants">
+                        <img src="{{ Vite::asset('resources/frontend/images/NEW-home-page-image.webp') }}" alt="Small Elephants">
                     </figure>
                 </div>
                 <div class="image-hover">
                     <figure>
-                        <img src="{{ asset('samet/assets/gallery.jpg') }}" alt="Small Elephants">
+                        <img src="{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}" alt="Small Elephants">
                     </figure>
                 </div>
             </div>
