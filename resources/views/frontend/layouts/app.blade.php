@@ -25,12 +25,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
 
     <!-- Main Theme CSS -->
-
-
     <!-- Favicons -->
-    <link rel="icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-32x32.png') }}" sizes="32x32">
-    <link rel="icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-192x192.png') }}" sizes="192x192">
-    <link rel="apple-touch-icon" href="{{ Vite::asset('resources/frontend/images/icons/favicon-180x180.png') }}">
+    <link rel="icon" href="{{ asset('favicon.ico?v=2') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=2') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=2') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png?v=2') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#b58d4f">
 
     {{-- Custom inline style (ถ้าจำเป็น) --}}
     <style id="fit-vids-style">

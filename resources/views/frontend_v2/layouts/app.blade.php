@@ -26,7 +26,12 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ asset('favicon.ico?v=2') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=2') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=2') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png?v=2') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#b58d4f">
 
     <link rel="stylesheet" href="{{ asset('samet/assets/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('samet/assets/bootstrap.css') }}">

@@ -293,6 +293,17 @@ height: 50px;
         min-height: 0;
     }
 
+    /* At one item per view the card is tall enough that the arrows' 40% offset
+       lands on the program name. Anchor them to the media block instead: this
+       box matches it exactly (item padding-top 10px, 8px each side, 4/3 media),
+       so the arrows sit centred on the image whatever the card height. */
+    .experience-section-v2 .experience-slider .owl-nav,
+    .meet-elephants-section-v2 .meet-elephants-slider .owl-nav{
+        top: 10px;
+        aspect-ratio: 4 / 3;
+        align-items: center;
+    }
+
     .meet-elephants-section-v2{
         padding: 32px 0 24px;
     }

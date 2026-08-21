@@ -5,12 +5,27 @@ $(function () {
         $('body').addClass("loaded");
     }, 400);
 
-    $(window).scroll(function () {
-        if ($(window).scrollTop() > 80) {
-            $(".scroll_nonefix").addClass("scroll-fixed")
-        } else {
-            $(".scroll_nonefix").removeClass("scroll-fixed")
-        }
+    /*****  HEADER SCROLL STATE  *****/
+    var $header = $(".scroll_nonefix");
+
+    function syncHeaderScrollState() {
+        $header.toggleClass("scroll-fixed", $(window).scrollTop() > 80);
+    }
+
+    // The state has to be applied on load as well as on scroll. Refreshing
+    // part-way down the page restores the scroll offset without firing a
+    // scroll event, which used to leave the header in its top-of-page layout
+    // (large logo, transparent background) overlapping the hero content.
+    // "no-anim" suppresses the 0.6s transition for this first pass only.
+    $header.addClass("no-anim");
+    syncHeaderScrollState();
+
+    $(window).on("scroll", syncHeaderScrollState);
+    $(window).on("load", function () {
+        syncHeaderScrollState();
+        setTimeout(function () {
+            $header.removeClass("no-anim");
+        }, 60);
     });
 
 

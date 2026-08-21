@@ -1,3 +1,13 @@
 /* Frontend V2 Vite entry.
    Keep this layer minimal while legacy samet assets are still loaded.
    Add V2-only overrides here first, then migrate old assets incrementally. */
+
+/* The header's scroll state is applied by JS on load as well as on scroll, so
+   a refresh part-way down the page lands in the correct layout. Suppress the
+   transition while that first state is applied, otherwise the header visibly
+   slides down from its top-of-page position. */
+header.no-anim,
+header.no-anim .navbar-header,
+header.no-anim .navbar-brand {
+    transition: none !important;
+}

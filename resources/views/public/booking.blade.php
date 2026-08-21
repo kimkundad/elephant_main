@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Booking Confirmation</title>
+  <link rel="icon" href="{{ asset('favicon.ico?v=2') }}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=2') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=2') }}">
+  <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png?v=2') }}">
   <style>
     body { margin:0; background:#f6f9fc; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial; }
     .wrap { max-width:720px; margin:0 auto; padding:28px 16px; }

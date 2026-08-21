@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Contact;
 use App\Models\Elephant;
 use App\Models\TourTag;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 
 class HomeController extends Controller
@@ -131,13 +132,8 @@ class HomeController extends Controller
 
     public function contactV2()
     {
-        $captcha = $this->makeCaptchaPayload('contact-v2');
-
         return view('frontend_v2.pages.contact', [
-            'captchaQuestion' => $captcha['question'],
-            'captchaLeft' => $captcha['left'],
-            'captchaRight' => $captcha['right'],
-            'captchaSignature' => $captcha['signature'],
+            'recaptchaSiteKey' => (string) config('services.recaptcha.site_key'),
             'contactFormIssuedAt' => now()->timestamp,
             'contactFormIssuedSignature' => $this->signContactFormTimestamp(now()->timestamp),
         ]);
@@ -149,7 +145,7 @@ class HomeController extends Controller
 
         if (RateLimiter::tooManyAttempts($rateKey, 3)) {
             return back()
-                ->withErrors(['form' => 'ส่งข้อความเร็วเกินไป กรุณาลองใหม่อีกครั้งในภายหลัง'])
+                ->withErrors(['form' => __('contact.error_rate_limited')])
                 ->withInput();
         }
 
@@ -159,10 +155,6 @@ class HomeController extends Controller
             'phone' => 'nullable|string|max:50',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
-            'captcha_answer' => 'required|numeric',
-            'captcha_left' => 'required|integer|min:1|max:9',
-            'captcha_right' => 'required|integer|min:1|max:9',
-            'captcha_signature' => 'required|string|size:64',
             'website' => 'nullable|max:0',
             'form_issued_at' => 'required|integer',
             'form_issued_signature' => 'required|string|size:64',
@@ -175,21 +167,15 @@ class HomeController extends Controller
             RateLimiter::hit($rateKey, 600);
 
             return back()
-                ->withErrors(['form' => 'ไม่สามารถส่งแบบฟอร์มนี้ได้ กรุณาลองเปิดหน้าใหม่แล้วส่งอีกครั้ง'])
+                ->withErrors(['form' => __('contact.error_stale_form')])
                 ->withInput();
         }
 
-        if (!$this->captchaIsValid(
-            'contact-v2',
-            (int) $data['captcha_left'],
-            (int) $data['captcha_right'],
-            (int) $data['captcha_answer'],
-            (string) $data['captcha_signature']
-        )) {
+        if (!$this->recaptchaIsValid($request)) {
             RateLimiter::hit($rateKey, 600);
 
             return back()
-                ->withErrors(['captcha_answer' => 'คำตอบไม่ถูกต้อง'])
+                ->withErrors(['recaptcha' => __('contact.error_recaptcha')])
                 ->withInput();
         }
 
@@ -203,28 +189,40 @@ class HomeController extends Controller
         RateLimiter::clear($rateKey);
 
         return redirect()
-            ->route('frontend.contact.v2')
-            ->with('success', 'ขอบคุณค่ะ เราได้รับข้อความของคุณแล้ว และจะติดต่อกลับโดยเร็วที่สุด');
+            ->route('frontend.contact')
+            ->with('contact_success', true);
     }
 
-    private function makeCaptchaPayload(string $scope): array
+    /**
+     * Verify a reCAPTCHA v2 checkbox token against Google's siteverify endpoint.
+     *
+     * Fails closed: a missing token, an unconfigured secret, or an unreachable
+     * endpoint all reject the submission rather than letting it through.
+     */
+    private function recaptchaIsValid(Request $request): bool
     {
-        $left = random_int(1, 9);
-        $right = random_int(1, 9);
+        $secret = trim((string) config('services.recaptcha.secret_key'));
+        $token = trim((string) $request->input('g-recaptcha-response'));
 
-        return [
-            'left' => $left,
-            'right' => $right,
-            'question' => "{$left} + {$right}",
-            'signature' => hash_hmac('sha256', "{$scope}|{$left}|{$right}", (string) config('app.key')),
-        ];
-    }
+        if ($secret === '' || $token === '') {
+            return false;
+        }
 
-    private function captchaIsValid(string $scope, int $left, int $right, int $answer, string $signature): bool
-    {
-        $expectedSignature = hash_hmac('sha256', "{$scope}|{$left}|{$right}", (string) config('app.key'));
+        try {
+            $response = Http::asForm()
+                ->timeout(10)
+                ->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => $secret,
+                    'response' => $token,
+                    'remoteip' => $request->ip(),
+                ]);
+        } catch (\Throwable $e) {
+            report($e);
 
-        return hash_equals($expectedSignature, $signature) && $answer === ($left + $right);
+            return false;
+        }
+
+        return $response->successful() && $response->json('success') === true;
     }
 
     private function signContactFormTimestamp(int $issuedAt): string

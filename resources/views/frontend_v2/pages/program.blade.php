@@ -425,6 +425,15 @@ height: 50px;
     font-size:15px;
     margin-bottom:8px;
   }
+  /* At one item per view the card is tall enough that the arrows' 40% offset
+     lands on the program title. Anchor them to the media block instead: this
+     box tracks it (card starts at the carousel top, media is 4/3), so the
+     arrows stay centred on the image whatever the title length. */
+  .program-grid .owl-nav{
+    top: 0;
+    aspect-ratio: 4 / 3;
+    align-items: center;
+  }
 }
 </style>
 @endpush

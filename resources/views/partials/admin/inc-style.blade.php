@@ -1,4 +1,7 @@
-		<link rel="icon" type="image/png" sizes="32x32" href="{{ url('img/favicon_v5.png') }}" />
+		<link rel="icon" href="{{ asset('favicon.ico?v=2') }}" sizes="any">
+		<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=2') }}">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=2') }}">
+		<link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png?v=2') }}">
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->

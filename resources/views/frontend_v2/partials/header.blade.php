@@ -96,3 +96,17 @@
             </div>
         </article>
 </header>
+<script>
+// jQuery and tpl.script.js load at the end of the body, so without this the
+// header would paint in its top-of-page layout for the whole page parse after
+// a refresh made part-way down. Runs again on window load in tpl.script.js,
+// which also clears "no-anim".
+(function () {
+    var h = document.querySelector('header.scroll_nonefix');
+    if (!h) return;
+    h.classList.add('no-anim');
+    if ((window.pageYOffset || document.documentElement.scrollTop || 0) > 80) {
+        h.classList.add('scroll-fixed');
+    }
+})();
+</script>
