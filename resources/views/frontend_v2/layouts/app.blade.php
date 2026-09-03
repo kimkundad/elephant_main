@@ -3,6 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-94EZMK5EPY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-94EZMK5EPY');
+    </script>
     @php
         $metaTitle = trim($__env->yieldContent('title', 'SMALL ELEPHANTS V2'));
         $metaDescription = trim($__env->yieldContent(
