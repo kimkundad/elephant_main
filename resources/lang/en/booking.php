@@ -85,6 +85,7 @@ return [
     ],
     'errors' => [
         'summary_title' => 'Please check the following before continuing:',
+        'booking_failed' => 'We could not complete your booking just now. Please try again, or contact us if it keeps happening.',
         'pickup_required' => 'Please select a hotel/accommodation from Google list or choose a meeting point on the map.',
         'meeting_point_required' => 'This location is outside pickup zone. Please select a meeting point.',
         'discount_required' => 'Please enter a discount code.',

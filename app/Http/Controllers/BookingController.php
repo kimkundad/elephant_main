@@ -268,16 +268,34 @@ class BookingController extends Controller
                     }
                 }
 
-                $customer = Customer::firstOrCreate(
-                    ['email' => $data['email']],
-                    ['full_name' => $data['full_name'], 'phone' => $data['phone'], 'created_by' => null]
-                );
-                if (!$customer->wasRecentlyCreated) {
-                    try {
-                        $customer->update(['full_name' => $data['full_name'], 'phone' => $data['phone']]);
-                    } catch (\Illuminate\Database\QueryException $e) {
-                        $customer->update(['full_name' => $data['full_name']]);
+                // Both `email` and `phone` are unique on `customers`, so matching
+                // on email alone inserts a duplicate phone when a returning guest
+                // books under a new address. Match on either column instead.
+                $customer = Customer::where('email', $data['email'])->first()
+                    ?: Customer::where('phone', $data['phone'])->first();
+
+                if ($customer) {
+                    $updates = ['full_name' => $data['full_name']];
+
+                    // Only adopt the contact detail that did not match if no other
+                    // row already holds it, otherwise the update collides in turn.
+                    if ($customer->email !== $data['email']
+                        && !Customer::where('email', $data['email'])->whereKeyNot($customer->id)->exists()) {
+                        $updates['email'] = $data['email'];
                     }
+                    if ($customer->phone !== $data['phone']
+                        && !Customer::where('phone', $data['phone'])->whereKeyNot($customer->id)->exists()) {
+                        $updates['phone'] = $data['phone'];
+                    }
+
+                    $customer->update($updates);
+                } else {
+                    $customer = Customer::create([
+                        'email' => $data['email'],
+                        'full_name' => $data['full_name'],
+                        'phone' => $data['phone'],
+                        'created_by' => null,
+                    ]);
                 }
 
                 $booking = Booking::create([
@@ -329,6 +347,15 @@ class BookingController extends Controller
                     ]);
                 }
             });
+        } catch (\Illuminate\Database\QueryException $e) {
+            // QueryException extends PDOException extends RuntimeException, so it
+            // would otherwise fall into the catch below and render raw SQL — table
+            // names, columns and the guest's own details — straight to the page.
+            report($e);
+
+            return back()->withErrors([
+                'form' => __('booking.errors.booking_failed'),
+            ])->withInput();
         } catch (\RuntimeException $e) {
             return back()->withErrors([
                 'discount_code' => $e->getMessage(),
