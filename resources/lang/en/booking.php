@@ -84,6 +84,7 @@ return [
         'product_name' => 'Booking #:id - :tour',
     ],
     'errors' => [
+        'summary_title' => 'Please check the following before continuing:',
         'pickup_required' => 'Please select a hotel/accommodation from Google list or choose a meeting point on the map.',
         'meeting_point_required' => 'This location is outside pickup zone. Please select a meeting point.',
         'discount_required' => 'Please enter a discount code.',

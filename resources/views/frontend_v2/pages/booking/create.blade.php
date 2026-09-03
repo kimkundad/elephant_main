@@ -207,6 +207,37 @@
         max-width: 1350px;
     }
 }
+
+/* Validation feedback. The controller bounces back with withErrors() from six
+   places plus validate(); without these the form just reloaded silently. */
+.booking-errors{
+  grid-column: 1 / -1;
+  border:1px solid #e6b3b3;
+  background:#fdf3f3;
+  border-radius:12px;
+  padding:14px 16px;
+  color:#8f2f2f;
+}
+.booking-errors__title{
+  font-weight:700;
+  margin-bottom:6px;
+}
+.booking-errors ul{
+  margin:0;
+  padding-left:18px;
+}
+.booking-errors li{
+  line-height:1.7;
+}
+.field-error{
+  display:block;
+  color:#b3261e;
+  font-size:13px;
+  margin-top:6px;
+}
+.f-input.is-invalid{
+  border-color:#b3261e;
+}
 </style>
 @endpush
 
@@ -241,6 +272,17 @@
       <input type="hidden" name="tour_id" value="{{ $tour->id }}">
       <input type="hidden" name="session_id" value="{{ $session->id }}">
       <input type="hidden" name="date" value="{{ $date }}">
+
+      @if($errors->any())
+        <div class="booking-errors" role="alert">
+          <div class="booking-errors__title">{{ __('booking.errors.summary_title') }}</div>
+          <ul>
+            @foreach($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
 
       <div class="booking-left">
         <div class="card">
@@ -324,6 +366,8 @@
                 >{{ $mp->name }}</option>
               @endforeach
             </select>
+            @error('google_place_name')<span class="field-error">{{ $message }}</span>@enderror
+            @error('meeting_point_id')<span class="field-error">{{ $message }}</span>@enderror
           </div>
         </div>
 
@@ -364,6 +408,7 @@
               <button type="button" id="apply_discount" class="btn-pay" style="padding:10px 14px; width:auto;">{{ __('booking.create.apply') }}</button>
             </div>
             <div id="discount_msg" class="tiny" style="margin-top:6px;"></div>
+            @error('discount_code')<span class="field-error">{{ $message }}</span>@enderror
           </div>
 
           <div class="card" style="margin-top:12px;">
@@ -377,6 +422,7 @@
                 </option>
                 @endforeach
               </select>
+              @error('payment_channel')<span class="field-error">{{ $message }}</span>@enderror
             </div>
           </div>
 
