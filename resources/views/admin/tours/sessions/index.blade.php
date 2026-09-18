@@ -52,7 +52,7 @@
 
                                             <td>
                                                 @if($s->start_time && $s->end_time)
-                                                    {{ $s->start_time }} - {{ $s->end_time }}
+                                                    {{ $s->time_range }}
                                                 @else
                                                     -
                                                 @endif

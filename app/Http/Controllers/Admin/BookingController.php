@@ -70,7 +70,7 @@ class BookingController extends Controller
                     $b->date,
                     $b->tour?->name ?? '-',
                     $b->session?->title ?? $b->session?->name ?? '-',
-                    ($b->session?->start_time ?? '') . ' - ' . ($b->session?->end_time ?? ''),
+                    $b->session?->time_range ?? '',
                     $b->customer?->full_name ?? $b->customer_name ?? '-',
                     $b->customer?->email ?? $b->customer_email ?? '-',
                     $b->customer?->phone ?? $b->customer_phone ?? '-',
@@ -149,7 +149,7 @@ class BookingController extends Controller
             })
             ->values();
 
-        return response()->json($sessions);
+        return response()->json($sessions->each->append('time_range'));
     }
 
 

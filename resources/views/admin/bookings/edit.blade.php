@@ -72,7 +72,7 @@
                                 {{-- Preload ค่าเดิม --}}
                                 <option value="{{ $booking->session_id }}">
                                     {{ $booking->session->title }}
-                                    ({{ $booking->session->start_time }} - {{ $booking->session->end_time }})
+                                    ({{ $booking->session->time_range }})
                                 </option>
                             </select>
 
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 data.forEach(s => {
                     sessionSelect.innerHTML += `
                         <option value="${s.id}">
-                            ${s.title} (${s.start_time} - ${s.end_time})
+                            ${s.title} (${s.time_range})
                         </option>`;
                 });
 

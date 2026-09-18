@@ -52,7 +52,7 @@
 
                                         <tr>
                                             <td>{{ $session->title ?? $session->name }}</td>
-                                            <td>{{ $session->start_time }} - {{ $session->end_time }}</td>
+                                            <td>{{ $session->time_range }}</td>
 
                                             <td>
                                                 <input type="hidden" name="sessions[{{ $session->id }}][is_open]" value="1">

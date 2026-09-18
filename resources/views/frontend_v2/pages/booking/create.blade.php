@@ -257,10 +257,7 @@
         <div class="booking-hero-title">{{ $tourName }}</div>
         <div class="booking-hero-sub">
           {{ \Carbon\Carbon::parse($date)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}
-          @ {{ \Carbon\Carbon::parse($session->start_time)->format('g:ia') }}
-          @if (!empty($session->end_time))
-            &ndash; {{ \Carbon\Carbon::parse($session->end_time)->format('g:ia') }}
-          @endif
+          @ {{ $session->time_range }}
         </div>
         <div class="booking-hero-desc">{{ $tourShortDescription }}</div>
       </div>

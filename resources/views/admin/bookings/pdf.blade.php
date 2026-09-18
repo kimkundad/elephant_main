@@ -189,7 +189,7 @@
         <tr>
             <td>
                 {{ $booking->tour->name }}<br>
-                {{ $booking->session->title }} ({{ $booking->session->start_time }} - {{ $booking->session->end_time }})<br>
+                {{ $booking->session->title }} ({{ $booking->session->time_range }})<br>
                 Date: {{ $booking->date }}
             </td>
             <td>1</td>

@@ -107,7 +107,7 @@
                                         <td>
                                             {{ $b->session?->title ?? $b->session?->name }}
                                             <br>
-                                            <small>{{ $b->session?->start_time }} - {{ $b->session?->end_time }}</small>
+                                            <small>{{ $b->session?->time_range }}</small>
                                         </td>
                                         <td>{{ $b->customer?->full_name ?? $b->customer_name }}</td>
                                         <td>

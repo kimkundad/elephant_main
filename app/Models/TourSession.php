@@ -20,6 +20,21 @@ class TourSession extends Model
     'title',
     ];
 
+    /**
+     * Session time as shown everywhere (admin, frontend, email), e.g. "09:30 - 12:00".
+     * Change TIME_FORMAT to reformat every screen at once.
+     */
+    public const TIME_FORMAT = 'H:i';
+
+    public function getTimeRangeAttribute(): string
+    {
+        $format = fn ($time) => $time ? \Carbon\Carbon::parse($time)->format(self::TIME_FORMAT) : null;
+
+        return collect([$format($this->start_time), $format($this->end_time)])
+            ->filter()
+            ->implode(' - ');
+    }
+
     public function tour()
     {
         return $this->belongsTo(Tour::class);

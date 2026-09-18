@@ -15,7 +15,7 @@
                 <strong>วันที่ไปทัวร์:</strong> {{ $booking->date }} <br>
                 <strong>โปรแกรม:</strong> {{ $booking->tour->name }} <br>
                 <strong>Session:</strong> {{ $booking->session->title }}
-                ({{ $booking->session->start_time }} - {{ $booking->session->end_time }})
+                ({{ $booking->session->time_range }})
             </div>
 
             <div class="mt-4">

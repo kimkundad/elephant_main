@@ -59,7 +59,7 @@
         </div>
         <div class="row">
           <div class="label">Session</div>
-          <div class="value">{{ optional($booking->session)->start_time ?? '-' }}</div>
+          <div class="value">{{ $booking->session?->time_range ?: '-' }}</div>
         </div>
         <div class="row">
           <div class="label">Package</div>

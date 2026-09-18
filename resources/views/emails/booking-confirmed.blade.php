@@ -32,7 +32,7 @@
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">DATE & TIME</div>
-            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->date }} / {{ $booking->session?->start_time ?? '-' }}</div>
+            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->date }} / {{ $booking->session?->time_range ?: '-' }}</div>
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">TOTAL</div>

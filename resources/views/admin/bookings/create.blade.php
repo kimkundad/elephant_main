@@ -166,7 +166,7 @@ fetch("{{ route('admin.bookings.ajax-sessions') }}?tour_id=" + tour_id + "&date=
         data.forEach(s => {
             sessionSelect.innerHTML += `
                 <option value="${s.id}">
-                    ${s.title} (${s.start_time} - ${s.end_time})
+                    ${s.title} (${s.time_range})
                 </option>
             `;
         });

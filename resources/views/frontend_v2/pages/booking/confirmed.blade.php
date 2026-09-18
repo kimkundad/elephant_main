@@ -108,7 +108,7 @@
             <div class="value">{{ \Carbon\Carbon::parse($booking->date)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}</div>
 
             <div class="label">{{ __('booking.confirmed.session') }}</div>
-            <div class="value">{{ optional($booking->session)->start_time }}</div>
+            <div class="value">{{ $booking->session?->time_range ?: '-' }}</div>
           </div>
 
           <div>

@@ -10,7 +10,7 @@
        ]) }}">
 
       <div class="session-time">
-        {{ \Carbon\Carbon::parse($s->start_time)->format('g:ia') }}
+        {{ $s->time_range }}
       </div>
 
       <div class="session-info">
