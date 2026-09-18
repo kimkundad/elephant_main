@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Tour extends Model
 {
     //
     protected $fillable = [
+        'province_id',
         'name',
         'slug',
         'short_description',
@@ -33,6 +35,18 @@ class Tour extends Model
     public function availabilities()
     {
         return $this->hasMany(TourAvailability::class);
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
+
+    /** Tours the public site may list and book: active, in an active province. */
+    public function scopeVisible(Builder $query): Builder
+    {
+        return $query->where('is_active', 1)
+            ->whereHas('province', fn (Builder $province) => $province->where('is_active', true));
     }
 
     public function tags()

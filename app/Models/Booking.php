@@ -12,7 +12,7 @@ class Booking extends Model
     'tour_id','session_id','date',
     'adults','children','infants','total_guests',
     'subtotal','vat_amount','fee_amount','grand_total',
-    'total_price','status','pickup_location_id','self_drive','pickup_source','pickup_place_name','pickup_place_address','created_by',
+    'total_price','status','pickup_location_id','self_drive','pickup_source','pickup_place_name','pickup_place_address','pickup_note','created_by',
     'agent_id','discount_code_id','discount_code','discount_amount',
     'payment_status','payment_channel','stripe_session_id','stripe_payment_intent_id',
     'amount_due_now','amount_pay_later','paid_at',
