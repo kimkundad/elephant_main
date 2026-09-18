@@ -50,7 +50,7 @@
                             <label class="form-label">โปรแกรมทัวร์</label>
                             <select id="tourSelect" name="tour_id" class="form-control" required>
                                 @foreach($tours as $t)
-                                    <option value="{{ $t->id }}"
+                                    <option value="{{ $t->id }}" data-province="{{ $t->province_id }}"
                                         {{ $booking->tour_id == $t->id ? 'selected' : '' }}>
                                         {{ $t->name }}
                                     </option>
@@ -81,16 +81,21 @@
 
                         {{-- PICKUP --}}
                         <div class="mb-3">
-                            <label class="form-label">สถานที่รับลูกค้า</label>
-                            <select name="pickup_location_id" class="form-control">
+                            <label class="form-label">สถานที่รับลูกค้า (เฉพาะจังหวัดของทัวร์)</label>
+                            <select name="pickup_location_id" id="pickupSelect" class="form-control">
                                 <option value="">-- เลือกสถานที่รับ --</option>
                                 @foreach($pickupLocations as $p)
-                                    <option value="{{ $p->id }}"
-                                        {{ $booking->pickup_location_id == $p->id ? 'selected' : '' }}>
-                                        {{ $p->name }} ({{ $p->pickup_time }})
+                                    <option value="{{ $p->id }}" data-province="{{ $p->province_id }}" @selected((string) old('pickup_location_id', $booking->pickup_location_id) === (string) $p->id)>
+                                        {{ $p->name }}{{ $p->is_meeting_point ? ' (Meeting Point)' : '' }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('pickup_location_id')<div class="text-danger mt-1">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">รายละเอียดจุดรับส่งเพิ่มเติม</label>
+                            <textarea name="pickup_note" class="form-control" rows="2" maxlength="1000">{{ old('pickup_note', $booking->pickup_note) }}</textarea>
                         </div>
 
                         {{-- PEOPLE --}}
@@ -203,5 +208,27 @@ document.addEventListener("DOMContentLoaded", function() {
     dateSelect.addEventListener("change", loadSessions);
     sessionSelect.addEventListener("change", updateCapacity);
 });
+</script>
+<script>
+// Only offer pickup points in the selected tour's province.
+(function () {
+    const tourSelect = document.getElementById('tourSelect');
+    const pickupSelect = document.getElementById('pickupSelect');
+    if (!tourSelect || !pickupSelect) return;
+
+    const syncPickupOptions = () => {
+        const provinceId = tourSelect.selectedOptions[0]?.dataset.province || '';
+        Array.from(pickupSelect.options).forEach((option) => {
+            if (!option.value) return;
+            const inProvince = option.dataset.province === provinceId;
+            option.hidden = !inProvince;
+            option.disabled = !inProvince;
+        });
+        if (pickupSelect.selectedOptions[0]?.disabled) pickupSelect.value = '';
+    };
+
+    tourSelect.addEventListener('change', syncPickupOptions);
+    syncPickupOptions();
+})();
 </script>
 @endsection

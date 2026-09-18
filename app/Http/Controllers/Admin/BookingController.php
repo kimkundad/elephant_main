@@ -183,9 +183,17 @@ public function store(Request $request)
         'children'    => 'nullable|integer|min:0',
         'infants'     => 'nullable|integer|min:0',
         'pickup_location_id' => 'nullable|exists:pickup_locations,id',
+        'pickup_note' => 'nullable|string|max:1000',
     ]);
 
     $tour    = Tour::findOrFail($request->tour_id);
+
+    if ($request->filled('pickup_location_id')
+        && !PickupLocation::availableIn((int) $tour->province_id)->whereKey($request->pickup_location_id)->exists()) {
+        return back()
+            ->withErrors(['pickup_location_id' => 'จุดรับส่งนี้ไม่อยู่ในจังหวัดของทัวร์ที่เลือก'])
+            ->withInput();
+    }
     $session = TourSession::findOrFail($request->session_id);
 
     $adults   = (int) $request->adults;
@@ -246,6 +254,7 @@ public function store(Request $request)
         'total_price'        => $totalPrice,
 
         'pickup_location_id' => $request->pickup_location_id,
+        'pickup_note'        => $request->pickup_note,
         'status'             => 'confirmed',
         'created_by'         => Auth::id(),
     ]);
@@ -340,11 +349,19 @@ public function update(Request $request, $id)
         'children'    => 'nullable|integer|min:0',
         'infants'     => 'nullable|integer|min:0',
         'pickup_location_id' => 'nullable|exists:pickup_locations,id',
+        'pickup_note' => 'nullable|string|max:1000',
         'status'      => 'required|string',
     ]);
 
     $booking = Booking::findOrFail($id);
     $tour    = Tour::findOrFail($request->tour_id);
+
+    if ($request->filled('pickup_location_id')
+        && !PickupLocation::availableIn((int) $tour->province_id)->whereKey($request->pickup_location_id)->exists()) {
+        return back()
+            ->withErrors(['pickup_location_id' => 'จุดรับส่งนี้ไม่อยู่ในจังหวัดของทัวร์ที่เลือก'])
+            ->withInput();
+    }
     $session = TourSession::findOrFail($request->session_id);
 
     $adults   = (int) $request->adults;
@@ -393,6 +410,7 @@ public function update(Request $request, $id)
         'total_price'        => $grand_total,
 
         'pickup_location_id' => $request->pickup_location_id,
+        'pickup_note'        => $request->pickup_note,
         'status'             => $request->status,
     ]);
 
