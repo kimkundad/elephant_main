@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,28 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+
+      // Consent Mode v2: analytics stays denied until the visitor accepts in the
+      // cookie banner. A returning visitor's saved choice (cc_cookie) is read here
+      // so the first page view already uses it.
+      (function () {
+        var analytics = 'denied';
+        try {
+          var match = document.cookie.match(/(?:^|;\s*)cc_cookie=([^;]*)/);
+          var saved = match && JSON.parse(decodeURIComponent(match[1]));
+          if (saved && saved.categories && saved.categories.indexOf('analytics') !== -1) {
+            analytics = 'granted';
+          }
+        } catch (e) {}
+        gtag('consent', 'default', {
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+          analytics_storage: analytics,
+          wait_for_update: 500
+        });
+      })();
+
       gtag('js', new Date());
 
       gtag('config', 'G-94EZMK5EPY');
@@ -62,6 +84,23 @@
     <link rel="stylesheet" href="{{ asset('samet/assets/t-datepicker.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    @php
+        $cookiePolicyUrl = route('frontend.policy') . '#cookies';
+        $cookieConsentConfig = [
+            'locale' => app()->getLocale(),
+            'policyUrl' => $cookiePolicyUrl,
+            'text' => [
+                'consent' => __('cookie.consent'),
+                'preferences' => __('cookie.preferences', [
+                    'policy_url' => $cookiePolicyUrl,
+                    'contact_url' => route('frontend.contact'),
+                ]),
+            ],
+        ];
+    @endphp
+    <script>
+      window.__cookieConsent = @json($cookieConsentConfig);
+    </script>
     @vite(['resources/css/frontend_v2.css', 'resources/js/frontend_v2.js'])
 
     <style>

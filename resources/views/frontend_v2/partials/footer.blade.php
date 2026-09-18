@@ -49,6 +49,7 @@
                     <li><a href="{{ route('frontend.support_us.v2') }}">How to Support Us</a></li>
                     <li><a href="{{ route('frontend.terms.v2') }}">Terms &amp; Conditions</a></li>
                     <li><a href="{{ route('frontend.policy.v2') }}">Policy</a></li>
+                    <li><a href="#" data-cc="show-preferencesModal">{{ __('cookie.footer_link') }}</a></li>
                 </ul>
             </div>
         </div>

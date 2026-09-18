@@ -61,7 +61,7 @@
           <li><span>&#10003;</span> {{ __('policy.website.items.2') }}</li>
         </ul>
 
-        <div class="about-eyebrow" style="margin-top:28px;">{{ __('policy.cookies.eyebrow') }}</div>
+        <div id="cookies" class="about-eyebrow" style="margin-top:28px;">{{ __('policy.cookies.eyebrow') }}</div>
         <h2 class="about-title">{{ __('policy.cookies.title') }}</h2>
         <p class="about-text">{{ __('policy.cookies.intro') }}</p>
       </div>
