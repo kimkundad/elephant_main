@@ -23,10 +23,20 @@
                         <div class="card-body">
 
 
+                            <form method="GET" class="mb-5" style="max-width:320px;">
+                                <select name="province_id" class="form-select" onchange="this.form.submit()">
+                                    <option value="">ทุกจังหวัด</option>
+                                    @foreach($provinces as $province)
+                                        <option value="{{ $province->id }}" @selected((string) request('province_id') === (string) $province->id)>{{ $province->name_th }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>ชื่อโปรแกรม</th>
+                                        <th>จังหวัด</th>
                                         <th>ช่วงราคา</th>
                                         <th>แสดงผล</th>
                                         <th width="150">จัดการ</th>
@@ -37,6 +47,7 @@
                                     @foreach ($tours as $tour)
                                         <tr>
                                             <td>{{ $tour->name }}</td>
+                                            <td>{{ $tour->province?->name_th ?? '-' }}</td>
                                             <td>{{ number_format($tour->min_price) }} -
                                                 {{ number_format($tour->max_price) }}</td>
 

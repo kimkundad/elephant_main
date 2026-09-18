@@ -134,6 +134,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">จังหวัด *</label>
+                                <select name="province_id" class="form-select @error('province_id') is-invalid @enderror" required>
+                                    <option value="">-- เลือกจังหวัด --</option>
+                                    @foreach($provinces as $province)
+                                        <option value="{{ $province->id }}" @selected((string) old('province_id', $tour->province_id) === (string) $province->id)>{{ $province->name_th }}</option>
+                                    @endforeach
+                                </select>
+                                @error('province_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
                             <div class="mb-3"><label class="form-label">Display Status</label><select name="is_active" class="form-select"><option value="1" @selected($tour->is_active)>Active</option><option value="0" @selected(!$tour->is_active)>Hidden</option></select></div>
                             <button class="btn btn-primary">Save Changes</button>
                             <a href="{{ route('admin.tours.index') }}" class="btn btn-light">Cancel</a>

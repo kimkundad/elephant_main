@@ -5,17 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PickupLocation;
+use App\Models\Province;
 
 class PickupLocationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $locations = PickupLocation::orderBy('name')->paginate(20);
-        return view('admin.pickup_locations.index', compact('locations'));
+        $provinces = Province::orderBy('name_th')->get();
+
+        $locations = PickupLocation::with('province')
+            ->when($request->query('province_id'), fn ($query, $provinceId) => $query->where('province_id', $provinceId))
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.pickup_locations.index', compact('locations', 'provinces'));
     }
 
     /**
@@ -23,8 +30,9 @@ class PickupLocationController extends Controller
      */
     public function create()
     {
-        //
-        return view('admin.pickup_locations.create');
+        $provinces = Province::orderBy('name_th')->get();
+
+        return view('admin.pickup_locations.create', compact('provinces'));
     }
 
     /**
@@ -33,6 +41,7 @@ class PickupLocationController extends Controller
     public function store(Request $request)
 {
     $data = $request->validate([
+        'province_id' => 'required|integer|exists:provinces,id',
         'name' => 'required|string|max:255',
         'latitude' => 'nullable|numeric',
         'longitude' => 'nullable|numeric',
@@ -63,9 +72,9 @@ class PickupLocationController extends Controller
      */
     public function edit(PickupLocation $pickup_location)
     {
-        //
-      //  dd($pickup_location);
-        return view('admin.pickup_locations.edit', compact('pickup_location'));
+        $provinces = Province::orderBy('name_th')->get();
+
+        return view('admin.pickup_locations.edit', compact('pickup_location', 'provinces'));
     }
 
     /**
@@ -74,6 +83,7 @@ class PickupLocationController extends Controller
     public function update(Request $request, PickupLocation $pickupLocation)
 {
     $data = $request->validate([
+        'province_id' => 'required|integer|exists:provinces,id',
         'name' => 'required|string|max:255',
         'latitude' => 'nullable|numeric',
         'longitude' => 'nullable|numeric',

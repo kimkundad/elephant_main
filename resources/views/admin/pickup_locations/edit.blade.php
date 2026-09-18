@@ -35,6 +35,17 @@
                                        class="form-control" required>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">จังหวัด *</label>
+                                <select name="province_id" class="form-select @error('province_id') is-invalid @enderror" required>
+                                    <option value="">-- เลือกจังหวัด --</option>
+                                    @foreach($provinces as $province)
+                                        <option value="{{ $province->id }}" @selected((string) old('province_id', $pickup_location->province_id) === (string) $province->id)>{{ $province->name_th }}</option>
+                                    @endforeach
+                                </select>
+                                @error('province_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+
 
 
                             {{-- ช่องค้นหาโรงแรม --}}

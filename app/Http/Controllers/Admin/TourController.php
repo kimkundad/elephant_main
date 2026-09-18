@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Province;
 use App\Models\Tour;
 use App\Models\TourTag;
 use App\Models\TourTranslation;
@@ -14,23 +15,30 @@ use Illuminate\Validation\ValidationException;
 
 class TourController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tours = Tour::orderBy('id', 'desc')->get();
+        $provinces = Province::orderBy('name_th')->get();
 
-        return view('admin.tours.index', compact('tours'));
+        $tours = Tour::with('province')
+            ->when($request->query('province_id'), fn ($query, $provinceId) => $query->where('province_id', $provinceId))
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('admin.tours.index', compact('tours', 'provinces'));
     }
 
     public function create()
     {
         $tags = $this->activeTags();
+        $provinces = Province::orderBy('name_th')->get();
 
-        return view('admin.tours.create', compact('tags'));
+        return view('admin.tours.create', compact('tags', 'provinces'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
+            'province_id' => 'required|integer|exists:provinces,id',
             'name_th' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'short_description_th' => 'nullable|string',
@@ -58,6 +66,7 @@ class TourController extends Controller
 
         $slugBase = $data['name_en'] ?: $data['name_th'];
         $tour = Tour::create([
+            'province_id' => $data['province_id'],
             'name' => $data['name_th'],
             'slug' => Str::slug($slugBase),
             'short_description' => $data['short_description_th'] ?? null,
@@ -80,11 +89,12 @@ class TourController extends Controller
     {
         $tour = Tour::with(['tags', 'translations'])->findOrFail($id);
         $tags = $this->activeTags();
+        $provinces = Province::orderBy('name_th')->get();
 
         $translationTh = $tour->translations->firstWhere('locale', 'th');
         $translationEn = $tour->translations->firstWhere('locale', 'en');
 
-        return view('admin.tours.edit', compact('tour', 'tags', 'translationTh', 'translationEn'));
+        return view('admin.tours.edit', compact('tour', 'tags', 'provinces', 'translationTh', 'translationEn'));
     }
 
     public function update(Request $request, $id)
@@ -92,6 +102,7 @@ class TourController extends Controller
         $tour = Tour::findOrFail($id);
 
         $data = $request->validate([
+            'province_id' => 'required|integer|exists:provinces,id',
             'name_th' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
             'short_description_th' => 'nullable|string',
@@ -148,6 +159,7 @@ class TourController extends Controller
 
         $slugBase = $data['name_en'] ?: $data['name_th'];
         $tour->update([
+            'province_id' => $data['province_id'],
             'name' => $data['name_th'],
             'slug' => Str::slug($slugBase),
             'short_description' => $data['short_description_th'] ?? null,

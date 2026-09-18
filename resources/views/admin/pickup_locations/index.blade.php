@@ -18,10 +18,20 @@
             <div class="card">
                 <div class="card-body">
 
+                    <form method="GET" class="mb-5" style="max-width:320px;">
+                        <select name="province_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">ทุกจังหวัด</option>
+                            @foreach($provinces as $province)
+                                <option value="{{ $province->id }}" @selected((string) request('province_id') === (string) $province->id)>{{ $province->name_th }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>ชื่อโรงแรม / จุดรับ</th>
+                                <th>จังหวัด</th>
                                 <th>ประเภท</th>
                                 <th>สถานะ</th>
                                 <th>แผนที่</th>
@@ -33,6 +43,7 @@
                             @foreach ($locations as $loc)
                                 <tr>
                                     <td>{{ $loc->name }}</td>
+                                    <td>{{ $loc->province?->name_th ?? '-' }}</td>
                                     <td>
                                         @if($loc->is_meeting_point)
                                             <span class="badge bg-info">Meeting Point</span>
