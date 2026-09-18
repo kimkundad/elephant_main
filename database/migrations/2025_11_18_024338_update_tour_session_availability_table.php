@@ -33,12 +33,8 @@ return new class extends Migration
             }
 
             // 4) index ป้องกันซ้ำ (เฉพาะถ้าไม่มีอยู่แล้ว)
-            $exists = DB::select("
-                SHOW INDEX FROM tour_session_availability
-                WHERE Key_name = 'tour_session_unique'
-            ");
-
-            if (empty($exists)) {
+            // Schema::hasIndex works on MySQL and on the sqlite test DB.
+            if (!Schema::hasIndex('tour_session_availability', 'tour_session_unique')) {
                 $table->unique(['tour_id', 'session_id', 'date'], 'tour_session_unique');
             }
         });
