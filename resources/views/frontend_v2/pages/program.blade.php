@@ -342,6 +342,9 @@ height: 50px;
   text-transform:uppercase;
   color:#d7d7d7;
 }
+.program-provinces{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.program-provinces a{ text-decoration:none; }
+.program-province{ opacity:.8; }
 .program-desc{
   font-size:13px;
   line-height:1.6;
@@ -455,6 +458,14 @@ height: 50px;
 
 <section id="program-list" class="program-list">
   <div class="container">
+    @if($provinces->count() > 1)
+      <div class="program-provinces" aria-label="{{ __('common.province') }}">
+        <a href="{{ request()->fullUrlWithoutQuery(['province']) }}" class="program-chip program-chip--selectable {{ $selectedProvince ? '' : 'is-active' }}">{{ __('common.all_provinces') }}</a>
+        @foreach($provinces as $province)
+          <a href="{{ request()->fullUrlWithQuery(['province' => $province->slug]) }}" class="program-chip program-chip--selectable {{ $selectedProvince?->is($province) ? 'is-active' : '' }}">{{ $province->name() }}</a>
+        @endforeach
+      </div>
+    @endif
     <div class="program-filter">
       <div class="program-filter__rail">
         <button type="button" class="program-filter__prev js-filter-prev" aria-label="Scroll filters left">&#8249;</button>
@@ -498,6 +509,7 @@ height: 50px;
             <div class="program-title">{{ $tr?->name ?? $tour->name }}</div>
             <div class="program-meta">
               <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
+              @if($tour->province)<span class="program-province">{{ $tour->province->name() }}</span>@endif
             </div>
             <div class="program-desc">
               {{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 220) }}

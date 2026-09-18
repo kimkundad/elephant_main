@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Contact;
 use App\Models\Elephant;
 use App\Models\TourTag;
+use App\Models\Province;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -67,11 +68,14 @@ class HomeController extends Controller
             ->orderBy('id')
             ->get();
 
+        $provinces = Province::active()->orderBy('name_th')->get();
+        $selectedProvince = $provinces->firstWhere('slug', (string) $request->query('province', ''));
+
         $filterByTags = count($selectedTags) > 0;
 
         $tours = Tour::query()
-            ->where('is_active', 1)
-            ->with(['tags', 'translations'])
+            ->visible()
+            ->with(['tags', 'translations', 'province'])
             ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
                 $query->where(function ($inner) use ($searchTerm) {
                     $inner->where('name', 'like', '%' . $searchTerm . '%')
@@ -89,10 +93,11 @@ class HomeController extends Controller
                     $tagQuery->whereIn('slug', $selectedTags);
                 });
             })
+            ->when($selectedProvince, fn ($query) => $query->where('province_id', $selectedProvince->id))
             ->orderByDesc('id')
             ->get();
 
-        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags', 'searchTerm'));
+        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags', 'searchTerm', 'provinces', 'selectedProvince'));
     }
 
     public function home()
@@ -103,8 +108,8 @@ class HomeController extends Controller
     public function homeV2()
     {
         $tours = Tour::query()
-            ->where('is_active', 1)
-            ->with('translations')
+            ->visible()
+            ->with(['translations', 'province'])
             ->orderByDesc('id')
             ->get();
 

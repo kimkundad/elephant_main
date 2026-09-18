@@ -117,6 +117,7 @@
   margin-bottom:12px;
   color:#2b2621;
 }
+.tour-province{ font-size:14px; color:#8b8177; margin:-4px 0 10px; }
 .tour-sub{
   color:#6b6156;
   line-height:1.8;
@@ -539,6 +540,9 @@ textarea.tour-form-control{
           </div>
 
           <h1 class="tour-title">{{ $tourName }}</h1>
+          @if($tour->province)
+            <div class="tour-province">{{ __('common.province') }}: {{ $tour->province->name() }}</div>
+          @endif
 
           <div class="tour-sub">
             {{ $tourShortDescription }}

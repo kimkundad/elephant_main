@@ -1014,7 +1014,7 @@ height: 50px;
                                         </div>
                                         <div class="elephant-card__body">
                                             <div class="elephant-name">{{ $tr?->name ?? $tour->name }}</div>
-                                            <div class="elephant-rescued">{{ strtoupper(__('common.program')) }}</div>
+                                            <div class="elephant-rescued">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
                                             <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
                                             <div class="elephant-desc">{{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 170) }}</div>
                                             <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-book" aria-label="Read more">{{ __('common.book_now') }}</a>

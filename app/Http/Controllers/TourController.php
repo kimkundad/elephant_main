@@ -125,8 +125,9 @@ public function show(string $slug, Request $request)
     public function showV2(string $slug, Request $request)
     {
         $tour = Tour::query()
+            ->visible()
+            ->with('province')
             ->where('slug', $slug)
-            ->where('is_active', 1)
             ->firstOrFail();
 
         $tourReviews = $this->approvedReviewsForTour($tour);
