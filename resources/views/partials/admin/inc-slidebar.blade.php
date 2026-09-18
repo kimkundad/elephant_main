@@ -183,6 +183,13 @@
 
 
                 <div class="menu-item">
+                    <a class="menu-link" href="{{ route('admin.provinces.index') }}">
+                        <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                        <span class="menu-title">Provinces / จังหวัด</span>
+                    </a>
+                </div>
+
+                <div class="menu-item">
                     <a class="menu-link" href="{{ route('admin.pickup-locations.index') }}">
                         <span class="menu-icon">
 												<!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->

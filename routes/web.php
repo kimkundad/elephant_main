@@ -227,6 +227,7 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
 
 
 
+        Route::resource('provinces', App\Http\Controllers\Admin\ProvinceController::class)->except(['show']);
         Route::resource('pickup-locations', App\Http\Controllers\Admin\PickupLocationController::class);
 
        Route::get('/bookings/get-sessions', [BookingController::class, 'ajaxSessions'])
