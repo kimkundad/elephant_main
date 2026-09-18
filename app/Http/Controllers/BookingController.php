@@ -10,6 +10,7 @@ use App\Models\Tour;
 use App\Models\TourSession;
 use App\Services\BookingNotificationService;
 use App\Services\BookingPaymentService;
+use App\Services\BookingPickup;
 use App\Support\IntegrationLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -116,17 +117,6 @@ class BookingController extends Controller
         return 'PromptPay is not enabled for this Stripe account. Please choose card payment.';
     }
 
-    private function isWithinChiangMaiBounds(float $lat, float $lng): bool
-    {
-        $swLat = 18.730;
-        $swLng = 98.930;
-        $neLat = 18.840;
-        $neLng = 99.050;
-
-        return $lat >= $swLat && $lat <= $neLat
-            && $lng >= $swLng && $lng <= $neLng;
-    }
-
     public function store(Request $request)
     {
       //  dd($request->all());
@@ -145,64 +135,27 @@ class BookingController extends Controller
             'phone' => 'required|string|max:50',
             'email' => 'required|email|max:255',
             'self_drive' => 'nullable|boolean',
-
-            'google_place_id' => 'nullable|string|max:255',
-            'google_place_name' => 'nullable|string|max:255',
-            'google_place_address' => 'nullable|string|max:255',
-            'google_lat' => 'nullable|numeric',
-            'google_lng' => 'nullable|numeric',
-            'pickup_source' => 'nullable|in:google,manual,meeting_point,self_drive',
-            'manual_address' => 'nullable|string|max:500',
-
-            'meeting_point_id' => 'nullable|integer|exists:pickup_locations,id',
+            'pickup_location_id' => 'nullable|integer',
+            'pickup_note' => 'nullable|string|max:1000',
 
             'payment_channel' => ['required', Rule::in($availablePaymentChannels)],
             'discount_code' => 'nullable|string|max:50',
         ]);
 
         $isV2 = $request->boolean('booking_v2');
-        $tour = Tour::with('translations')->findOrFail($data['tour_id']);
+        $tour = Tour::visible()->with('translations')->findOrFail($data['tour_id']);
 
         $adults = (int) $data['qty_adult'];
         $children = (int) $data['qty_child'];
         $infants = (int) $data['qty_infant'];
         $totalGuests = $adults + $children + $infants;
-        $selfDrive = $request->boolean('self_drive');
 
-        $lat = isset($data['google_lat']) ? (float) $data['google_lat'] : null;
-        $lng = isset($data['google_lng']) ? (float) $data['google_lng'] : null;
-        $hasLatLng = ($lat !== null && $lng !== null);
-        $selectedMeetingPointId = !empty($data['meeting_point_id']) ? (int) $data['meeting_point_id'] : null;
-
-        if (!$selfDrive && !$hasLatLng && !$selectedMeetingPointId) {
-            return back()->withErrors([
-                'google_place_name' => __('booking.errors.pickup_required'),
-            ])->withInput();
-        }
-
-        $inBounds = (!$selfDrive && $hasLatLng) ? $this->isWithinChiangMaiBounds($lat, $lng) : false;
-        if (!$selfDrive && !$selectedMeetingPointId && !$inBounds) {
-            return back()->withErrors([
-                'meeting_point_id' => __('booking.errors.meeting_point_required'),
-            ])->withInput();
-        }
-
-        $pickupLocationId = $selfDrive ? null : $selectedMeetingPointId;
-        $pickupSource = null;
-        $pickupPlaceName = null;
-        $pickupPlaceAddress = null;
-
-        if ($selfDrive) {
-            $pickupSource = 'self_drive';
-        } elseif ($pickupLocationId) {
-            $meetingPoint = PickupLocation::find($pickupLocationId);
-            $pickupSource = 'meeting_point';
-            $pickupPlaceName = $meetingPoint?->name;
-        } else {
-            $pickupSource = $data['pickup_source'] ?? 'google';
-            $pickupPlaceName = $data['google_place_name'] ?? null;
-            $pickupPlaceAddress = $data['google_place_address'] ?? null;
-        }
+        $pickup = (new BookingPickup())->resolve(
+            $tour,
+            $request->boolean('self_drive'),
+            isset($data['pickup_location_id']) ? (int) $data['pickup_location_id'] : null,
+            $data['pickup_note'] ?? null
+        );
 
         $priceAdult = (int) ($tour->min_price ?? 0);
         $priceChild = (int) round($priceAdult * 0.5);
@@ -254,11 +207,7 @@ class BookingController extends Controller
                 $discountAmount,
                 $discountCode,
                 $agentId,
-                $pickupLocationId,
-                $selfDrive,
-                $pickupSource,
-                $pickupPlaceName,
-                $pickupPlaceAddress
+                $pickup
             ) {
                 if ($discountCode) {
                     $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
@@ -325,11 +274,10 @@ class BookingController extends Controller
                     'discount_code' => $discountCode,
                     'discount_amount' => $discountAmount,
                     'agent_id' => $agentId,
-                    'pickup_location_id' => $pickupLocationId,
-                    'self_drive' => $selfDrive,
-                    'pickup_source' => $pickupSource,
-                    'pickup_place_name' => $pickupPlaceName,
-                    'pickup_place_address' => $pickupPlaceAddress,
+                    'pickup_location_id' => $pickup['pickup_location_id'],
+                    'self_drive' => $pickup['self_drive'],
+                    'pickup_source' => $pickup['pickup_source'],
+                    'pickup_note' => $pickup['pickup_note'],
 
                     'status' => 'pending',
                     'created_by' => null,
