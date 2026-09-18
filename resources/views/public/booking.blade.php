@@ -66,6 +66,15 @@
           <div class="value">{{ optional($booking->tour)->name ?? '-' }}</div>
         </div>
         <div class="row">
+          <div class="label">Province</div>
+          <div class="value">{{ $booking->tour?->province?->name('en') ?? '-' }}</div>
+        </div>
+        <div class="row">
+          <div class="label">Pickup</div>
+          <div class="value" style="white-space:pre-line;">{{ $booking->pickupLabel() }}@if($booking->pickupDetail())
+{{ $booking->pickupDetail() }}@endif</div>
+        </div>
+        <div class="row">
           <div class="label">Amount</div>
           <div class="value">THB {{ number_format($booking->amount_due_now ?? $booking->grand_total ?? 0, 2) }}</div>
         </div>

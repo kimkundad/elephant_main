@@ -148,17 +148,9 @@
 
     {{-- PICKUP --}}
     @php
-        if ($booking->self_drive) {
-            $pickupLabel = 'Self Drive (No pickup required)';
-        } elseif ($booking->pickupLocation) {
-            $pickupLabel = 'Meeting Point: ' . $booking->pickupLocation->name;
-        } elseif ($booking->pickup_place_name) {
-            $pickupLabel = $booking->pickup_place_name;
-            if ($booking->pickup_place_address) {
-                $pickupLabel .= "\n" . $booking->pickup_place_address;
-            }
-        } else {
-            $pickupLabel = '-';
+        $pickupLabel = $booking->pickupLabel();
+        if ($booking->pickupDetail()) {
+            $pickupLabel .= "\n" . $booking->pickupDetail();
         }
     @endphp
     <div class="row" style="margin-top:20px;">

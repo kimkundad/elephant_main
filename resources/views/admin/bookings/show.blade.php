@@ -25,20 +25,10 @@
             </div>
 
             <div class="mt-4">
-                <strong>Pickup:</strong>
-                @if($booking->self_drive)
-                    เดินทางไปเอง
-                @elseif($booking->pickupLocation?->name)
-                    {{ $booking->pickupLocation->name }}
-                @elseif($booking->pickup_place_name)
-                    {{ $booking->pickup_place_name }}
-                @else
-                    -
-                @endif
-                <br>
+                <strong>Pickup:</strong> {{ $booking->pickupLabel() }} <br>
 
-                @if($booking->pickup_place_address)
-                    <strong>Pickup address:</strong> {{ $booking->pickup_place_address }} <br>
+                @if($booking->pickupDetail())
+                    <strong>Pickup details:</strong> <span style="white-space:pre-line;">{{ $booking->pickupDetail() }}</span> <br>
                 @endif
 
                 <strong>Pickup source:</strong> {{ $booking->pickup_source ?? '-' }} <br>

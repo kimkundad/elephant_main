@@ -47,6 +47,26 @@ class Booking extends Model
         return $this->belongsTo(PickupLocation::class);
     }
 
+    /** How the guest gets to the tour: self drive, the chosen pickup point, or an old free-text hotel. */
+    public function pickupLabel(): string
+    {
+        if ($this->self_drive) {
+            return __('booking.confirmed.self_drive');
+        }
+
+        return $this->pickupLocation?->name ?: ($this->pickup_place_name ?: '-');
+    }
+
+    /** Extra pickup details: the guest's note, or the address saved by the old Google flow. */
+    public function pickupDetail(): ?string
+    {
+        if ($this->self_drive) {
+            return null;
+        }
+
+        return $this->pickup_note ?: ($this->pickup_place_address ?: null);
+    }
+
     public function agent()
     {
         return $this->belongsTo(Agent::class);

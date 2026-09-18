@@ -3,17 +3,6 @@
 @php
   $tourTranslation = optional($booking->tour)->translation(app()->getLocale());
   $tourName = $tourTranslation->name ?? optional($booking->tour)->name ?? '-';
-  $pickupLabel = '-';
-
-  if ($booking->self_drive) {
-      $pickupLabel = app()->getLocale() === 'th' ? 'เดินทางไปเอง' : 'Traveling by myself';
-  } elseif (optional($booking->pickupLocation)->name) {
-      $pickupLabel = $booking->pickupLocation->name;
-  } elseif ($booking->pickup_place_name) {
-      $pickupLabel = $booking->pickup_place_name;
-  }
-
-  $pickupAddressLabel = app()->getLocale() === 'th' ? 'ที่อยู่รับส่ง' : 'Pickup address';
 @endphp
 
 @section('title', __('booking.confirmed.title'))
@@ -104,6 +93,11 @@
             <div class="label">{{ __('booking.confirmed.tour') }}</div>
             <div class="value">{{ $tourName }}</div>
 
+            @if($booking->tour?->province)
+              <div class="label">{{ __('booking.confirmed.province') }}</div>
+              <div class="value">{{ $booking->tour->province->name() }}</div>
+            @endif
+
             <div class="label">{{ __('booking.confirmed.date') }}</div>
             <div class="value">{{ \Carbon\Carbon::parse($booking->date)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}</div>
 
@@ -122,11 +116,11 @@
             <div class="value">{{ $booking->customer_email }}</div>
 
             <div class="label">{{ __('booking.confirmed.pickup_location') }}</div>
-            <div class="value">{{ $pickupLabel }}</div>
+            <div class="value">{{ $booking->pickupLabel() }}</div>
 
-            @if(!$booking->self_drive && $booking->pickup_place_address)
-              <div class="label">{{ $pickupAddressLabel }}</div>
-              <div class="value">{{ $booking->pickup_place_address }}</div>
+            @if($booking->pickupDetail())
+              <div class="label">{{ __('booking.confirmed.pickup_address') }}</div>
+              <div class="value" style="white-space:pre-line;">{{ $booking->pickupDetail() }}</div>
             @endif
           </div>
         </div>

@@ -28,11 +28,18 @@
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">PROGRAM</div>
-            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->tour?->name ?? '-' }}</div>
+            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->tour?->name ?? '-' }}@if($booking->tour?->province) ({{ $booking->tour->province->name('en') }})@endif</div>
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">DATE & TIME</div>
             <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->date }} / {{ $booking->session?->time_range ?: '-' }}</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">PICKUP</div>
+            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->pickupLabel() }}</div>
+            @if($booking->pickupDetail())
+              <div style="font-size:13px;color:#425466;white-space:pre-line;">{{ $booking->pickupDetail() }}</div>
+            @endif
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">TOTAL</div>

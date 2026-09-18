@@ -21,7 +21,7 @@ class BookingController extends Controller
         $dateTo   = $request->query('date_to');
         $tourId   = $request->query('tour_id');
 
-        $bookings = Booking::with(['customer', 'tour', 'session', 'agent', 'discountCode', 'pickupLocation'])
+        $bookings = Booking::with(['customer', 'tour.province', 'session', 'agent', 'discountCode', 'pickupLocation'])
             ->when($dateFrom, fn($q) => $q->whereDate('date', '>=', $dateFrom))
             ->when($dateTo,   fn($q) => $q->whereDate('date', '<=', $dateTo))
             ->when($tourId,   fn($q) => $q->where('tour_id', $tourId))
@@ -41,7 +41,7 @@ class BookingController extends Controller
             'ชื่อลูกค้า', 'อีเมล', 'โทรศัพท์',
             'ผู้ใหญ่', 'เด็ก', 'ทารก', 'รวม',
             'ราคารวม', 'ส่วนลด', 'โค้ด',
-            'จุดรับส่ง', 'ประเภทการรับส่ง',
+            'จังหวัด', 'จุดรับส่ง', 'รายละเอียดรับส่ง', 'ประเภทการรับส่ง',
             'พนักงานขาย', 'สถานะ', 'วันที่จอง',
         ];
 
@@ -52,17 +52,13 @@ class BookingController extends Controller
 
             foreach ($bookings as $b) {
                 if ($b->self_drive) {
-                    $pickupLabel = 'มาเอง (Self Drive)';
-                    $pickupType  = 'Self Drive';
+                    $pickupType = 'Self Drive';
                 } elseif ($b->pickupLocation) {
-                    $pickupLabel = $b->pickupLocation->name;
-                    $pickupType  = 'Meeting Point';
+                    $pickupType = $b->pickupLocation->is_meeting_point ? 'Meeting Point' : 'Hotel / Zone';
                 } elseif ($b->pickup_place_name) {
-                    $pickupLabel = $b->pickup_place_name . ($b->pickup_place_address ? ' - ' . $b->pickup_place_address : '');
-                    $pickupType  = 'Hotel / Address';
+                    $pickupType = 'Hotel / Address';
                 } else {
-                    $pickupLabel = '-';
-                    $pickupType  = '-';
+                    $pickupType = '-';
                 }
 
                 fputcsv($file, [
@@ -81,7 +77,9 @@ class BookingController extends Controller
                     number_format($b->total_price ?? 0, 2),
                     number_format($b->discount_amount ?? 0, 2),
                     $b->discount_code ?? '-',
-                    $pickupLabel,
+                    $b->tour?->province?->name_th ?? '-',
+                    $b->pickupLabel(),
+                    $b->pickupDetail() ?? '-',
                     $pickupType,
                     $b->agent?->name ?? '-',
                     $b->status ?? '-',
