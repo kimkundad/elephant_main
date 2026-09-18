@@ -31,7 +31,6 @@
                                 <th>ชื่อ</th>
                                 <th>Email</th>
                                 <th>เบอร์โทร</th>
-                                <th>สัญชาติ</th>
                                 <th>สร้างโดย</th>
                                 <th>จัดการ</th>
                             </tr>
@@ -43,7 +42,6 @@
                                     <td>{{ $c->full_name }}</td>
                                     <td>{{ $c->email }}</td>
                                     <td>{{ $c->phone }}</td>
-                                    <td>{{ $c->nationality ?? '-' }}</td>
                                     <td>{{ $c->creator?->name }}</td>
                                     <td>
                                         <a href="{{ route('admin.customers.edit', $c->id) }}" class="btn btn-warning btn-sm">แก้ไข</a>
