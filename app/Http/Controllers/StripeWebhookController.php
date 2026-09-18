@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
-use Illuminate\Support\Str;
 use App\Support\IntegrationLogger;
-use App\Services\BookingNotificationService;
+use App\Services\BookingPaymentService;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
@@ -25,7 +24,7 @@ class StripeWebhookController extends Controller
             $event = Webhook::constructEvent(
                 $payload,
                 $sigHeader,
-                env('STRIPE_WEBHOOK_SECRET')
+                config('services.stripe.webhook_secret')
             );
         } catch (\Throwable $e) {
             IntegrationLogger::error('stripe', 'invalid_signature', 'Stripe webhook invalid signature', ['error' => $e->getMessage()]);
@@ -36,7 +35,7 @@ class StripeWebhookController extends Controller
             'type' => $event->type,
         ]);
 
-        $isTestMode = str_starts_with((string) env('STRIPE_SECRET'), 'sk_test_');
+        $isTestMode = str_starts_with((string) config('services.stripe.secret'), 'sk_test_');
 
         /**
          * 1) Card (Checkout)
@@ -193,18 +192,6 @@ class StripeWebhookController extends Controller
 
     private function markPaidAndSendOnce(Booking $booking, array $updateData = []): void
     {
-        $booking->fill(array_merge([
-            'payment_status' => 'paid',
-            'status'         => 'confirmed',
-            'paid_at'        => $booking->paid_at ?? now(),
-        ], $updateData));
-
-        if (!$booking->public_code) {
-            $booking->public_code = Str::random(32);
-        }
-
-        $booking->save();
-
-        (new BookingNotificationService())->sendConfirmation($booking);
+        (new BookingPaymentService())->markPaidAndNotify($booking, $updateData);
     }
 }

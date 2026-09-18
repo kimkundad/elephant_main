@@ -9,6 +9,8 @@ use App\Models\PickupLocation;
 use App\Models\Tour;
 use App\Models\TourSession;
 use App\Services\BookingNotificationService;
+use App\Services\BookingPaymentService;
+use App\Support\IntegrationLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -476,6 +478,27 @@ class BookingController extends Controller
             $data['stripe_status'] = $intent->status;
         } catch (\Throwable $e) {
             $data['stripe_status'] = 'unknown';
+
+            return response()->json($data);
+        }
+
+        // Stripe is the source of truth for the payment. The webhook is the
+        // normal path to "paid", but it can be missed (delivery failure, local
+        // dev with no public URL), so reconcile here too rather than leaving
+        // the guest on the QR screen after they have already paid.
+        if ($intent->status === 'succeeded' && $booking->payment_status !== 'paid') {
+            IntegrationLogger::info('stripe', 'payment_status_reconciled', 'Marking booking paid from payment status poll', [
+                'booking_id' => $booking->id,
+                'pi_id' => $intent->id,
+            ]);
+
+            (new BookingPaymentService())->markPaidAndNotify($booking, [
+                'payment_channel' => 'promptpay',
+                'stripe_payment_intent_id' => $intent->id,
+            ]);
+
+            $data['booking_status'] = $booking->status;
+            $data['payment_status'] = $booking->payment_status;
         }
 
         return response()->json($data);
