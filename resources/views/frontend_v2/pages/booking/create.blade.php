@@ -23,6 +23,7 @@
           'checking' => __('booking.create.checking'),
           'apply' => __('booking.create.apply'),
           'discountApplied' => __('booking.create.discount_applied'),
+          'submitting' => __('booking.create.submitting'),
       ],
   ];
 @endphp
@@ -238,6 +239,63 @@
 .f-input.is-invalid{
   border-color:#b3261e;
 }
+
+/* Submit loading state: locks the Book button and covers the page so the
+   guest can't double-submit while the booking / payment page is prepared. */
+.btn-pay.is-loading{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  cursor:wait; opacity:.85;
+}
+.btn-spinner{
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.35); border-top-color:#fff;
+  animation:booking-spin .7s linear infinite;
+}
+.booking-overlay{
+  position:fixed; inset:0; z-index:9999;
+  display:flex; align-items:center; justify-content:center; padding:16px;
+  background:rgba(43,38,33,.55);
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  opacity:0; visibility:hidden; transition:opacity .25s ease, visibility .25s ease;
+}
+.booking-overlay.is-visible{ opacity:1; visibility:visible; }
+.booking-overlay-card{
+  width:100%; max-width:360px; background:#fff; border-radius:18px;
+  padding:32px 24px 26px; text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);
+  transform:translateY(12px) scale(.97); transition:transform .3s ease;
+}
+.booking-overlay.is-visible .booking-overlay-card{ transform:none; }
+.booking-loader{
+  position:relative; width:64px; height:64px; margin:0 auto 18px;
+}
+.booking-loader::before,
+.booking-loader::after{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  border:4px solid transparent;
+}
+.booking-loader::before{ border-color:#f1ebe3; }
+.booking-loader::after{
+  border-top-color:#b58d4f; border-right-color:#b58d4f;
+  animation:booking-spin .9s cubic-bezier(.5,.1,.5,.9) infinite;
+}
+.booking-overlay-title{ font-size:18px; font-weight:800; color:#2b2621; margin-bottom:8px; }
+.booking-overlay-text{ font-size:14px; line-height:1.6; color:#6f655b; }
+.booking-overlay-dots{ display:flex; justify-content:center; gap:6px; margin-top:16px; }
+.booking-overlay-dots span{
+  width:7px; height:7px; border-radius:50%; background:#b58d4f;
+  animation:booking-dot 1.2s ease-in-out infinite;
+}
+.booking-overlay-dots span:nth-child(2){ animation-delay:.15s; }
+.booking-overlay-dots span:nth-child(3){ animation-delay:.3s; }
+@keyframes booking-spin{ to{ transform:rotate(360deg); } }
+@keyframes booking-dot{
+  0%, 80%, 100%{ opacity:.25; transform:scale(.8); }
+  40%{ opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .booking-loader::after, .btn-spinner, .booking-overlay-dots span{ animation-duration:2.4s; }
+}
 </style>
 @endpush
 
@@ -431,6 +489,15 @@
   </div>
 </section>
 
+<div class="booking-overlay" id="booking-overlay" role="status" aria-live="polite" aria-hidden="true">
+  <div class="booking-overlay-card">
+    <div class="booking-loader" aria-hidden="true"></div>
+    <div class="booking-overlay-title">{{ __('booking.create.processing_title') }}</div>
+    <div class="booking-overlay-text">{{ __('booking.create.processing_text') }}</div>
+    <div class="booking-overlay-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
 <script>
 const BOOKING_I18N = @json($bookingI18n);
 </script>
@@ -440,7 +507,56 @@ const BOOKING_I18N = @json($bookingI18n);
   const form = document.getElementById('booking-form');
   if (!form) return;
 
+  const bookBtn = document.getElementById('btn-book');
+  const overlay = document.getElementById('booking-overlay');
+  const bookBtnHtml = bookBtn ? bookBtn.innerHTML : '';
+  let submitting = false;
+
+  // Hang the overlay directly off <body> so a transformed ancestor (smooth-scroll
+  // wrappers etc.) can never turn its position:fixed into a local position.
+  if (overlay) document.body.appendChild(overlay);
+
+  // Lock the form once a valid submit goes through: spinner on the button plus a
+  // full-page overlay, so repeated clicks / Enter presses can't create extra bookings.
+  const startLoading = () => {
+    submitting = true;
+    if (bookBtn) {
+      bookBtn.disabled = true;
+      bookBtn.classList.add('is-loading');
+      bookBtn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span><span></span>';
+      bookBtn.lastChild.textContent = BOOKING_I18N.ui.submitting;
+    }
+    if (overlay) {
+      overlay.classList.add('is-visible');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+  };
+
+  const stopLoading = () => {
+    submitting = false;
+    if (bookBtn) {
+      bookBtn.disabled = false;
+      bookBtn.classList.remove('is-loading');
+      bookBtn.innerHTML = bookBtnHtml;
+    }
+    if (overlay) {
+      overlay.classList.remove('is-visible');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+  };
+
+  // Coming back with the browser Back button (e.g. from Stripe Checkout) restores
+  // this page from the back/forward cache still in its loading state.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && submitting) stopLoading();
+  });
+
   form.addEventListener('submit', (e) => {
+    if (submitting) {
+      e.preventDefault();
+      return;
+    }
+
     const searchInput = document.getElementById('searchInput');
     const selfDrive = document.getElementById('self_drive');
     const fullName = form.querySelector('input[name="full_name"]');
@@ -503,6 +619,8 @@ const BOOKING_I18N = @json($bookingI18n);
       discountCode.focus();
       return;
     }
+
+    startLoading();
   });
 })();
 

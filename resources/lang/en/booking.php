@@ -51,6 +51,9 @@ return [
         'terms_notice' => 'By completing this transaction, you agree to our booking terms.',
         'checking' => 'Checking...',
         'discount_applied' => 'Discount code applied successfully.',
+        'submitting' => 'Sending...',
+        'processing_title' => 'Processing your booking',
+        'processing_text' => 'Please wait while we send your details and prepare the payment page. Please do not close or refresh this page.',
     ],
     'promptpay' => [
         'title' => 'PromptPay',
