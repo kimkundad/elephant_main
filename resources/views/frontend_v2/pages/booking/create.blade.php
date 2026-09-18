@@ -6,17 +6,13 @@
   $tourShortDescription = $tourTranslation->short_description ?? $tour->short_description;
   $bookingI18n = [
       'errors' => [
-          'selectHotel' => __('booking.errors.select_hotel'),
-          'selectManualAddress' => __('booking.errors.select_manual_address'),
-          'pinLocation' => __('booking.errors.pin_location'),
-          'selectMeetingPoint' => __('booking.errors.select_meeting_point'),
+          'selectPickup' => __('booking.errors.pickup_required'),
           'enterFullName' => __('booking.errors.enter_full_name'),
           'enterPhone' => __('booking.errors.enter_phone'),
           'enterEmail' => __('booking.errors.enter_email'),
           'minCharge' => __('booking.errors.min_charge'),
           'discountInvalid' => __('booking.errors.discount_invalid'),
           'discountRequired' => __('booking.errors.discount_required'),
-          'outOfBounds' => __('booking.errors.out_of_bounds'),
           'discountCheckFailed' => __('booking.errors.discount_check_failed'),
       ],
       'ui' => [
@@ -239,6 +235,8 @@
 .f-input.is-invalid{
   border-color:#b3261e;
 }
+.req{ color:#e2572b; font-weight:700; }
+textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height:84px; font-family:inherit; }
 
 /* Submit loading state: locks the Book button and covers the page so the
    guest can't double-submit while the booking / payment page is prepared. */
@@ -316,6 +314,7 @@
         <div class="booking-hero-sub">
           {{ \Carbon\Carbon::parse($date)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}
           @ {{ $session->time_range }}
+          @if($tour->province) &middot; {{ $tour->province->name() }} @endif
         </div>
         <div class="booking-hero-desc">{{ $tourShortDescription }}</div>
       </div>
@@ -386,43 +385,37 @@
         <div class="card">
           <div class="card-title">{{ __('booking.create.additional_info') }}</div>
           <label class="checkbox self-drive-check">
-            <input type="checkbox" name="self_drive" id="self_drive" value="1" >
+            <input type="checkbox" name="self_drive" id="self_drive" value="1" @checked(old('self_drive'))>
             <span>{{ __('booking.create.self_drive') }}</span>
           </label>
-          <label class="f-label" id="pickupLabel">{{ __('booking.create.hotel_pickup') }}</label>
 
-          <div class="mb-3" id="pickupFields" style="position:relative;">
-            <label class="form-label">{{ __('booking.create.search_hotel_label') }}</label>
-            <input id="searchInput" type="text" class="f-input" placeholder="{{ __('booking.create.search_hotel_placeholder') }}" autocomplete="off" required>
-          <div class="tiny" style="margin-top:8px;">{{ __('booking.create.search_hotel_help') }}</div>
-          </div>
-
-          <input type="hidden" name="google_place_id" id="google_place_id" value="">
-          <input type="hidden" name="google_place_name" id="google_place_name" value="">
-          <input type="hidden" name="google_place_address" id="google_place_address" value="">
-          <input type="hidden" name="google_lat" id="google_lat" value="">
-          <input type="hidden" name="google_lng" id="google_lng" value="">
-          <input type="hidden" name="pickup_source" id="pickup_source" value="">
-          <input type="hidden" name="pickup_out_of_bounds" id="pickup_out_of_bounds" value="0">
-
-          <div id="pickupFound" class="tiny" style="display:none; margin-top:8px;">{{ __('booking.create.pickup_found') }}</div>
-
-          <div id="meetingWrap" style="display:none; margin-top:12px;">
-            <label class="f-label">{{ __('booking.create.meeting_label') }}</label>
-            <div class="tiny" style="margin-top:8px;">{{ __('booking.create.meeting_map_help') }}</div>
-            <div id="meetingMap" style="height:300px; border-radius:12px; overflow:hidden; margin-top:10px; border:1px solid #e6e6e6;"></div>
-            <select name="meeting_point_id" id="meeting_point_id" class="f-input">
-              <option value="">{{ __('booking.create.meeting_placeholder') }}</option>
-              @foreach($meetingPoints as $mp)
-                <option
-                  value="{{ $mp->id }}"
-                  data-lat="{{ $mp->latitude }}"
-                  data-lng="{{ $mp->longitude }}"
-                >{{ $mp->name }}</option>
+          <div id="pickupFields">
+            <label class="f-label" for="pickup_location_id">
+              {{ __('booking.create.hotel_pickup') }} <span class="req">*</span>
+            </label>
+            @php
+              $pickupGroups = [
+                __('booking.create.pickup_group_hotels') => $pickupLocations->where('is_meeting_point', false),
+                __('booking.create.pickup_group_meeting') => $pickupLocations->where('is_meeting_point', true),
+              ];
+            @endphp
+            <select name="pickup_location_id" id="pickup_location_id" class="f-input @error('pickup_location_id') is-invalid @enderror" required>
+              <option value="">{{ __('booking.create.pickup_select_placeholder') }}</option>
+              @foreach($pickupGroups as $groupLabel => $groupItems)
+                @if($groupItems->isNotEmpty())
+                  <optgroup label="{{ $groupLabel }}">
+                    @foreach($groupItems as $pickup)
+                      <option value="{{ $pickup->id }}" @selected((string) old('pickup_location_id') === (string) $pickup->id)>{{ $pickup->name }}</option>
+                    @endforeach
+                  </optgroup>
+                @endif
               @endforeach
             </select>
-            @error('google_place_name')<span class="field-error">{{ $message }}</span>@enderror
-            @error('meeting_point_id')<span class="field-error">{{ $message }}</span>@enderror
+            @error('pickup_location_id')<span class="field-error">{{ $message }}</span>@enderror
+
+            <label class="f-label" for="pickup_note">{{ __('booking.create.pickup_note_label') }}</label>
+            <textarea name="pickup_note" id="pickup_note" class="f-input pickup-note" rows="3" maxlength="1000">{{ old('pickup_note') }}</textarea>
+            @error('pickup_note')<span class="field-error">{{ $message }}</span>@enderror
           </div>
         </div>
 
@@ -557,33 +550,18 @@ const BOOKING_I18N = @json($bookingI18n);
       return;
     }
 
-    const searchInput = document.getElementById('searchInput');
     const selfDrive = document.getElementById('self_drive');
+    const pickupSelect = document.getElementById('pickup_location_id');
     const fullName = form.querySelector('input[name="full_name"]');
     const phone = form.querySelector('input[name="phone"]');
     const email = form.querySelector('input[name="email"]');
     const discountCode = document.getElementById('discount_code');
 
-    const meetingWrap = document.getElementById('meetingWrap');
-    const meetingSelect = document.getElementById('meeting_point_id');
-    const latEl = document.getElementById('google_lat');
-    const lngEl = document.getElementById('google_lng');
-    const outEl = document.getElementById('pickup_out_of_bounds');
-
-    if (!selfDrive?.checked && (!searchInput || !searchInput.value.trim())) {
+    if (!selfDrive?.checked && (!pickupSelect || !pickupSelect.value)) {
       e.preventDefault();
-      alert(BOOKING_I18N.errors.selectHotel);
-      searchInput?.focus();
+      alert(BOOKING_I18N.errors.selectPickup);
+      pickupSelect?.focus();
       return;
-    }
-
-    if (!selfDrive?.checked && ((meetingWrap && meetingWrap.style.display !== 'none') || (outEl && outEl.value === '1'))) {
-      if (!meetingSelect || !meetingSelect.value) {
-        e.preventDefault();
-        alert(BOOKING_I18N.errors.selectMeetingPoint);
-        meetingSelect?.focus();
-        return;
-      }
     }
 
     if (!fullName || !fullName.value.trim()) {
@@ -771,281 +749,20 @@ const BOOKING_I18N = @json($bookingI18n);
 </script>
 
 <script>
-window.initHotelAutocomplete = function () {
-  const input = document.getElementById('searchInput');
-  if (!input) return;
-
+(function () {
   const selfDrive = document.getElementById('self_drive');
   const pickupFields = document.getElementById('pickupFields');
-  const pickupLabel = document.getElementById('pickupLabel');
-  const pickupFound = document.getElementById('pickupFound');
-  const meetingWrap = document.getElementById('meetingWrap');
-  const meetingSelect = document.getElementById('meeting_point_id');
-  const meetingMapEl = document.getElementById('meetingMap');
+  const pickupSelect = document.getElementById('pickup_location_id');
+  if (!selfDrive || !pickupFields || !pickupSelect) return;
 
-  const placeIdEl = document.getElementById('google_place_id');
-  const placeNameEl = document.getElementById('google_place_name');
-  const placeAddrEl = document.getElementById('google_place_address');
-  const latEl = document.getElementById('google_lat');
-  const lngEl = document.getElementById('google_lng');
-  const sourceEl = document.getElementById('pickup_source');
-  const outEl = document.getElementById('pickup_out_of_bounds');
-  const meetingPointOptions = Array.from(meetingSelect?.options || [])
-    .filter(opt => opt.value && opt.dataset.lat && opt.dataset.lng)
-    .map(opt => ({
-      id: opt.value,
-      name: opt.textContent.trim(),
-      lat: parseFloat(opt.dataset.lat),
-      lng: parseFloat(opt.dataset.lng),
-    }))
-    .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng));
-
-  const bounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(18.760, 98.955),
-    new google.maps.LatLng(18.815, 99.025)
-  );
-
-  const isWithinBounds = (lat, lng) => (
-    lat >= 18.760 && lat <= 18.815 && lng >= 98.955 && lng <= 99.025
-  );
-
-  const setHidden = (el, v) => { if (el) el.value = (v ?? ''); };
-
-  const hideAllStatus = () => {
-    pickupFound.style.display = 'none';
-    meetingWrap.style.display = 'none';
-  };
-
-  const resetPickupFields = () => {
-    input.value = '';
-    if (meetingSelect) meetingSelect.value = '';
-    clearGoogle();
-    clearLatLng();
-    hideAllStatus();
-    setHidden(sourceEl, '');
-  };
-
+  // Travelling by themselves means no pickup point is needed.
   const syncPickupMode = () => {
-    const isSelfDrive = !!selfDrive?.checked;
-    input.required = !isSelfDrive;
-
-    if (pickupFields) {
-      pickupFields.style.display = isSelfDrive ? 'none' : '';
-    }
-    if (pickupLabel) {
-      pickupLabel.style.display = isSelfDrive ? 'none' : '';
-    }
-
-    if (isSelfDrive) {
-      resetPickupFields();
-      setHidden(sourceEl, 'self_drive');
-      return;
-    }
+    pickupFields.style.display = selfDrive.checked ? 'none' : '';
+    pickupSelect.required = !selfDrive.checked;
   };
 
-  const clearGoogle = () => {
-    setHidden(placeIdEl, '');
-    setHidden(placeNameEl, '');
-    setHidden(placeAddrEl, '');
-  };
-
-  const clearLatLng = () => {
-    setHidden(latEl, '');
-    setHidden(lngEl, '');
-    setHidden(outEl, '0');
-  };
-
-  const applyLatLng = (lat, lng) => {
-    setHidden(latEl, lat);
-    setHidden(lngEl, lng);
-
-    const inBounds = isWithinBounds(lat, lng);
-    if (inBounds) {
-      pickupFound.style.display = 'block';
-      meetingWrap.style.display = 'none';
-      setHidden(outEl, '0');
-      if (meetingSelect) meetingSelect.value = '';
-    } else {
-      pickupFound.style.display = 'none';
-      meetingWrap.style.display = 'block';
-      setHidden(outEl, '1');
-    }
-
-  };
-
-  const autocomplete = new google.maps.places.Autocomplete(input, {
-    fields: ['place_id', 'name', 'formatted_address', 'geometry'],
-    componentRestrictions: { country: 'th' },
-    bounds: bounds,
-    strictBounds: true,
-    types: ['lodging'],
-  });
-
-  autocomplete.addListener('place_changed', () => {
-    if (selfDrive?.checked) return;
-
-    const place = autocomplete.getPlace();
-    if (!place || !place.geometry || !place.geometry.location) return;
-
-    if (!bounds.contains(place.geometry.location)) {
-      alert(BOOKING_I18N.errors.outOfBounds);
-      input.value = '';
-      clearGoogle();
-      clearLatLng();
-      hideAllStatus();
-      return;
-    }
-
-    meetingWrap.style.display = 'none';
-    if (meetingSelect) meetingSelect.value = '';
-
-    setHidden(sourceEl, 'google');
-    setHidden(placeIdEl, place.place_id || '');
-    setHidden(placeNameEl, place.name || '');
-    setHidden(placeAddrEl, place.formatted_address || '');
-
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    applyLatLng(lat, lng);
-  });
-
-  let map = null;
-  let meetingMarkers = [];
-  let infoWindow = null;
-
-  const ensureMap = () => {
-    if (map) return;
-    if (!meetingMapEl) return;
-    map = new google.maps.Map(meetingMapEl, {
-      center: { lat: 18.7883, lng: 98.9853 },
-      zoom: 13,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-    });
-    new google.maps.Rectangle({
-      bounds: bounds,
-      map: map,
-      strokeColor: '#d32f2f',
-      strokeOpacity: 0.9,
-      strokeWeight: 2,
-      fillOpacity: 0,
-      clickable: false,
-    });
-    infoWindow = new google.maps.InfoWindow();
-  };
-
-  const focusMeetingPoint = (point, openInfo = false) => {
-    if (!map || !point) return;
-    map.panTo({ lat: point.lat, lng: point.lng });
-    map.setZoom(15);
-    setHidden(sourceEl, 'meeting_point');
-    applyLatLng(point.lat, point.lng);
-    setHidden(outEl, '1');
-    pickupFound.style.display = 'none';
-    meetingWrap.style.display = 'block';
-    if (meetingSelect) meetingSelect.value = String(point.id);
-
-    if (openInfo && infoWindow) {
-      const marker = meetingMarkers.find(item => String(item.point.id) === String(point.id))?.marker;
-      if (marker) {
-        infoWindow.setContent(`<strong>${point.name}</strong>`);
-        infoWindow.open({ anchor: marker, map });
-      }
-    }
-  };
-
-  const renderMeetingMarkers = () => {
-    if (!map) return;
-    meetingMarkers.forEach(item => item.marker.setMap(null));
-    meetingMarkers = meetingPointOptions.map(point => {
-      const marker = new google.maps.Marker({
-        position: { lat: point.lat, lng: point.lng },
-        map,
-        title: point.name,
-      });
-
-      marker.addListener('click', () => {
-        focusMeetingPoint(point, true);
-      });
-
-      return { point, marker };
-    });
-  };
-
-  const showMeetingMap = () => {
-    hideAllStatus();
-    clearGoogle();
-    clearLatLng();
-    ensureMap();
-    renderMeetingMarkers();
-    meetingWrap.style.display = 'block';
-    setHidden(sourceEl, 'meeting_point');
-    setHidden(outEl, '1');
-
-    if (meetingSelect?.value) {
-      const selectedPoint = meetingPointOptions.find(point => String(point.id) === String(meetingSelect.value));
-      if (selectedPoint) {
-        focusMeetingPoint(selectedPoint);
-        return;
-      }
-    }
-
-    if (meetingPointOptions.length > 0) {
-      const mapBounds = new google.maps.LatLngBounds();
-      meetingPointOptions.forEach(point => mapBounds.extend({ lat: point.lat, lng: point.lng }));
-      map.fitBounds(mapBounds);
-    }
-  };
-
-  let t = null;
-  input.addEventListener('input', () => {
-    if (selfDrive?.checked) return;
-
-    hideAllStatus();
-    clearGoogle();
-    setHidden(sourceEl, '');
-    clearLatLng();
-    if (meetingSelect) meetingSelect.value = '';
-
-    if (t) clearTimeout(t);
-    t = setTimeout(() => {
-      const val = (input.value || '').trim();
-      if (val.length >= 2) {
-        if (!placeIdEl.value) showMeetingMap();
-      } else {
-        meetingWrap.style.display = 'none';
-      }
-    }, 600);
-  });
-
-  input.addEventListener('blur', () => {
-    if (selfDrive?.checked) return;
-
-    const val = (input.value || '').trim();
-    if (val.length >= 2 && !placeIdEl.value) {
-      showMeetingMap();
-    }
-  });
-
-  meetingSelect?.addEventListener('change', () => {
-    const selectedPoint = meetingPointOptions.find(point => String(point.id) === String(meetingSelect.value));
-    if (!selectedPoint) {
-      clearLatLng();
-      setHidden(outEl, '1');
-      return;
-    }
-
-    showMeetingMap();
-    focusMeetingPoint(selectedPoint, true);
-  });
-
-  selfDrive?.addEventListener('change', syncPickupMode);
+  selfDrive.addEventListener('change', syncPickupMode);
   syncPickupMode();
-};
+})();
 </script>
-
-<script
-  src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&libraries=places&callback=initHotelAutocomplete"
-  async defer></script>
 @endsection

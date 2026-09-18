@@ -68,7 +68,7 @@ class BookingController extends Controller
             $date = now()->toDateString();
         }
 
-        $tour = Tour::with('translations')->findOrFail($tourId);
+        $tour = Tour::visible()->with(['translations', 'province'])->findOrFail($tourId);
         $session = TourSession::findOrFail($sessionId);
 
         $prices = [
@@ -77,9 +77,7 @@ class BookingController extends Controller
             'infant' => 0,
         ];
 
-        $meetingPoints = PickupLocation::query()
-            ->where('is_active', 1)
-            ->where('is_meeting_point', 1)
+        $pickupLocations = PickupLocation::availableIn((int) $tour->province_id)
             ->orderBy('name')
             ->get();
 
@@ -90,7 +88,7 @@ class BookingController extends Controller
             'session',
             'date',
             'prices',
-            'meetingPoints',
+            'pickupLocations',
             'availablePaymentChannels'
         ));
     }
