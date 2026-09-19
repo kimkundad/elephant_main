@@ -48,7 +48,8 @@ class PickupLocationController extends Controller
     ]);
 
     $data['is_active'] = $request->has('is_active');
-    $data['is_meeting_point'] = $request->has('is_meeting_point'); // ✅
+    // A select always sends the key, so read the value, not its presence.
+    $data['is_meeting_point'] = $request->boolean('is_meeting_point');
 
     PickupLocation::create($data);
 
@@ -88,7 +89,8 @@ class PickupLocationController extends Controller
     ]);
 
     $data['is_active'] = $request->has('is_active');
-    $data['is_meeting_point'] = $request->has('is_meeting_point'); // ✅
+    // A select always sends the key, so read the value, not its presence.
+    $data['is_meeting_point'] = $request->boolean('is_meeting_point');
 
     $pickupLocation->update($data);
 

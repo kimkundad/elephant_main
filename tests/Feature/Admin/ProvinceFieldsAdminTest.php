@@ -33,6 +33,37 @@ class ProvinceFieldsAdminTest extends TestCase
         $this->assertDatabaseHas('pickup_locations', ['name' => 'Bangtao Zone', 'province_id' => $phuket->id]);
     }
 
+    public function test_pickup_type_is_saved_from_the_dropdown(): void
+    {
+        $phuket = $this->makeProvince('phuket');
+
+        $this->actingAsAdmin()->post(route('admin.pickup-locations.store'), [
+            'name' => 'Bangtao Zone',
+            'province_id' => $phuket->id,
+            'is_meeting_point' => '0',
+            'is_active' => 1,
+        ]);
+        $this->assertDatabaseHas('pickup_locations', ['name' => 'Bangtao Zone', 'is_meeting_point' => false]);
+
+        $this->actingAsAdmin()->post(route('admin.pickup-locations.store'), [
+            'name' => 'Patong Meeting Point',
+            'province_id' => $phuket->id,
+            'is_meeting_point' => '1',
+            'is_active' => 1,
+        ]);
+        $this->assertDatabaseHas('pickup_locations', ['name' => 'Patong Meeting Point', 'is_meeting_point' => true]);
+
+        $meetingPoint = $this->makePickup($phuket, ['name' => 'Kata Point', 'is_meeting_point' => true]);
+
+        $this->actingAsAdmin()->put(route('admin.pickup-locations.update', $meetingPoint), [
+            'name' => 'Kata Point',
+            'province_id' => $phuket->id,
+            'is_meeting_point' => '0',
+            'is_active' => 1,
+        ]);
+        $this->assertFalse($meetingPoint->fresh()->is_meeting_point);
+    }
+
     public function test_pickup_location_update_changes_province(): void
     {
         $pickup = $this->makePickup($this->chiangMai(), ['name' => 'Old Town']);

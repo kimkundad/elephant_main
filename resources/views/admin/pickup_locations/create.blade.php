@@ -52,18 +52,12 @@
     </div>
 
     <div class="col-md-6">
-        <div class="form-check form-switch">
-            <input class="form-check-input"
-                   type="checkbox"
-                   id="is_meeting_point"
-                   name="is_meeting_point"
-                   value="1"
-                   {{ old('is_meeting_point', 0) ? 'checked' : '' }}>
-            <label class="form-check-label" for="is_meeting_point">
-                เป็น “จุดนัดรับ” (Meeting Point)
-            </label>
-        </div>
-        <small class="text-muted">ใช้กรณีลูกค้าอยู่นอกเขตโรงแรมรับส่ง ให้มารอที่จุดนี้</small>
+        <label class="form-label" for="is_meeting_point">ประเภท</label>
+        <select class="form-select" id="is_meeting_point" name="is_meeting_point">
+            <option value="0" @selected((string) old('is_meeting_point', '0') === '0')>Hotel Pickup (โรงแรม / โซน)</option>
+            <option value="1" @selected((string) old('is_meeting_point', '0') === '1')>Meeting Point (จุดนัดพบ)</option>
+        </select>
+        <small class="text-muted">ใช้แยกกลุ่มในช่องเลือกจุดรับส่งของหน้าจอง</small>
     </div>
 </div>
 
