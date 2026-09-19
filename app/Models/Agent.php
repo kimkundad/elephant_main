@@ -10,6 +10,7 @@ class Agent extends Model
         'name',
         'email',
         'phone',
+        'phone_country',
         'notes',
         'is_active',
     ];

@@ -43,7 +43,7 @@
                                 <div class="row mb-6">
                                     <div class="col-md-6">
                                         <label class="form-label">เบอร์โทร</label>
-                                        <input class="form-control" name="phone" value="{{ old('phone', $agent->phone) }}">
+                                        <input type="tel" class="form-control" name="phone" data-intl-phone data-intl-phone-country="{{ old('phone_country', $agent->phone_country ?: 'th') }}" value="{{ old('phone', $agent->phone) }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">สถานะ</label>

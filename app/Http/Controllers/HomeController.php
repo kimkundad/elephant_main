@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\Elephant;
 use App\Models\TourTag;
 use App\Models\Province;
+use App\Support\PhoneNumber;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -157,7 +158,8 @@ class HomeController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:32',
+            'phone_country' => 'nullable|string|size:2',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
             'website' => 'nullable|max:0',
@@ -186,6 +188,8 @@ class HomeController extends Controller
 
         Contact::create([
             ...$data,
+            'phone' => PhoneNumber::normalize($data['phone'] ?? null),
+            'phone_country' => PhoneNumber::country($data['phone_country'] ?? null),
             'ip_address' => $request->ip(),
             'user_agent' => substr((string) $request->userAgent(), 0, 255),
             'submitted_at' => now(),
@@ -275,13 +279,16 @@ class HomeController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:32',
+            'phone_country' => 'nullable|string|size:2',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
         ]);
 
         Contact::create([
             ...$data,
+            'phone' => PhoneNumber::normalize($data['phone'] ?? null),
+            'phone_country' => PhoneNumber::country($data['phone_country'] ?? null),
             'ip_address' => $request->ip(),
             'user_agent' => substr((string)$request->userAgent(), 0, 255),
             'submitted_at' => now(),

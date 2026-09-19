@@ -38,8 +38,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">เบอร์โทร</label>
-                        <input type="text" name="phone" class="form-control"
-                               value="{{ $customer->phone }}" required>
+                        <input type="tel" name="phone" class="form-control" data-intl-phone data-intl-phone-country="{{ old('phone_country', $customer->phone_country ?: 'th') }}"
+                               value="{{ old('phone', $customer->phone) }}" required>
                     </div>
 
 

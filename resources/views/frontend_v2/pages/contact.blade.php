@@ -250,7 +250,7 @@
           </div>
           <div class="form-row">
             <div class="single-form">
-              <input type="text" name="phone" value="{{ old('phone') }}" placeholder="Phone">
+              <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="Phone" data-intl-phone data-intl-phone-country="{{ old('phone_country', 'th') }}">
               @error('phone')<div class="text-danger mt-1">{{ $message }}</div>@enderror
             </div>
           </div>

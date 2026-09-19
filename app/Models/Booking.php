@@ -8,7 +8,7 @@ class Booking extends Model
 {
     protected $fillable = [
     'customer_id', 'public_code',
-    'customer_name', 'customer_phone', 'customer_email', // ✅ เพิ่ม
+    'customer_name', 'customer_phone', 'customer_phone_country', 'customer_email', // ✅ เพิ่ม
     'tour_id','session_id','date',
     'adults','children','infants','total_guests',
     'subtotal','vat_amount','fee_amount','grand_total',

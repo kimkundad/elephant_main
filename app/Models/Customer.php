@@ -11,6 +11,7 @@ class Customer extends Model
         'full_name',
         'email',
         'phone',
+        'phone_country',
         'created_by'
     ];
 

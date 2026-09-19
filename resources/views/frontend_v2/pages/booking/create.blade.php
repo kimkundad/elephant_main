@@ -457,7 +457,7 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
             </div>
             <div>
               <label class="f-label">{{ __('booking.create.phone') }}</label>
-              <input type="text" name="phone" class="f-input" required>
+              <input type="tel" name="phone" class="f-input" data-intl-phone required>
             </div>
           </div>
           <label class="f-label">{{ __('booking.create.email') }}</label>

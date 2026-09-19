@@ -42,7 +42,7 @@
                                 <div class="row mb-6">
                                     <div class="col-md-6">
                                         <label class="form-label">เบอร์โทร</label>
-                                        <input class="form-control" name="phone" value="{{ old('phone') }}">
+                                        <input type="tel" class="form-control" name="phone" data-intl-phone value="{{ old('phone') }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">สถานะ</label>

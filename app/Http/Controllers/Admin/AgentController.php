@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Agent;
 use App\Models\Booking;
+use App\Support\PhoneNumber;
 use Illuminate\Http\Request;
 
 class AgentController extends Controller
@@ -33,7 +34,8 @@ class AgentController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:32'],
+            'phone_country' => ['nullable', 'string', 'size:2'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -41,7 +43,8 @@ class AgentController extends Controller
         Agent::create([
             'name' => $data['name'],
             'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
+            'phone' => PhoneNumber::normalize($data['phone'] ?? null),
+            'phone_country' => PhoneNumber::country($data['phone_country'] ?? null),
             'notes' => $data['notes'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ]);
@@ -60,7 +63,8 @@ class AgentController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:32'],
+            'phone_country' => ['nullable', 'string', 'size:2'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -68,7 +72,8 @@ class AgentController extends Controller
         $agent->update([
             'name' => $data['name'],
             'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
+            'phone' => PhoneNumber::normalize($data['phone'] ?? null),
+            'phone_country' => PhoneNumber::country($data['phone_country'] ?? null),
             'notes' => $data['notes'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ]);

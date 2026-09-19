@@ -55,7 +55,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label">เบอร์โทร</label>
-                                    <input type="text" name="phone"
+                                    <input type="tel" name="phone" data-intl-phone
                                            class="form-control @error('phone') is-invalid @enderror"
                                            value="{{ old('phone') }}" required>
 

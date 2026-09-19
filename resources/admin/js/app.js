@@ -6,3 +6,4 @@ import.meta.glob(
   { eager: true }
 );
 import './legacy.js';
+import '../../js/intl-phone';

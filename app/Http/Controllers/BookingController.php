@@ -12,6 +12,7 @@ use App\Services\BookingNotificationService;
 use App\Services\BookingPaymentService;
 use App\Services\BookingPickup;
 use App\Services\BookingPricing;
+use App\Support\PhoneNumber;
 use App\Support\IntegrationLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -131,7 +132,8 @@ class BookingController extends Controller
             'qty_infant' => 'required|integer|min:0',
 
             'full_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
+            'phone' => 'required|string|max:32',
+            'phone_country' => 'nullable|string|size:2',
             'email' => 'required|email|max:255',
             'self_drive' => 'nullable|boolean',
             'pickup_location_id' => 'nullable|integer',
@@ -143,6 +145,11 @@ class BookingController extends Controller
 
         $isV2 = $request->boolean('booking_v2');
         $tour = Tour::visible()->with('translations')->findOrFail($data['tour_id']);
+
+        // Phone is stored in E.164 (+66958467417) with the country next to it.
+        $data['phone'] = PhoneNumber::normalize($data['phone']) ?? $data['phone'];
+        $phoneCountry = PhoneNumber::country($data['phone_country'] ?? null);
+        $phoneVariants = PhoneNumber::variants($data['phone'], $phoneCountry);
 
         $adults = (int) $data['qty_adult'];
         $children = (int) $data['qty_child'];
@@ -203,7 +210,9 @@ class BookingController extends Controller
                 $discountAmount,
                 $discountCode,
                 $agentId,
-                $pickup
+                $pickup,
+                $phoneCountry,
+                $phoneVariants
             ) {
                 if ($discountCode) {
                     $discountRow = DiscountCode::where('code', $discountCode)->lockForUpdate()->first();
@@ -218,8 +227,9 @@ class BookingController extends Controller
                 // Both `email` and `phone` are unique on `customers`, so matching
                 // on email alone inserts a duplicate phone when a returning guest
                 // books under a new address. Match on either column instead.
+                // The same number may sit in an older row as 0958467417.
                 $customer = Customer::where('email', $data['email'])->first()
-                    ?: Customer::where('phone', $data['phone'])->first();
+                    ?: Customer::whereIn('phone', $phoneVariants)->first();
 
                 if ($customer) {
                     $updates = ['full_name' => $data['full_name']];
@@ -233,6 +243,7 @@ class BookingController extends Controller
                     if ($customer->phone !== $data['phone']
                         && !Customer::where('phone', $data['phone'])->whereKeyNot($customer->id)->exists()) {
                         $updates['phone'] = $data['phone'];
+                        $updates['phone_country'] = $phoneCountry;
                     }
 
                     $customer->update($updates);
@@ -241,6 +252,7 @@ class BookingController extends Controller
                         'email' => $data['email'],
                         'full_name' => $data['full_name'],
                         'phone' => $data['phone'],
+                        'phone_country' => $phoneCountry,
                         'created_by' => null,
                     ]);
                 }
@@ -249,6 +261,7 @@ class BookingController extends Controller
                     'customer_id' => $customer->id,
                     'customer_name' => $data['full_name'],
                     'customer_phone' => $data['phone'],
+                    'customer_phone_country' => $phoneCountry,
                     'customer_email' => $data['email'],
                     'public_code' => \Illuminate\Support\Str::random(32),
 
