@@ -10,8 +10,11 @@ use App\Models\PickupLocation;
 
 use App\Models\TourSession;
 use App\Models\TourAvailability; // ของคุณ map กับ table tour_session_availability
+use App\Models\Agent;
+use App\Services\BookingPricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -124,11 +127,14 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
+        $agents = Agent::where('is_active', 1)->orderBy('name')->get();
+
         return view('admin.bookings.create', compact(
             'customers',
             'tours',
             'sessions',
-            'pickupLocations'
+            'pickupLocations',
+            'agents'
         ));
     }
 
@@ -174,17 +180,7 @@ class BookingController extends Controller
 
 public function store(Request $request)
 {
-    $request->validate([
-        'customer_id' => 'required|exists:customers,id',
-        'tour_id'     => 'required|exists:tours,id',
-        'session_id'  => 'required|exists:tour_sessions,id',
-        'date'        => 'required|date',
-        'adults'      => 'required|integer|min:1',
-        'children'    => 'nullable|integer|min:0',
-        'infants'     => 'nullable|integer|min:0',
-        'pickup_location_id' => 'nullable|exists:pickup_locations,id',
-        'pickup_note' => 'nullable|string|max:1000',
-    ]);
+    $request->validate($this->bookingRules());
 
     $tour    = Tour::findOrFail($request->tour_id);
 
@@ -216,27 +212,24 @@ public function store(Request $request)
     }
 
     // ---------------------------
-    // 2) คำนวนราคา: subtotal, VAT, fee, total
+    // 2) คำนวนราคา: ใช้สูตรเดียวกับหน้าบ้าน
     // ---------------------------
-    $pricePerPerson = $tour->min_price ?? 0;
-    $subtotal       = $pricePerPerson * $totalGuests;
-
-    $vatRate    = 0.07; // VAT 7%
-    $feeRate    = 0.05; // Fees 5%
-
-    $vat_amount = $subtotal * $vatRate;
-    $fee_amount = $subtotal * $feeRate;
-
-    $grand_total = $subtotal + $vat_amount + $fee_amount;
-
-    // total_price เดิม → ให้ = grand_total เพื่อความเข้ากันได้
-    $totalPrice = $grand_total;
+    $pricing = (new BookingPricing())->for($tour, $adults, $children, $infants, (float) $request->input('discount_amount', 0));
 
     // ---------------------------
     // 3) สร้าง Booking
     // ---------------------------
-    Booking::create([
-        'customer_id'        => $request->customer_id,
+    $customer = Customer::findOrFail($request->customer_id);
+
+    Booking::create(array_merge([
+        'customer_id'        => $customer->id,
+        // Snapshot the guest details, like the public booking form does, so a
+        // later profile edit does not rewrite past bookings.
+        'customer_name'      => $customer->full_name,
+        'customer_phone'     => $customer->phone,
+        'customer_email'     => $customer->email,
+        'public_code'        => Str::random(32),
+
         'tour_id'            => $tour->id,
         'session_id'         => $session->id,
         'date'               => $request->date,
@@ -245,23 +238,86 @@ public function store(Request $request)
         'infants'            => $infants,
         'total_guests'       => $totalGuests,
 
-        // ราคาแบบละเอียด
-        'subtotal'           => $subtotal,
-        'vat_amount'         => $vat_amount,
-        'fee_amount'         => $fee_amount,
-        'grand_total'        => $grand_total,
-
-        'total_price'        => $totalPrice,
-
-        'pickup_location_id' => $request->pickup_location_id,
-        'pickup_note'        => $request->pickup_note,
-        'status'             => 'confirmed',
+        'status'             => $request->input('status', 'confirmed'),
         'created_by'         => Auth::id(),
-    ]);
+    ], $this->pickupAttributes($request), $this->moneyAttributes($request, $pricing), $this->paymentAttributes($request, $pricing)));
 
     return redirect()
         ->route('admin.bookings.index')
         ->with('success', 'สร้าง Booking สำเร็จ');
+}
+
+/** Validation rules shared by the admin create and edit forms. */
+private function bookingRules(): array
+{
+    return [
+        'customer_id' => 'required|exists:customers,id',
+        'tour_id'     => 'required|exists:tours,id',
+        'session_id'  => 'required|exists:tour_sessions,id',
+        'date'        => 'required|date',
+        'adults'      => 'required|integer|min:1',
+        'children'    => 'nullable|integer|min:0',
+        'infants'     => 'nullable|integer|min:0',
+        'pickup_location_id' => 'nullable|exists:pickup_locations,id',
+        'pickup_note' => 'nullable|string|max:1000',
+        'self_drive'  => 'nullable|boolean',
+        'status'      => 'required|in:pending,confirmed,cancelled',
+        'payment_status'  => 'required|in:pending,paid,failed',
+        'payment_channel' => 'nullable|in:cash,transfer,card,promptpay',
+        'agent_id'        => 'nullable|exists:agents,id',
+        'discount_code'   => 'nullable|string|max:50',
+        'discount_amount' => 'nullable|numeric|min:0',
+    ];
+}
+
+/** @return array<string, mixed> */
+private function pickupAttributes(Request $request): array
+{
+    $selfDrive = $request->boolean('self_drive');
+    $pickupLocationId = $selfDrive ? null : $request->pickup_location_id;
+
+    return [
+        'pickup_location_id' => $pickupLocationId,
+        'pickup_note'        => $selfDrive ? null : $request->pickup_note,
+        'self_drive'         => $selfDrive,
+        'pickup_source'      => $selfDrive ? 'self_drive' : ($pickupLocationId ? 'list' : null),
+    ];
+}
+
+/**
+ * @param  array{subtotal: float, vat: float, fee: float, discount: float, grand_total: float}  $pricing
+ * @return array<string, mixed>
+ */
+private function moneyAttributes(Request $request, array $pricing): array
+{
+    return [
+        'subtotal'        => $pricing['subtotal'],
+        'vat_amount'      => $pricing['vat'],
+        'fee_amount'      => $pricing['fee'],
+        'discount_amount' => $pricing['discount'],
+        'discount_code'   => $request->discount_code ?: null,
+        'agent_id'        => $request->agent_id ?: null,
+        'grand_total'     => $pricing['grand_total'],
+        'total_price'     => $pricing['grand_total'],
+    ];
+}
+
+/**
+ * @param  array{grand_total: float}  $pricing
+ * @return array<string, mixed>
+ */
+private function paymentAttributes(Request $request, array $pricing, ?Booking $booking = null): array
+{
+    $isPaid = $request->payment_status === 'paid';
+
+    return [
+        'payment_status'   => $request->payment_status,
+        'payment_channel'  => $request->payment_channel ?: null,
+        'amount_due_now'   => $pricing['grand_total'],
+        'amount_pay_later' => 0,
+        // Keep the original timestamp when a booking is already marked paid.
+        'paid_at'          => $isPaid ? ($booking?->paid_at ?? now()) : null,
+    ];
 }
 
 
@@ -328,30 +384,22 @@ public function cancel($id)
         ->orderBy('name')
         ->get();
 
+    $agents = Agent::where('is_active', 1)->orderBy('name')->get();
+
     return view('admin.bookings.edit', compact(
         'booking',
         'customers',
         'tours',
         'sessions',
-        'pickupLocations'
+        'pickupLocations',
+        'agents'
     ));
 }
 
 
 public function update(Request $request, $id)
 {
-    $request->validate([
-        'customer_id' => 'required|exists:customers,id',
-        'tour_id'     => 'required|exists:tours,id',
-        'session_id'  => 'required|exists:tour_sessions,id',
-        'date'        => 'required|date',
-        'adults'      => 'required|integer|min:1',
-        'children'    => 'nullable|integer|min:0',
-        'infants'     => 'nullable|integer|min:0',
-        'pickup_location_id' => 'nullable|exists:pickup_locations,id',
-        'pickup_note' => 'nullable|string|max:1000',
-        'status'      => 'required|string',
-    ]);
+    $request->validate($this->bookingRules());
 
     $booking = Booking::findOrFail($id);
     $tour    = Tour::findOrFail($request->tour_id);
@@ -373,8 +421,14 @@ public function update(Request $request, $id)
     // 1) capacity
     $remaining = $session->remainingCapacity($request->date);
 
-    // ถ้า guest ของ booking เดิมยังอยู่ ต้องกัน capacity เดิมไว้
-    $remaining += $booking->total_guests;
+    // Give back the seats this booking already holds, but only when it stays
+    // on the same session and date — otherwise a move would be credited twice.
+    $staysInPlace = (int) $booking->session_id === (int) $session->id
+        && (string) $booking->date === (string) $request->date;
+
+    if ($staysInPlace) {
+        $remaining += $booking->total_guests;
+    }
 
     if ($remaining < $totalGuests) {
         return back()->withErrors([
@@ -382,18 +436,19 @@ public function update(Request $request, $id)
         ])->withInput();
     }
 
-    // 2) ราคาละเอียด
-    $pricePerPerson = $tour->min_price;
-    $subtotal = $pricePerPerson * $totalGuests;
+    // 2) ราคาละเอียด: ใช้สูตรเดียวกับหน้าบ้าน
+    $pricing = (new BookingPricing())->for($tour, $adults, $children, $infants, (float) $request->input('discount_amount', 0));
 
-    $vat = $subtotal * 0.07;
-    $fee = $subtotal * 0.05;
-
-    $grand_total = $subtotal + $vat + $fee;
+    $customer = Customer::findOrFail($request->customer_id);
 
     // 3) update booking
-    $booking->update([
-        'customer_id'        => $request->customer_id,
+    $booking->update(array_merge([
+        'customer_id'        => $customer->id,
+        'customer_name'      => $customer->full_name,
+        'customer_phone'     => $customer->phone,
+        'customer_email'     => $customer->email,
+        'public_code'        => $booking->public_code ?: Str::random(32),
+
         'tour_id'            => $tour->id,
         'session_id'         => $session->id,
         'date'               => $request->date,
@@ -403,16 +458,8 @@ public function update(Request $request, $id)
         'infants'            => $infants,
         'total_guests'       => $totalGuests,
 
-        'subtotal'           => $subtotal,
-        'vat_amount'         => $vat,
-        'fee_amount'         => $fee,
-        'grand_total'        => $grand_total,
-        'total_price'        => $grand_total,
-
-        'pickup_location_id' => $request->pickup_location_id,
-        'pickup_note'        => $request->pickup_note,
         'status'             => $request->status,
-    ]);
+    ], $this->pickupAttributes($request), $this->moneyAttributes($request, $pricing), $this->paymentAttributes($request, $pricing, $booking)));
 
     return redirect()->route('admin.bookings.index')
         ->with('success', 'อัปเดต Booking สำเร็จ');

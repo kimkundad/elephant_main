@@ -80,7 +80,12 @@
                         </div>
 
                         {{-- PICKUP --}}
-                        <div class="mb-3">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="selfDrive" name="self_drive" value="1" @checked(old('self_drive', $booking->self_drive))>
+                            <label class="form-check-label" for="selfDrive">ลูกค้าเดินทางมาเอง (ไม่ต้องรับส่ง)</label>
+                        </div>
+
+                        <div class="mb-3 js-pickup-field">
                             <label class="form-label">สถานที่รับลูกค้า (เฉพาะจังหวัดของทัวร์)</label>
                             <select name="pickup_location_id" id="pickupSelect" class="form-control">
                                 <option value="">-- เลือกสถานที่รับ --</option>
@@ -93,7 +98,7 @@
                             @error('pickup_location_id')<div class="text-danger mt-1">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3 js-pickup-field">
                             <label class="form-label">รายละเอียดจุดรับส่งเพิ่มเติม</label>
                             <textarea name="pickup_note" class="form-control" rows="2" maxlength="1000">{{ old('pickup_note', $booking->pickup_note) }}</textarea>
                         </div>
@@ -122,14 +127,57 @@
                             </div>
                         </div>
 
-                        {{-- STATUS --}}
-                        <div class="mb-3">
-                            <label class="form-label">สถานะ</label>
-                            <select name="status" class="form-control">
-                                <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                            </select>
+                        {{-- PAYMENT --}}
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">สถานะการจอง</label>
+                                <select name="status" class="form-select">
+                                    @foreach(['confirmed' => 'Confirmed', 'pending' => 'Pending', 'cancelled' => 'Cancelled'] as $value => $label)
+                                        <option value="{{ $value }}" @selected(old('status', $booking->status) === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">สถานะการชำระเงิน</label>
+                                <select name="payment_status" class="form-select">
+                                    @foreach(['pending' => 'ยังไม่ชำระ', 'paid' => 'ชำระแล้ว', 'failed' => 'ชำระไม่สำเร็จ'] as $value => $label)
+                                        <option value="{{ $value }}" @selected(old('payment_status', $booking->payment_status ?: 'pending') === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @if($booking->paid_at)
+                                    <div class="form-text">ชำระเมื่อ {{ \Carbon\Carbon::parse($booking->paid_at)->format('d/m/Y H:i') }}</div>
+                                @endif
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ช่องทางชำระเงิน</label>
+                                <select name="payment_channel" class="form-select">
+                                    <option value="">-- ยังไม่ระบุ --</option>
+                                    @foreach(['cash' => 'เงินสด', 'transfer' => 'โอนเงิน', 'card' => 'บัตรเครดิต/เดบิต', 'promptpay' => 'QR พร้อมเพย์'] as $value => $label)
+                                        <option value="{{ $value }}" @selected(old('payment_channel', $booking->payment_channel) === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- AGENT / DISCOUNT --}}
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">พนักงานขาย</label>
+                                <select name="agent_id" class="form-select">
+                                    <option value="">-- ไม่มี --</option>
+                                    @foreach($agents as $agent)
+                                        <option value="{{ $agent->id }}" @selected((string) old('agent_id', $booking->agent_id) === (string) $agent->id)>{{ $agent->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">โค้ดส่วนลด</label>
+                                <input type="text" name="discount_code" class="form-control" maxlength="50" value="{{ old('discount_code', $booking->discount_code) }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ส่วนลด (บาท)</label>
+                                <input type="number" step="0.01" min="0" name="discount_amount" class="form-control" value="{{ old('discount_amount', $booking->discount_amount ?? 0) }}">
+                            </div>
                         </div>
 
                         <button class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
@@ -229,6 +277,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     tourSelect.addEventListener('change', syncPickupOptions);
     syncPickupOptions();
+})();
+
+// Self drive means no pickup point at all.
+(function () {
+    const selfDrive = document.getElementById('selfDrive');
+    const fields = document.querySelectorAll('.js-pickup-field');
+    if (!selfDrive || !fields.length) return;
+
+    const syncSelfDrive = () => {
+        fields.forEach((field) => { field.style.display = selfDrive.checked ? 'none' : ''; });
+    };
+
+    selfDrive.addEventListener('change', syncSelfDrive);
+    syncSelfDrive();
 })();
 </script>
 @endsection

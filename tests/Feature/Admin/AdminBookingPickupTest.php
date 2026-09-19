@@ -26,6 +26,8 @@ class AdminBookingPickupTest extends TestCase
                 'session_id' => $session->id,
                 'date' => now()->addDays(3)->toDateString(),
                 'adults' => 1,
+                'status' => 'confirmed',
+                'payment_status' => 'pending',
                 'pickup_location_id' => $otherPickup->id,
             ])
             ->assertSessionHasErrors('pickup_location_id');
@@ -62,6 +64,8 @@ class AdminBookingPickupTest extends TestCase
                 'session_id' => $session->id,
                 'date' => now()->addDays(3)->toDateString(),
                 'adults' => 1,
+                'status' => 'confirmed',
+                'payment_status' => 'pending',
                 'pickup_location_id' => $pickup->id,
                 'pickup_note' => 'Villa 12',
             ])

@@ -11,6 +11,7 @@ use App\Models\TourSession;
 use App\Services\BookingNotificationService;
 use App\Services\BookingPaymentService;
 use App\Services\BookingPickup;
+use App\Services\BookingPricing;
 use App\Support\IntegrationLogger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -155,14 +156,11 @@ class BookingController extends Controller
             $data['pickup_note'] ?? null
         );
 
-        $priceAdult = (int) ($tour->min_price ?? 0);
-        $priceChild = (int) round($priceAdult * 0.5);
-        $subtotal = ($adults * $priceAdult) + ($children * $priceChild);
-
-        $vatRate = 0.07;
-        $vat = round($subtotal * $vatRate, 2);
-        $fee = 0;
-        $grand = round($subtotal + $vat + $fee, 2);
+        $pricing = (new BookingPricing())->for($tour, $adults, $children, $infants);
+        $subtotal = $pricing['subtotal'];
+        $vat = $pricing['vat'];
+        $fee = $pricing['fee'];
+        $grand = $pricing['grand_total'];
         $discountAmount = 0;
         $discountCode = null;
         $agentId = null;

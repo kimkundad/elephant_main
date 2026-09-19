@@ -74,7 +74,12 @@
                         </div>
 
                         {{-- PICKUP --}}
-                        <div class="mb-3">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="selfDrive" name="self_drive" value="1" @checked(old('self_drive'))>
+                            <label class="form-check-label" for="selfDrive">ลูกค้าเดินทางมาเอง (ไม่ต้องรับส่ง)</label>
+                        </div>
+
+                        <div class="mb-3 js-pickup-field">
                             <label class="form-label">สถานที่รับลูกค้า (เฉพาะจังหวัดของทัวร์)</label>
                             <select name="pickup_location_id" id="pickupSelect" class="form-control">
                                 <option value="">-- เลือกสถานที่รับ --</option>
@@ -87,7 +92,7 @@
                             @error('pickup_location_id')<div class="text-danger mt-1">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3 js-pickup-field">
                             <label class="form-label">รายละเอียดจุดรับส่งเพิ่มเติม</label>
                             <textarea name="pickup_note" class="form-control" rows="2" maxlength="1000">{{ old('pickup_note') }}</textarea>
                         </div>
@@ -108,6 +113,57 @@
                                 <label class="form-label">เด็กเล็ก (Infants)</label>
                                 <input type="number" id="infantsInput" name="infants"
                                        class="form-control" value="0" min="0">
+                            </div>
+                        </div>
+
+                        {{-- PAYMENT --}}
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">สถานะการจอง</label>
+                                <select name="status" class="form-select">
+                                    <option value="confirmed" @selected(old('status', 'confirmed') === 'confirmed')>Confirmed</option>
+                                    <option value="pending" @selected(old('status') === 'pending')>Pending</option>
+                                    <option value="cancelled" @selected(old('status') === 'cancelled')>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">สถานะการชำระเงิน</label>
+                                <select name="payment_status" class="form-select">
+                                    <option value="pending" @selected(old('payment_status', 'pending') === 'pending')>ยังไม่ชำระ</option>
+                                    <option value="paid" @selected(old('payment_status') === 'paid')>ชำระแล้ว</option>
+                                    <option value="failed" @selected(old('payment_status') === 'failed')>ชำระไม่สำเร็จ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ช่องทางชำระเงิน</label>
+                                <select name="payment_channel" class="form-select">
+                                    <option value="">-- ยังไม่ระบุ --</option>
+                                    <option value="cash" @selected(old('payment_channel') === 'cash')>เงินสด</option>
+                                    <option value="transfer" @selected(old('payment_channel') === 'transfer')>โอนเงิน</option>
+                                    <option value="card" @selected(old('payment_channel') === 'card')>บัตรเครดิต/เดบิต</option>
+                                    <option value="promptpay" @selected(old('payment_channel') === 'promptpay')>QR พร้อมเพย์</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- AGENT / DISCOUNT --}}
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">พนักงานขาย</label>
+                                <select name="agent_id" class="form-select">
+                                    <option value="">-- ไม่มี --</option>
+                                    @foreach($agents as $agent)
+                                        <option value="{{ $agent->id }}" @selected((string) old('agent_id') === (string) $agent->id)>{{ $agent->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">โค้ดส่วนลด</label>
+                                <input type="text" name="discount_code" class="form-control" maxlength="50" value="{{ old('discount_code') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ส่วนลด (บาท)</label>
+                                <input type="number" step="0.01" min="0" name="discount_amount" class="form-control" value="{{ old('discount_amount', 0) }}">
                             </div>
                         </div>
 
@@ -224,6 +280,20 @@ fetch("{{ route('admin.bookings.ajax-sessions') }}?tour_id=" + tour_id + "&date=
 
     tourSelect.addEventListener('change', syncPickupOptions);
     syncPickupOptions();
+})();
+
+// Self drive means no pickup point at all.
+(function () {
+    const selfDrive = document.getElementById('selfDrive');
+    const fields = document.querySelectorAll('.js-pickup-field');
+    if (!selfDrive || !fields.length) return;
+
+    const syncSelfDrive = () => {
+        fields.forEach((field) => { field.style.display = selfDrive.checked ? 'none' : ''; });
+    };
+
+    selfDrive.addEventListener('change', syncSelfDrive);
+    syncSelfDrive();
 })();
 </script>
 @endsection
