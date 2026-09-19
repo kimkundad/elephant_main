@@ -43,8 +43,6 @@ class PickupLocationController extends Controller
     $data = $request->validate([
         'province_id' => 'required|integer|exists:provinces,id',
         'name' => 'required|string|max:255',
-        'latitude' => 'nullable|numeric',
-        'longitude' => 'nullable|numeric',
         'is_active' => 'sometimes|boolean',
         'is_meeting_point' => 'sometimes|boolean',
     ]);
@@ -85,8 +83,6 @@ class PickupLocationController extends Controller
     $data = $request->validate([
         'province_id' => 'required|integer|exists:provinces,id',
         'name' => 'required|string|max:255',
-        'latitude' => 'nullable|numeric',
-        'longitude' => 'nullable|numeric',
         'is_active' => 'sometimes|boolean',
         'is_meeting_point' => 'sometimes|boolean',
     ]);

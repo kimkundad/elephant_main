@@ -64,7 +64,16 @@ class ProvinceFieldsAdminTest extends TestCase
         $this->get(route('admin.tours.index', ['province_id' => $phuket->id]))
             ->assertOk()->assertSee('Phuket Walk')->assertDontSee('Chiang Mai Feeding');
 
-        $this->get(route('admin.pickup-locations.create'))->assertOk()->assertSee('name="province_id"', false);
+        $this->get(route('admin.pickup-locations.create'))
+            ->assertOk()
+            ->assertSee('name="province_id"', false)
+            ->assertDontSee('maps.googleapis.com', false)
+            ->assertDontSee('name="latitude"', false);
+        $this->get(route('admin.pickup-locations.edit', $this->makePickup($phuket)))
+            ->assertOk()
+            ->assertSee('name="province_id"', false)
+            ->assertDontSee('maps.googleapis.com', false)
+            ->assertDontSee('name="latitude"', false);
         $this->get(route('admin.tours.create'))->assertOk()->assertSee('name="province_id"', false);
         $this->get(route('admin.tours.edit', $tour->id))->assertOk()->assertSee('name="province_id"', false);
     }

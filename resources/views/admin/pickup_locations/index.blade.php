@@ -34,7 +34,6 @@
                                 <th>จังหวัด</th>
                                 <th>ประเภท</th>
                                 <th>สถานะ</th>
-                                <th>แผนที่</th>
                                 <th width="150">จัดการ</th>
                             </tr>
                         </thead>
@@ -57,17 +56,6 @@
                                             <span class="badge bg-success">Active</span>
                                         @else
                                             <span class="badge bg-danger">Inactive</span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        @if($loc->latitude)
-                                            <a target="_blank"
-                                               href="https://www.google.com/maps?q={{ $loc->latitude }},{{ $loc->longitude }}">
-                                               ดูแผนที่
-                                            </a>
-                                        @else
-                                            -
                                         @endif
                                     </td>
 
