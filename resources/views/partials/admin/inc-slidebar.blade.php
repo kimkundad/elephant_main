@@ -40,6 +40,79 @@
         <!--end::Sidebar toggle-->
     </div>
     <!--end::Logo-->
+
+    @php
+        // Duotone icons, drawn inline so the sidebar needs no icon files.
+        $menuIcons = [
+            'grid' => '<path opacity="0.3" d="M3 3h8v8H3V3Zm10 0h8v5h-8V3Z" fill="currentColor"/><path d="M3 13h8v8H3v-8Zm10-3h8v11h-8V10Z" fill="currentColor"/>',
+            'booking' => '<path opacity="0.3" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" fill="currentColor"/><path d="M7 8h10v2H7V8Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z" fill="currentColor"/>',
+            'customer' => '<path opacity="0.3" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" fill="currentColor"/><path d="M12 14c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z" fill="currentColor"/>',
+            'agent' => '<path opacity="0.3" d="M10 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" fill="currentColor"/><path d="M10 14c-4 0-7 2-7 4.5V20h14v-1.5C17 16 14 14 10 14Zm11.3-5.3-3.6 3.6-1.7-1.7-1.4 1.4 3.1 3.1 5-5-1.4-1.4Z" fill="currentColor"/>',
+            'discount' => '<path opacity="0.3" d="m21 11.6-9.6-9.6H4a2 2 0 0 0-2 2v7.4l9.6 9.6a2 2 0 0 0 2.8 0l6.6-6.6a2 2 0 0 0 0-2.8Z" fill="currentColor"/><path d="M7 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor"/>',
+            'report' => '<path opacity="0.3" d="M4 4h2v16H4V4Zm14 6h2v10h-2V10Z" fill="currentColor"/><path d="M9 8h2v12H9V8Zm4.5 4h2v8h-2v-8Z" fill="currentColor"/>',
+            'tour' => '<path opacity="0.3" d="m9 4 6 2 5-2v14l-5 2-6-2-5 2V6l5-2Z" fill="currentColor"/><path d="M9 4v14l6 2V6L9 4Z" fill="currentColor"/>',
+            'session' => '<path opacity="0.3" d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" fill="currentColor"/><path d="M13 7h-2v6l4.2 2.5 1-1.7-3.2-1.9V7Z" fill="currentColor"/>',
+            'tag' => '<path opacity="0.3" d="M20 12.2 11.8 4H5a1 1 0 0 0-1 1v6.8l8.2 8.2a1 1 0 0 0 1.4 0l6.4-6.4a1 1 0 0 0 0-1.4Z" fill="currentColor"/><path d="M7.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor"/>',
+            'province' => '<path opacity="0.3" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="currentColor"/><path d="M12 11.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" fill="currentColor"/>',
+            'pickup' => '<path opacity="0.3" d="M4 6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3h2.2a2 2 0 0 1 1.7 1l1.6 2.7c.3.4.5 1 .5 1.5V17a1 1 0 0 1-1 1H4a2 2 0 0 1-2-2V6Z" fill="currentColor"/><path d="M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor"/>',
+            'elephant' => '<path opacity="0.3" d="M12 21s-7-4.4-7-9.6A4.4 4.4 0 0 1 12 8a4.4 4.4 0 0 1 7 3.4C19 16.6 12 21 12 21Z" fill="currentColor"/><path d="M12 8a4.4 4.4 0 0 0-7 3.4c0 1.5.6 2.9 1.5 4.1C6.2 14 6 12.8 6 11.6 6 9.6 7.6 8 9.6 8c.9 0 1.7.3 2.4.8V8Z" fill="currentColor"/>',
+            'review' => '<path opacity="0.3" d="M12 3l2.6 5.27 5.82.85-4.21 4.11.99 5.79L12 16.29 6.8 19.02l.99-5.79-4.21-4.11 5.82-.85L12 3Z" fill="currentColor"/><path d="M12 5.84l1.45 2.93 3.23.47-2.34 2.28.55 3.21L12 13.21l-2.89 1.52.55-3.21-2.34-2.28 3.23-.47L12 5.84Z" fill="currentColor"/>',
+            'text' => '<path opacity="0.3" d="M18 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10l4 4v12a2 2 0 0 1-2 2Z" fill="currentColor"/><path d="M8 11h8v2H8v-2Zm0 4h8v2H8v-2Zm7-12v5h5l-5-5Z" fill="currentColor"/>',
+            'media' => '<path opacity="0.3" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" fill="currentColor"/><path d="M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM4 18l4.5-5 3 3.2L15 12l5 6H4Z" fill="currentColor"/>',
+            'settings' => '<path opacity="0.3" d="m20.5 13.4-1.7-1a7.4 7.4 0 0 0 0-2l1.7-1a1 1 0 0 0 .4-1.3l-1.6-2.8a1 1 0 0 0-1.3-.4l-1.7 1a7.5 7.5 0 0 0-1.7-1V3a1 1 0 0 0-1-1h-3.2a1 1 0 0 0-1 1v2a7.5 7.5 0 0 0-1.7.9l-1.7-1a1 1 0 0 0-1.3.4L3.1 8.1a1 1 0 0 0 .4 1.3l1.7 1a7.4 7.4 0 0 0 0 2l-1.7 1a1 1 0 0 0-.4 1.3l1.6 2.8a1 1 0 0 0 1.3.4l1.7-1c.5.4 1.1.7 1.7 1v2a1 1 0 0 0 1 1h3.2a1 1 0 0 0 1-1v-2c.6-.3 1.2-.6 1.7-1l1.7 1a1 1 0 0 0 1.3-.4l1.6-2.8a1 1 0 0 0-.4-1.3Z" fill="currentColor"/><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" fill="currentColor"/>',
+            'users' => '<path opacity="0.3" d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm8 .5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" fill="currentColor"/><path d="M9 13c-3.9 0-7 1.9-7 4.2V19h14v-1.8c0-2.3-3.1-4.2-7-4.2Zm8 .5c-.7 0-1.4.1-2 .2 1.2.9 2 2.1 2 3.5V19h5v-1.6c0-2.1-2.2-3.9-5-3.9Z" fill="currentColor"/>',
+            'logout' => '<path opacity="0.3" d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7a1 1 0 1 0 0-2H6V5h7a1 1 0 1 0 0-2Z" fill="currentColor"/><path d="m17.6 8.6 2.7 2.7a1 1 0 0 1 0 1.4l-2.7 2.7-1.4-1.4 1-1H10v-2h7.2l-1-1 1.4-1.4Z" fill="currentColor"/>',
+        ];
+
+        // Grouped so related screens sit next to each other in the sidebar.
+        $menuGroups = [
+            [
+                'label' => 'ภาพรวม',
+                'items' => [
+                    ['title' => 'Dashboard', 'url' => url('admin/dashboard'), 'icon' => 'grid'],
+                ],
+            ],
+            [
+                'label' => 'การขาย',
+                'items' => [
+                    ['title' => 'Bookings', 'url' => route('admin.bookings.index'), 'icon' => 'booking'],
+                    ['title' => 'Customers', 'url' => url('admin/customers'), 'icon' => 'customer'],
+                    ['title' => 'Sales Agents', 'url' => route('admin.agents.index'), 'icon' => 'agent'],
+                    ['title' => 'Discount Codes', 'url' => route('admin.discount-codes.index'), 'icon' => 'discount'],
+                    ['title' => 'Agent Reports', 'url' => route('admin.reports.agents'), 'icon' => 'report'],
+                ],
+            ],
+            [
+                'label' => 'ทัวร์',
+                'items' => [
+                    ['title' => 'Program List', 'url' => route('admin.tours.index'), 'icon' => 'tour'],
+                    ['title' => 'Tour Sessions', 'url' => route('admin.sessions.all'), 'icon' => 'session'],
+                    ['title' => 'Tour Tags', 'url' => route('admin.tour-tags.index'), 'icon' => 'tag'],
+                    ['title' => 'Provinces / จังหวัด', 'url' => route('admin.provinces.index'), 'icon' => 'province'],
+                    ['title' => 'Pick-up Locations', 'url' => route('admin.pickup-locations.index'), 'icon' => 'pickup'],
+                ],
+            ],
+            [
+                'label' => 'เนื้อหาเว็บ',
+                'items' => [
+                    ['title' => 'Elephants', 'url' => route('admin.elephants.index'), 'icon' => 'elephant'],
+                    ['title' => 'Reviews', 'url' => route('admin.reviews.index'), 'icon' => 'review'],
+                    ['title' => 'Site Texts (Home)', 'url' => route('admin.site-texts.home'), 'icon' => 'text'],
+                    ['title' => 'Site Texts (About)', 'url' => route('admin.site-texts.about'), 'icon' => 'text'],
+                    ['title' => 'Page Media', 'url' => route('admin.page-media.index'), 'icon' => 'media'],
+                ],
+            ],
+            [
+                'label' => 'ระบบ',
+                'items' => [
+                    ['title' => 'Site Settings', 'url' => route('admin.settings.edit'), 'icon' => 'settings'],
+                    ['title' => 'Users', 'url' => url('admin/users'), 'icon' => 'users'],
+                    ['title' => 'Logout', 'url' => url('admin/logout'), 'icon' => 'logout'],
+                ],
+            ],
+        ];
+    @endphp
+
     <!--begin::sidebar menu-->
     <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
         <!--begin::Menu wrapper-->
@@ -51,321 +124,31 @@
             <div class="menu menu-column menu-rounded menu-sub-indention px-3" id="kt_app_sidebar_menu"
                 data-kt-menu="true" data-kt-menu-expand="false">
 
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="{{ url('admin/dashboard') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M11.2929 2.70711C11.6834 2.31658 12.3166 2.31658 12.7071 2.70711L15.2929 5.29289C15.6834 5.68342 15.6834 6.31658 15.2929 6.70711L12.7071 9.29289C12.3166 9.68342 11.6834 9.68342 11.2929 9.29289L8.70711 6.70711C8.31658 6.31658 8.31658 5.68342 8.70711 5.29289L11.2929 2.70711Z"
-                                        fill="currentColor"></path>
-                                    <path
-                                        d="M11.2929 14.7071C11.6834 14.3166 12.3166 14.3166 12.7071 14.7071L15.2929 17.2929C15.6834 17.6834 15.6834 18.3166 15.2929 18.7071L12.7071 21.2929C12.3166 21.6834 11.6834 21.6834 11.2929 21.2929L8.70711 18.7071C8.31658 18.3166 8.31658 17.6834 8.70711 17.2929L11.2929 14.7071Z"
-                                        fill="currentColor"></path>
-                                    <path opacity="0.3"
-                                        d="M5.29289 8.70711C5.68342 8.31658 6.31658 8.31658 6.70711 8.70711L9.29289 11.2929C9.68342 11.6834 9.68342 12.3166 9.29289 12.7071L6.70711 15.2929C6.31658 15.6834 5.68342 15.6834 5.29289 15.2929L2.70711 12.7071C2.31658 12.3166 2.31658 11.6834 2.70711 11.2929L5.29289 8.70711Z"
-                                        fill="currentColor"></path>
-                                    <path opacity="0.3"
-                                        d="M17.2929 8.70711C17.6834 8.31658 18.3166 8.31658 18.7071 8.70711L21.2929 11.2929C21.6834 11.6834 21.6834 12.3166 21.2929 12.7071L18.7071 15.2929C18.3166 15.6834 17.6834 15.6834 17.2929 15.2929L14.7071 12.7071C14.3166 12.3166 14.3166 11.6834 14.7071 11.2929L17.2929 8.70711Z"
-                                        fill="currentColor"></path>
-                                </svg>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Dashboard</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-
-
-                {{-- Tour Programs --}}
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-
-                    <span class="menu-link">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3"
-                                        d="M18 21H6C4.9 21 4 20.1 4 19V5C4 3.9 4.9 3 6 3H16L20 7V19C20 20.1 19.1 21 18 21Z"
-                                        fill="currentColor" />
-                                    <path d="M15 3V8H20" fill="currentColor" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Tour Programs</span>
-                        <span class="menu-arrow"></span>
-                    </span>
-
-                    {{-- Sub Menu --}}
-                    <div class="menu-sub menu-sub-accordion">
-
-                        {{-- Program List --}}
-                        <div class="menu-item">
-                            <a class="menu-link" href="{{ route('admin.tours.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Program List</span>
-                            </a>
-                        </div>
-
-                        <div class="menu-item">
-                            <a class="menu-link" href="{{ route('admin.sessions.all') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Tour Sessions</span>
-                            </a>
-                        </div>
-
-                        <div class="menu-item">
-                            <a class="menu-link" href="{{ route('admin.tour-tags.index') }}">
-                                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                                <span class="menu-title">Tour Tags</span>
-                            </a>
+                @foreach($menuGroups as $group)
+                    <div class="menu-item pt-4">
+                        <div class="menu-content">
+                            <span class="menu-heading fw-bold text-uppercase fs-8 text-muted">{{ $group['label'] }}</span>
                         </div>
                     </div>
-                </div>
 
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ url('admin/customers') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/communication/com013.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M6.28548 15.0861C7.34369 13.1814 9.35142 12 11.5304 12H12.4696C14.6486 12 16.6563 13.1814 17.7145 15.0861L19.3493 18.0287C20.0899 19.3618 19.1259 21 17.601 21H6.39903C4.87406 21 3.91012 19.3618 4.65071 18.0287L6.28548 15.0861Z"
-                                        fill="currentColor"></path>
-                                    <rect opacity="0.3" x="8" y="3" width="8" height="8" rx="4"
-                                        fill="currentColor"></rect>
-                                </svg>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Customers</span>
-                    </a>
-                </div>
-
-
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ url('admin/users') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="8" r="4" fill="currentColor" />
-                                    <rect x="6" y="16" width="12" height="2" rx="1"
-                                        fill="currentColor" />
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Users</span>
-                    </a>
-                </div>
-
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.bookings.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                {{-- Booking Icon --}}
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor"/>
-                                    <rect x="7" y="8" width="10" height="2" fill="white"/>
-                                    <rect x="7" y="12" width="6" height="2" fill="white"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Bookings</span>
-                    </a>
-                </div>
-
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.provinces.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.3" d="M12 2C8.13401 2 5 5.13401 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13401 15.866 2 12 2Z" fill="currentColor"></path>
-                                    <path d="M12 11.5C13.3807 11.5 14.5 10.3807 14.5 9C14.5 7.61929 13.3807 6.5 12 6.5C10.6193 6.5 9.5 7.61929 9.5 9C9.5 10.3807 10.6193 11.5 12 11.5Z" fill="currentColor"></path>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Provinces / จังหวัด</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.pickup-locations.index') }}">
-                        <span class="menu-icon">
-												<!--begin::Svg Icon | path: icons/duotune/communication/com004.svg-->
-												<span class="svg-icon svg-icon-2">
-													<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-														<path opacity="0.3" d="M14 3V20H2V3C2 2.4 2.4 2 3 2H13C13.6 2 14 2.4 14 3ZM11 13V11C11 9.7 10.2 8.59995 9 8.19995V7C9 6.4 8.6 6 8 6C7.4 6 7 6.4 7 7V8.19995C5.8 8.59995 5 9.7 5 11V13C5 13.6 4.6 14 4 14V15C4 15.6 4.4 16 5 16H11C11.6 16 12 15.6 12 15V14C11.4 14 11 13.6 11 13Z" fill="currentColor"></path>
-														<path d="M2 20H14V21C14 21.6 13.6 22 13 22H3C2.4 22 2 21.6 2 21V20ZM9 3V2H7V3C7 3.6 7.4 4 8 4C8.6 4 9 3.6 9 3ZM6.5 16C6.5 16.8 7.2 17.5 8 17.5C8.8 17.5 9.5 16.8 9.5 16H6.5ZM21.7 12C21.7 11.4 21.3 11 20.7 11H17.6C17 11 16.6 11.4 16.6 12C16.6 12.6 17 13 17.6 13H20.7C21.2 13 21.7 12.6 21.7 12ZM17 8C16.6 8 16.2 7.80002 16.1 7.40002C15.9 6.90002 16.1 6.29998 16.6 6.09998L19.1 5C19.6 4.8 20.2 5 20.4 5.5C20.6 6 20.4 6.60005 19.9 6.80005L17.4 7.90002C17.3 8.00002 17.1 8 17 8ZM19.5 19.1C19.4 19.1 19.2 19.1 19.1 19L16.6 17.9C16.1 17.7 15.9 17.1 16.1 16.6C16.3 16.1 16.9 15.9 17.4 16.1L19.9 17.2C20.4 17.4 20.6 18 20.4 18.5C20.2 18.9 19.9 19.1 19.5 19.1Z" fill="currentColor"></path>
-													</svg>
-												</span>
-												<!--end::Svg Icon-->
-											</span>
-                        <span class="menu-title">Pick-up Locations</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.settings.edit') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 8.5A3.5 3.5 0 1 1 8.5 12 3.5 3.5 0 0 1 12 8.5Z" fill="currentColor"/>
-                                    <path opacity="0.3" d="M19.4 13.5a7.8 7.8 0 0 0 0-3l2-1.5-2-3.5-2.4 1a8.6 8.6 0 0 0-2.6-1.5L12 2H8l-.4 3A8.6 8.6 0 0 0 5 6.5l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 0 0 0 3l-2 1.5 2 3.5 2.4-1a8.6 8.6 0 0 0 2.6 1.5L8 22h4l.4-3a8.6 8.6 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Site Settings</span>
-                    </a>
-                </div>
-                
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.agents.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="8" r="4" fill="currentColor" />
-                                    <path opacity="0.3" d="M4 20C4 16.7 7.1 14 12 14C16.9 14 20 16.7 20 20H4Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Sales Agents</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.discount-codes.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
-                                    <path d="M8 7H16V9H8V7ZM8 11H16V13H8V11ZM8 15H13V17H8V15Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Discount Codes</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.reports.agents') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M4 4H20V20H4V4Z" fill="currentColor"/>
-                                    <path d="M7 7H17V9H7V7ZM7 11H14V13H7V11ZM7 15H12V17H7V15Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Agent Reports</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.elephants.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M3 7C3 5.3 4.3 4 6 4H16C18.8 4 21 6.2 21 9V13C21 15.2 19.2 17 17 17H13L10 20H8L9 17H7C4.8 17 3 15.2 3 13V7Z" fill="currentColor"/>
-                                    <path d="M8 9.5C8 8.7 8.7 8 9.5 8H12.5C13.3 8 14 8.7 14 9.5V12.5C14 13.3 13.3 14 12.5 14H9.5C8.7 14 8 13.3 8 12.5V9.5Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Elephants</span>
-                    </a>
-                </div>
-
-
-                
-
-            <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.site-texts.home') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
-                                    <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Site Texts (Home)</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.site-texts.about') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
-                                    <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H14V17H7V15Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Site Texts (About)</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.page-media.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M4 5C4 3.9 4.9 3 6 3H18C19.1 3 20 3.9 20 5V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V5Z" fill="currentColor"/>
-                                    <path d="M8 8H16V16H8V8ZM9 9V15H15V9H9Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Page Media</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <a class="menu-link" href="{{ route('admin.reviews.index') }}">
-                        <span class="menu-icon">
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path opacity="0.3" d="M12 3L14.6 8.27L20.42 9.12L16.21 13.23L17.2 19.02L12 16.29L6.8 19.02L7.79 13.23L3.58 9.12L9.4 8.27L12 3Z" fill="currentColor"/>
-                                    <path d="M12 5.84L13.45 8.77L16.68 9.24L14.34 11.52L14.89 14.73L12 13.21L9.11 14.73L9.66 11.52L7.32 9.24L10.55 8.77L12 5.84Z" fill="currentColor"/>
-                                </svg>
-                            </span>
-                        </span>
-                        <span class="menu-title">Reviews</span>
-                    </a>
-                </div>
-
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="{{ url('admin/logout') }}">
-                        <span class="menu-icon">
-                            <!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
-                            <span class="svg-icon svg-icon-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.3"
-                                        d="M11.8 5.2L17.7 8.6V15.4L11.8 18.8L5.90001 15.4V8.6L11.8 5.2ZM11.8 2C11.5 2 11.2 2.1 11 2.2L3.8 6.4C3.3 6.7 3 7.3 3 7.9V16.2C3 16.8 3.3 17.4 3.8 17.7L11 21.9C11.3 22 11.5 22.1 11.8 22.1C12.1 22.1 12.4 22 12.6 21.9L19.8 17.7C20.3 17.4 20.6 16.8 20.6 16.2V7.9C20.6 7.3 20.3 6.7 19.8 6.4L12.6 2.2C12.4 2.1 12.1 2 11.8 2Z"
-                                        fill="currentColor"></path>
-                                    <path d="M11.8 8.69995L8.90001 10.3V13.7L11.8 15.3L14.7 13.7V10.3L11.8 8.69995Z"
-                                        fill="currentColor"></path>
-                                </svg>
-                            </span>
-                            <!--end::Svg Icon-->
-                        </span>
-                        <span class="menu-title">Logout</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
+                    @foreach($group['items'] as $item)
+                        @php($isActive = rtrim(request()->url(), '/') === rtrim($item['url'], '/'))
+                        <div class="menu-item">
+                            <a class="menu-link {{ $isActive ? 'active' : '' }}" href="{{ $item['url'] }}">
+                                <span class="menu-icon">
+                                    <span class="svg-icon svg-icon-2">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            {!! $menuIcons[$item['icon']] !!}
+                                        </svg>
+                                    </span>
+                                </span>
+                                <span class="menu-title">{{ $item['title'] }}</span>
+                            </a>
+                        </div>
+                    @endforeach
+                @endforeach
 
             </div>
-                
             <!--end::Menu-->
         </div>
         <!--end::Menu wrapper-->
@@ -373,5 +156,3 @@
     <!--end::sidebar menu-->
 
 </div>
-
-
