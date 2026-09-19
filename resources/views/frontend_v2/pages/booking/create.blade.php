@@ -864,7 +864,8 @@ const BOOKING_I18N = @json($bookingI18n);
 
   const render = (term) => {
     const needle = term.trim().toLowerCase();
-    matches = needle === '' ? entries.slice(0, 50) : entries.filter((e) => e.search.includes(needle)).slice(0, 50);
+    const limit = 100;
+    matches = needle === '' ? entries.slice(0, limit) : entries.filter((e) => e.search.includes(needle)).slice(0, limit);
 
     panel.innerHTML = '';
 
