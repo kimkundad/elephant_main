@@ -15,6 +15,11 @@
           'discountRequired' => __('booking.errors.discount_required'),
           'discountCheckFailed' => __('booking.errors.discount_check_failed'),
       ],
+      'pickup' => [
+          'placeholder' => __('booking.create.pickup_select_placeholder'),
+          'hint' => __('booking.create.pickup_search_hint'),
+          'empty' => __('booking.create.pickup_search_empty'),
+      ],
       'ui' => [
           'checking' => __('booking.create.checking'),
           'apply' => __('booking.create.apply'),
@@ -238,6 +243,28 @@
 .req{ color:#e2572b; font-weight:700; }
 textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height:84px; font-family:inherit; }
 
+/* Searchable pickup list. The native <select> still carries the value and
+   stays visible until the JS takes over, so the form works without JS. */
+.pickup-combo{ position:relative; }
+.pickup-combo.is-enhanced > select{ position:absolute; opacity:0; width:0; height:0; pointer-events:none; }
+.pickup-combo__input{ cursor:text; }
+.pickup-combo__panel{
+  position:absolute; z-index:40; left:0; right:0; top:calc(100% + 4px);
+  background:#fff; border:1px solid #ddd3c6; border-radius:12px;
+  box-shadow:0 18px 40px rgba(0,0,0,.12); overflow:auto; max-height:280px; display:none;
+}
+.pickup-combo.is-open .pickup-combo__panel{ display:block; }
+.pickup-combo__group{
+  padding:8px 12px; font-size:12px; font-weight:700; color:#8b8177;
+  background:#faf6ef; position:sticky; top:0;
+}
+.pickup-combo__option{ padding:10px 12px; cursor:pointer; font-size:14px; color:#2b2621; }
+.pickup-combo__option:hover,
+.pickup-combo__option.is-active{ background:#f3eee6; }
+.pickup-combo__option.is-selected{ font-weight:700; }
+.pickup-combo__empty{ padding:12px; color:#8b8177; font-size:13px; }
+.pickup-combo__hint{ font-size:12px; color:#8b8177; margin-top:6px; }
+
 /* Submit loading state: locks the Book button and covers the page so the
    guest can't double-submit while the booking / payment page is prepared. */
 .btn-pay.is-loading{
@@ -399,6 +426,7 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
                 __('booking.create.pickup_group_meeting') => $pickupLocations->where('is_meeting_point', true),
               ];
             @endphp
+            <div class="pickup-combo" data-pickup-combo>
             <select name="pickup_location_id" id="pickup_location_id" class="f-input @error('pickup_location_id') is-invalid @enderror" required>
               <option value="">{{ __('booking.create.pickup_select_placeholder') }}</option>
               @foreach($pickupGroups as $groupLabel => $groupItems)
@@ -411,6 +439,7 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
                 @endif
               @endforeach
             </select>
+            </div>
             @error('pickup_location_id')<span class="field-error">{{ $message }}</span>@enderror
 
             <label class="f-label" for="pickup_note">{{ __('booking.create.pickup_note_label') }}</label>
@@ -763,6 +792,175 @@ const BOOKING_I18N = @json($bookingI18n);
 
   selfDrive.addEventListener('change', syncPickupMode);
   syncPickupMode();
+})();
+</script>
+
+<script>
+// Searchable pickup list. The <select> keeps the value (and works on its own
+// when this script does not run), this only puts a filter in front of it.
+(function () {
+  const wrap = document.querySelector('[data-pickup-combo]');
+  const select = document.getElementById('pickup_location_id');
+  if (!wrap || !select) return;
+
+  const texts = (typeof BOOKING_I18N !== 'undefined' && BOOKING_I18N.pickup) || {};
+
+  // Read the options once, keeping which group each belongs to.
+  const entries = [];
+  Array.from(select.querySelectorAll('optgroup')).forEach((group) => {
+    Array.from(group.querySelectorAll('option')).forEach((option) => {
+      if (!option.value) return;
+      entries.push({
+        value: option.value,
+        label: option.textContent.trim(),
+        group: group.label,
+        search: option.textContent.trim().toLowerCase(),
+      });
+    });
+  });
+
+  if (entries.length === 0) return;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'f-input pickup-combo__input';
+  input.autocomplete = 'off';
+  input.placeholder = texts.placeholder || '';
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-autocomplete', 'list');
+
+  const panel = document.createElement('div');
+  panel.className = 'pickup-combo__panel';
+  panel.setAttribute('role', 'listbox');
+
+  const hint = document.createElement('div');
+  hint.className = 'pickup-combo__hint';
+  hint.textContent = texts.hint || '';
+
+  wrap.appendChild(input);
+  wrap.appendChild(panel);
+  wrap.appendChild(hint);
+  wrap.classList.add('is-enhanced');
+
+  // A hidden required control blocks the browser's own validation, and our
+  // submit handler already checks the value.
+  select.removeAttribute('required');
+
+  let matches = [];
+  let activeIndex = -1;
+
+  const setSelected = (entry) => {
+    select.value = entry ? entry.value : '';
+    input.value = entry ? entry.label : '';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  const close = () => {
+    wrap.classList.remove('is-open');
+    input.setAttribute('aria-expanded', 'false');
+    activeIndex = -1;
+  };
+
+  const render = (term) => {
+    const needle = term.trim().toLowerCase();
+    matches = needle === '' ? entries.slice(0, 50) : entries.filter((e) => e.search.includes(needle)).slice(0, 50);
+
+    panel.innerHTML = '';
+
+    if (matches.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'pickup-combo__empty';
+      empty.textContent = texts.empty || '';
+      panel.appendChild(empty);
+      return;
+    }
+
+    let lastGroup = null;
+    matches.forEach((entry, index) => {
+      if (entry.group !== lastGroup) {
+        const header = document.createElement('div');
+        header.className = 'pickup-combo__group';
+        header.textContent = entry.group;
+        panel.appendChild(header);
+        lastGroup = entry.group;
+      }
+
+      const option = document.createElement('div');
+      option.className = 'pickup-combo__option' + (select.value === entry.value ? ' is-selected' : '');
+      option.textContent = entry.label;
+      option.setAttribute('role', 'option');
+      option.dataset.index = String(index);
+      option.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        setSelected(entry);
+        close();
+      });
+      panel.appendChild(option);
+    });
+  };
+
+  const open = () => {
+    render(input.value === selectedLabel() ? '' : input.value);
+    wrap.classList.add('is-open');
+    input.setAttribute('aria-expanded', 'true');
+  };
+
+  const selectedLabel = () => {
+    const current = entries.find((e) => e.value === select.value);
+    return current ? current.label : '';
+  };
+
+  const highlight = (delta) => {
+    const options = panel.querySelectorAll('.pickup-combo__option');
+    if (options.length === 0) return;
+
+    activeIndex = (activeIndex + delta + options.length) % options.length;
+    options.forEach((el, i) => el.classList.toggle('is-active', i === activeIndex));
+    options[activeIndex].scrollIntoView({ block: 'nearest' });
+  };
+
+  input.addEventListener('focus', open);
+  input.addEventListener('input', () => {
+    select.value = '';
+    render(input.value);
+    wrap.classList.add('is-open');
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!wrap.classList.contains('is-open')) open();
+      highlight(e.key === 'ArrowDown' ? 1 : -1);
+      return;
+    }
+
+    if (e.key === 'Enter' && wrap.classList.contains('is-open')) {
+      e.preventDefault();
+      const chosen = matches[activeIndex] ?? (matches.length === 1 ? matches[0] : null);
+      if (chosen) {
+        setSelected(chosen);
+        close();
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') close();
+  });
+
+  input.addEventListener('blur', () => {
+    // Typing without choosing must not look like a selection.
+    window.setTimeout(() => {
+      input.value = selectedLabel();
+      close();
+    }, 120);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) close();
+  });
+
+  input.value = selectedLabel();
 })();
 </script>
 @endsection

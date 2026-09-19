@@ -19,6 +19,8 @@ return [
         'self_drive' => 'I will travel by myself / เดินทางไปเอง',
         'hotel_pickup' => 'Hotel Pick up & Drop Off (If your hotel is not on the list, select your zone, e.g. "Bangtao" and enter your hotel name manually)',
         'pickup_select_placeholder' => 'Please select where you are staying',
+        'pickup_search_hint' => 'Type to search your hotel or zone',
+        'pickup_search_empty' => 'No match. Choose your zone and type the hotel name below.',
         'pickup_group_hotels' => 'Hotels / Zones',
         'pickup_group_meeting' => 'Meeting points',
         'pickup_note_label' => 'If your hotel is not listed, please provide address below:',
