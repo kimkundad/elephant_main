@@ -184,7 +184,14 @@
 
                 <div class="menu-item">
                     <a class="menu-link" href="{{ route('admin.provinces.index') }}">
-                        <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                        <span class="menu-icon">
+                            <span class="svg-icon svg-icon-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path opacity="0.3" d="M12 2C8.13401 2 5 5.13401 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13401 15.866 2 12 2Z" fill="currentColor"></path>
+                                    <path d="M12 11.5C13.3807 11.5 14.5 10.3807 14.5 9C14.5 7.61929 13.3807 6.5 12 6.5C10.6193 6.5 9.5 7.61929 9.5 9C9.5 10.3807 10.6193 11.5 12 11.5Z" fill="currentColor"></path>
+                                </svg>
+                            </span>
+                        </span>
                         <span class="menu-title">Provinces / จังหวัด</span>
                     </a>
                 </div>
