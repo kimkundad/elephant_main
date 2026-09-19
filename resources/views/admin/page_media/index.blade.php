@@ -63,6 +63,7 @@
             <table class="table table-row-dashed align-middle">
               <thead>
                 <tr>
+                  <th style="width:110px;">Preview</th>
                   <th>Key</th>
                   <th>Locale</th>
                   <th>Type</th>
@@ -73,7 +74,21 @@
               </thead>
               <tbody>
                 @forelse($mediaItems as $item)
+                  @php($mediaUrl = $item->path ? \Illuminate\Support\Facades\Storage::disk($item->disk ?: 'spaces')->url($item->path) : null)
                   <tr>
+                    <td>
+                      @if($mediaUrl && $item->type === 'image')
+                        <a href="{{ $mediaUrl }}" target="_blank">
+                          <img src="{{ $mediaUrl }}" alt="{{ $item->alt_text ?: $item->key }}" loading="lazy"
+                               class="rounded border"
+                               style="width:96px;height:64px;object-fit:cover;background:#f5f5f5;">
+                        </a>
+                      @elseif($mediaUrl)
+                        <a href="{{ $mediaUrl }}" target="_blank" class="badge badge-light-primary">{{ ucfirst($item->type) }}</a>
+                      @else
+                        <span class="text-muted">&mdash;</span>
+                      @endif
+                    </td>
                     <td>
                       <div class="fw-bold">{{ $item->key }}</div>
                       @if(!empty($keyDescriptions[$item->key] ?? null))
@@ -93,8 +108,8 @@
                       @endif
                     </td>
                     <td>
-                      @if($item->path)
-                        <a href="{{ \Illuminate\Support\Facades\Storage::disk($item->disk ?: 'spaces')->url($item->path) }}" target="_blank">
+                      @if($mediaUrl)
+                        <a href="{{ $mediaUrl }}" target="_blank">
                           View
                         </a>
                       @else
@@ -112,7 +127,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="6" class="text-center text-muted py-8">No media found.</td>
+                    <td colspan="7" class="text-center text-muted py-8">No media found.</td>
                   </tr>
                 @endforelse
               </tbody>
