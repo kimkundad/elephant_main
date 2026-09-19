@@ -168,9 +168,8 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
     ->group(function () {
 
         // Dashboard
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
+            ->name('dashboard');
 
         // Site settings
         Route::get('/settings', [SiteSettingController::class, 'edit'])
