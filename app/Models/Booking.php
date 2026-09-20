@@ -16,12 +16,14 @@ class Booking extends Model
     'agent_id','discount_code_id','discount_code','discount_amount',
     'payment_status','payment_channel','stripe_session_id','stripe_payment_intent_id',
     'amount_due_now','amount_pay_later','paid_at',
+    'checked_in_at','checked_in_by',
 ];
 
     protected $casts = [
         'self_drive' => 'boolean',
         'paid_at' => 'datetime',
         'confirmation_email_sent_at' => 'datetime',
+        'checked_in_at' => 'datetime',
     ];
 
     public function customer()

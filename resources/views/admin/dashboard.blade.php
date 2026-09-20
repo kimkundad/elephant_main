@@ -89,7 +89,10 @@
               <div class="card-body">
                 <div class="text-muted fs-7">ผู้เข้าร่วมทัวร์วันนี้</div>
                 <div class="fs-2 fw-bold text-dark mt-2">{{ number_format($kpi['guests_today']) }} คน</div>
-                <div class="text-muted fs-8 mt-1">{{ $kpi['departures_today'] }} การจอง</div>
+                <div class="text-muted fs-8 mt-1">
+                  {{ $kpi['departures_today'] }} การจอง &middot;
+                  เช็คอินแล้ว {{ $kpi['checked_in_today'] }}/{{ $kpi['departures_today'] }}
+                </div>
               </div>
             </div>
           </div>
@@ -180,6 +183,7 @@
                         {{ \Carbon\Carbon::parse($departure['date'])->format('d/m/Y') }}
                         &middot; {{ $departure['session'] }} {{ $departure['time'] }}
                         &middot; {{ $departure['bookings'] }} การจอง
+                        &middot; เช็คอิน {{ $departure['checked_in'] }}/{{ $departure['bookings'] }}
                       </div>
                     </div>
                     <div class="text-end" style="min-width:180px;">

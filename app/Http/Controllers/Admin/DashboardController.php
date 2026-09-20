@@ -55,6 +55,7 @@ class DashboardController extends Controller
             'bookings_change' => $this->percentChange($bookingsThisMonth, $bookingsLastMonth),
             'guests_today' => (int) $this->liveBookings()->whereDate('date', $today)->sum('total_guests'),
             'departures_today' => $this->liveBookings()->whereDate('date', $today)->count(),
+            'checked_in_today' => $this->liveBookings()->whereDate('date', $today)->whereNotNull('checked_in_at')->count(),
             'unpaid' => $this->liveBookings()->whereIn('payment_status', ['pending', 'awaiting_qr'])->count(),
             'unpaid_amount' => (float) $this->liveBookings()
                 ->whereIn('payment_status', ['pending', 'awaiting_qr'])
@@ -139,6 +140,7 @@ class DashboardController extends Controller
                     'capacity' => $capacity,
                     'percent' => $capacity > 0 ? min(100, (int) round($guests / $capacity * 100)) : 0,
                     'bookings' => $bookings->count(),
+                    'checked_in' => $bookings->whereNotNull('checked_in_at')->count(),
                 ];
             })
             ->sortBy([['date', 'asc'], ['time', 'asc']])

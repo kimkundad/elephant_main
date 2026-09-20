@@ -30,6 +30,20 @@
     .value { font-size:14px; font-weight:600; color:#0f172a; }
     .ok { display:inline-block; padding:6px 10px; border-radius:999px; background:#ecfdf5; color:#065f46; font-weight:700; font-size:12px; }
     .bad { display:inline-block; padding:6px 10px; border-radius:999px; background:#fef2f2; color:#991b1b; font-weight:700; font-size:12px; }
+
+    /* Front desk check-in */
+    .checkin { margin-top:18px; border-radius:14px; padding:16px; border:1px solid #e5e7eb; }
+    .checkin--done { background:#ecfdf5; border-color:#a7f3d0; }
+    .checkin--todo { background:#f8fafc; }
+    .checkin h2 { margin:0 0 4px; font-size:16px; }
+    .checkin .hint { font-size:13px; color:#64748b; }
+    .checkin form { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .checkin input { flex:1 1 150px; min-width:0; padding:11px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:15px; }
+    .btn { padding:11px 18px; border:0; border-radius:10px; font-weight:700; font-size:15px; cursor:pointer; }
+    .btn--go { background:#059669; color:#fff; }
+    .btn--undo { background:transparent; color:#64748b; text-decoration:underline; padding:4px 0; font-size:13px; }
+    .warn { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fffbeb; color:#92400e; font-size:13px; }
+    .err { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fef2f2; color:#991b1b; font-size:13px; }
   </style>
 </head>
 <body>
@@ -129,6 +143,63 @@
           </div>
         </div>
       </div>
+
+      @if($booking->checked_in_at)
+        <div class="checkin checkin--done">
+          <h2>✅ Checked in</h2>
+          <div class="hint">
+            {{ $booking->checked_in_at->format('d M Y H:i') }}
+            @if($booking->checked_in_by) &middot; by {{ $booking->checked_in_by }} @endif
+          </div>
+
+          @if($checkInEnabled)
+            <form method="POST" action="{{ route('booking.public.check-in.undo', $booking->public_code) }}"
+                  onsubmit="return confirm('Undo this check-in?')">
+              @csrf
+              <input type="password" name="pin" inputmode="numeric" placeholder="Staff PIN" required>
+              <button class="btn btn--undo" type="submit">Undo check-in</button>
+            </form>
+          @endif
+        </div>
+      @elseif($booking->payment_status !== 'paid')
+        <div class="checkin checkin--todo">
+          <h2>Check-in unavailable</h2>
+          <div class="hint">This booking is not paid yet.</div>
+        </div>
+      @elseif($booking->status === 'cancelled')
+        <div class="checkin checkin--todo">
+          <h2>Check-in unavailable</h2>
+          <div class="hint">This booking was cancelled.</div>
+        </div>
+      @elseif($checkInEnabled)
+        <div class="checkin checkin--todo">
+          <h2>Guest arrived?</h2>
+          <div class="hint">Staff only: enter the PIN to record the arrival.</div>
+
+          @if(!\Carbon\Carbon::parse($booking->date)->isToday())
+            <div class="warn">
+              Heads up: this booking is for {{ \Carbon\Carbon::parse($booking->date)->format('d M Y') }}, not today.
+            </div>
+          @endif
+
+          <form method="POST" action="{{ route('booking.public.check-in', $booking->public_code) }}">
+            @csrf
+            <input type="password" name="pin" inputmode="numeric" placeholder="Staff PIN" required>
+            <input type="text" name="staff_name" placeholder="Staff name (optional)">
+            <button class="btn btn--go" type="submit">Check in</button>
+          </form>
+        </div>
+      @endif
+
+      @if($errors->any())
+        <div class="err">{{ $errors->first() }}</div>
+      @endif
+      @if(session('checkin_success'))
+        <div class="warn" style="background:#ecfdf5;color:#065f46;">Check-in saved.</div>
+      @endif
+      @if(session('checkin_undone'))
+        <div class="warn">Check-in removed.</div>
+      @endif
 
       <div style="margin-top:16px;" class="muted">
         Booked on {{ $booking->created_at?->format('d M Y H:i') ?? '-' }}.

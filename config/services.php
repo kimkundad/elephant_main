@@ -65,4 +65,12 @@ return [
         'site_key' => env('RECAPTCHA_SITE_KEY'),
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
     ],
+
+    /*
+     * PIN the front desk types on the public QR page to mark a guest as
+     * arrived. Leave it unset and check-in stays switched off.
+     */
+    'checkin' => [
+        'pin' => env('CHECKIN_PIN'),
+    ],
 ];

@@ -187,9 +187,20 @@
                   <span class="text-muted">ช่องทางชำระ</span>
                   <span class="fw-bold">{{ strtoupper($booking->payment_channel ?? '-') }}</span>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                   <span class="text-muted">ชำระเมื่อ</span>
                   <span class="fw-bold">{{ $booking->paid_at ? \Carbon\Carbon::parse($booking->paid_at)->format('d/m/Y H:i') : '-' }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted">เช็คอินหน้างาน</span>
+                  @if($booking->checked_in_at)
+                    <span class="badge badge-light-success fs-7">
+                      {{ $booking->checked_in_at->format('d/m/Y H:i') }}
+                      @if($booking->checked_in_by) &middot; {{ $booking->checked_in_by }} @endif
+                    </span>
+                  @else
+                    <span class="badge badge-light-secondary fs-7">ยังไม่เช็คอิน</span>
+                  @endif
                 </div>
               </div>
             </div>

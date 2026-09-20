@@ -96,6 +96,7 @@
                                     <th>โค้ด</th>
                                     <th>พนักงานขาย</th>
                                     <th>สถานะ</th>
+                                    <th>เช็คอิน</th>
                                     <th>การกระทำ</th>
                                 </tr>
                             </thead>
@@ -123,6 +124,13 @@
                                         <td>{{ $b->discount_code ?? '-' }}</td>
                                         <td>{{ $b->agent?->name ?? '-' }}</td>
                                         <td>{{ $b->status }}</td>
+                                        <td>
+                                            @if($b->checked_in_at)
+                                                <span class="badge bg-success">{{ $b->checked_in_at->format('d/m H:i') }}</span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                         <td class="text-nowrap">
                                             <a href="{{ route('admin.bookings.show', $b->id) }}"
                                                 class="btn btn-sm btn-primary me-1">

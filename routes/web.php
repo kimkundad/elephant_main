@@ -34,6 +34,15 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
 
 Route::get('/b/{code}', [BookingPublicController::class, 'show'])->name('booking.public');
 
+// Front-desk check-in from the QR page. Throttled: the staff PIN is the only
+// thing guarding it, so brute forcing must not be cheap.
+Route::post('/b/{code}/check-in', [BookingPublicController::class, 'checkIn'])
+    ->middleware('throttle:10,1')
+    ->name('booking.public.check-in');
+Route::post('/b/{code}/check-in/undo', [BookingPublicController::class, 'undoCheckIn'])
+    ->middleware('throttle:10,1')
+    ->name('booking.public.check-in.undo');
+
 // หน้าแรก
 Route::name('frontend.')->group(function () {
     Route::get('/locale/{locale}', function (string $locale) {
