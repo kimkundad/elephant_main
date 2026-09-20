@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Booking;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesTours;
 use Tests\TestCase;
@@ -17,7 +18,7 @@ class BookingCheckInTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['services.checkin.pin' => self::PIN]);
+        SiteSetting::create(['checkin_pin' => self::PIN]);
     }
 
     private function booking(array $attrs = []): Booking
@@ -110,12 +111,44 @@ class BookingCheckInTest extends TestCase
 
     public function test_the_button_is_hidden_when_no_pin_is_configured(): void
     {
+        SiteSetting::query()->update(['checkin_pin' => null]);
         config(['services.checkin.pin' => null]);
         $booking = $this->booking();
 
         $this->get(route('booking.public', $booking->public_code))
             ->assertOk()
             ->assertDontSee('Guest arrived?');
+    }
+
+    public function test_the_pin_comes_from_the_site_settings_and_is_editable_there(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('admin.settings.update'), [
+                'email' => 'info@example.com',
+                'checkin_pin' => '917355',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('917355', SiteSetting::first()->checkin_pin);
+
+        $booking = $this->booking();
+
+        // The old PIN no longer works, the new one does.
+        $this->post(route('booking.public.check-in', $booking->public_code), ['pin' => self::PIN])
+            ->assertSessionHasErrors('pin');
+        $this->assertNull($booking->fresh()->checked_in_at);
+
+        $this->post(route('booking.public.check-in', $booking->public_code), ['pin' => '917355']);
+        $this->assertNotNull($booking->fresh()->checked_in_at);
+    }
+
+    public function test_a_pin_that_is_not_digits_is_rejected(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('admin.settings.update'), ['email' => 'info@example.com', 'checkin_pin' => 'abcd'])
+            ->assertSessionHasErrors('checkin_pin');
+
+        $this->assertSame(self::PIN, SiteSetting::first()->checkin_pin);
     }
 
     public function test_a_booking_for_another_day_warns_but_still_allows_check_in(): void

@@ -152,6 +152,20 @@
                 </div>
               </div>
 
+              <div class="row mb-6">
+                <div class="col-md-4">
+                  <label class="form-label">PIN เช็คอินหน้างาน</label>
+                  <input class="form-control @error('checkin_pin') is-invalid @enderror"
+                         name="checkin_pin" inputmode="numeric" maxlength="10" autocomplete="off"
+                         value="{{ old('checkin_pin', $setting->checkin_pin) }}">
+                  @error('checkin_pin')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                  <div class="form-text">
+                    ตัวเลข 4-10 หลัก พนักงานใช้กดยืนยันว่าลูกค้ามาถึงแล้ว ตอนสแกน QR ของลูกค้า
+                    เว้นว่างไว้ = ปิดปุ่มเช็คอิน
+                  </div>
+                </div>
+              </div>
+
               <div class="text-end">
                 <button class="btn btn-primary" type="submit">บันทึก</button>
               </div>

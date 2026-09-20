@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -74,8 +75,14 @@ class BookingPublicController extends Controller
             ->firstOrFail();
     }
 
+    /**
+     * Set in the admin's site settings; the .env value stays as a fallback
+     * for installs that configured it there before.
+     */
     private function pin(): string
     {
-        return trim((string) config('services.checkin.pin'));
+        $pin = trim((string) SiteSetting::first()?->checkin_pin);
+
+        return $pin !== '' ? $pin : trim((string) config('services.checkin.pin'));
     }
 }

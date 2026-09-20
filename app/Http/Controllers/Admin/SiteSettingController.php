@@ -36,6 +36,7 @@ class SiteSettingController extends Controller
             'contact_whatsapp_line' => ['nullable', 'string', 'max:255'],
             'map_embed_url' => ['nullable', 'string'],
             'copyright_text' => ['nullable', 'string', 'max:255'],
+            'checkin_pin' => ['nullable', 'string', 'regex:/^\d{4,10}$/'],
             'logo_header' => ['nullable', 'image', 'max:25600'],
             'logo_footer' => ['nullable', 'image', 'max:25600'],
             'og_image' => ['nullable', 'image', 'max:25600'],

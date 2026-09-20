@@ -22,6 +22,7 @@ class SiteSetting extends Model
         'contact_whatsapp_line',
         'map_embed_url',
         'copyright_text',
+        'checkin_pin',
         'logo_path',
         'logo_header_path',
         'logo_footer_path',
