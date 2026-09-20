@@ -44,6 +44,18 @@
     .btn--undo { background:transparent; color:#64748b; text-decoration:underline; padding:4px 0; font-size:13px; }
     .warn { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fffbeb; color:#92400e; font-size:13px; }
     .err { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fef2f2; color:#991b1b; font-size:13px; }
+
+    /* Sending state, so the staff member knows the tap registered */
+    .btn[disabled] { opacity:.75; cursor:wait; }
+    .btn--go { display:inline-flex; align-items:center; gap:8px; }
+    .spinner {
+      width:15px; height:15px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.4); border-top-color:#fff;
+      animation: spin .7s linear infinite;
+    }
+    .btn--undo .spinner { border-color:rgba(100,116,139,.35); border-top-color:#64748b; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
   </style>
 </head>
 <body>
@@ -207,5 +219,37 @@
       </div>
     </div>
   </div>
+
+  <script>
+  // Check-in posts to the server, which can take a moment on a phone's data
+  // connection: show the button is working and block a second tap.
+  (function () {
+    document.querySelectorAll('.checkin form').forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (event.defaultPrevented) return;
+
+        var button = form.querySelector('button');
+        if (!button || button.disabled) {
+          event.preventDefault();
+          return;
+        }
+
+        button.dataset.label = button.textContent.trim();
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner"></span><span>Sending...</span>';
+      });
+    });
+
+    // Coming back with the Back button restores the page mid-send.
+    window.addEventListener('pageshow', function (event) {
+      if (!event.persisted) return;
+
+      document.querySelectorAll('.checkin button[data-label]').forEach(function (button) {
+        button.disabled = false;
+        button.textContent = button.dataset.label;
+      });
+    });
+  })();
+  </script>
 </body>
 </html>
