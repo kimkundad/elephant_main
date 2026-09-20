@@ -200,10 +200,18 @@
             <td>VAT (7%)</td>
             <td style="text-align:right;">THB {{ number_format($booking->vat_amount, 2) }}</td>
         </tr>
-        <tr>
-            <td>Fees (5%)</td>
-            <td style="text-align:right;">THB {{ number_format($booking->fee_amount, 2) }}</td>
-        </tr>
+        @if(($booking->fee_amount ?? 0) > 0)
+            <tr>
+                <td>Fees</td>
+                <td style="text-align:right;">THB {{ number_format($booking->fee_amount, 2) }}</td>
+            </tr>
+        @endif
+        @if(($booking->discount_amount ?? 0) > 0)
+            <tr>
+                <td>Discount @if($booking->discount_code)({{ $booking->discount_code }})@endif</td>
+                <td style="text-align:right;">- THB {{ number_format($booking->discount_amount, 2) }}</td>
+            </tr>
+        @endif
 
         <tr class="total-row">
             <td>Total</td>
@@ -214,9 +222,18 @@
     <div style="clear: both;"></div>
 
     {{-- FOOTER --}}
+    @php($site = \App\Models\SiteSetting::first())
+    @php($contactPhones = array_filter([$site?->phone, $site?->phone_secondary]))
     <div class="footer-text">
-        Thank you for your booking.
-        For questions, contact us at support@example.com
+        Thank you for booking with Small Elephants.<br>
+        @if($site?->email)
+            Questions? Email {{ $site->email }}@if($contactPhones) or call {{ implode(' / ', $contactPhones) }}@endif.<br>
+        @elseif($contactPhones)
+            Questions? Call {{ implode(' / ', $contactPhones) }}.<br>
+        @endif
+        @if($site?->address)
+            {{ $site->address }}
+        @endif
     </div>
 </div>
 </body>
