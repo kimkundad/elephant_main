@@ -5,86 +5,52 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Agent;
 use App\Models\Booking;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
+/**
+ * Sales are money that actually arrived, so every sales figure counts only
+ * bookings with payment_status = paid and is dated by paid_at, not by the
+ * tour date. Booking counts use the date the booking was made.
+ */
 class AgentReportController extends Controller
 {
     public function index(Request $request)
     {
-        $start = $request->query('start_date');
-        $end = $request->query('end_date');
-        $paymentFilter = $request->query('payment_status');
+        [$start, $end, $paymentFilter] = $this->filters($request);
 
-        $dateFilter = function ($q) use ($start, $end, $paymentFilter) {
-            if ($start) {
-                $q->whereDate('date', '>=', $start);
-            }
-            if ($end) {
-                $q->whereDate('date', '<=', $end);
-            }
-            if ($paymentFilter === 'paid') {
-                $q->where('payment_status', 'paid');
-            } elseif ($paymentFilter === 'unpaid') {
-                $q->where('payment_status', '!=', 'paid');
-            }
-        };
+        $summary = Agent::orderBy('name')->get()->map(function (Agent $agent) use ($start, $end) {
+            $paid = $this->paidSales($start, $end)->where('agent_id', $agent->id)->get();
+            $booked = $this->bookingsMade($start, $end)->where('agent_id', $agent->id)->get();
 
-        $agents = Agent::orderBy('name')->get();
-
-        $summary = $agents->map(function (Agent $agent) use ($dateFilter) {
-            $bookings = Booking::where('agent_id', $agent->id)
-                ->where($dateFilter)
-                ->get();
-            $paid = $bookings->where('payment_status', 'paid');
-            $unpaid = $bookings->where('payment_status', '!=', 'paid');
             return [
                 'agent' => $agent,
-                'total_sales' => $paid->sum('grand_total'),
-                'total_discount' => $paid->sum('discount_amount'),
-                'booking_count' => $bookings->count(),
+                'total_sales' => (float) $paid->sum('grand_total'),
+                'total_discount' => (float) $paid->sum('discount_amount'),
                 'paid_count' => $paid->count(),
-                'unpaid_count' => $unpaid->count(),
+                'booking_count' => $booked->count(),
+                'unpaid_count' => $booked->where('payment_status', '!=', 'paid')->count(),
             ];
         });
 
-        $bookingsWithDiscount = Booking::with(['tour', 'session', 'agent'])
-            ->whereNotNull('discount_code')
-            ->where($dateFilter)
-            ->orderByDesc('id')
-            ->get();
+        $bookingsWithDiscount = $this->discountList($start, $end, $paymentFilter)->get();
 
         return view('admin.reports.agents', compact('summary', 'bookingsWithDiscount', 'start', 'end', 'paymentFilter'));
     }
 
     public function exportCsv(Request $request)
     {
-        $start = $request->query('start_date');
-        $end = $request->query('end_date');
-        $paymentFilter = $request->query('payment_status');
+        [$start, $end, $paymentFilter] = $this->filters($request);
 
-        $query = Booking::with(['tour', 'session', 'agent'])
-            ->whereNotNull('discount_code');
-
-        if ($start) {
-            $query->whereDate('date', '>=', $start);
-        }
-        if ($end) {
-            $query->whereDate('date', '<=', $end);
-        }
-        if ($paymentFilter === 'paid') {
-            $query->where('payment_status', 'paid');
-        } elseif ($paymentFilter === 'unpaid') {
-            $query->where('payment_status', '!=', 'paid');
-        }
-
-        $rows = $query->orderByDesc('id')->get();
-
-        $filename = 'agent-discount-report.csv';
+        $rows = $this->discountList($start, $end, $paymentFilter)->get();
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
+            fputs($out, "\xEF\xBB\xBF");
             fputcsv($out, [
                 'Booking ID',
+                'Booked At',
+                'Paid At',
                 'Tour Date',
                 'Tour',
                 'Customer',
@@ -93,11 +59,14 @@ class AgentReportController extends Controller
                 'Agent',
                 'Total',
                 'Payment Status',
+                'Booking Status',
             ]);
 
             foreach ($rows as $b) {
                 fputcsv($out, [
                     $b->id,
+                    $b->created_at?->format('Y-m-d H:i'),
+                    $b->paid_at ? $b->paid_at->format('Y-m-d H:i') : '',
                     $b->date,
                     $b->tour?->name,
                     $b->customer_name ?? $b->customer?->full_name,
@@ -106,12 +75,57 @@ class AgentReportController extends Controller
                     $b->agent?->name,
                     $b->grand_total,
                     $b->payment_status,
+                    $b->status,
                 ]);
             }
 
             fclose($out);
-        }, $filename, [
+        }, 'agent-discount-report.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /** @return array{0: ?string, 1: ?string, 2: ?string} */
+    private function filters(Request $request): array
+    {
+        return [
+            $request->query('start_date'),
+            $request->query('end_date'),
+            $request->query('payment_status'),
+        ];
+    }
+
+    /** Money received in the period: paid bookings, dated by payment. */
+    private function paidSales(?string $start, ?string $end): Builder
+    {
+        return Booking::query()
+            ->where('payment_status', 'paid')
+            ->whereNotNull('paid_at')
+            ->when($start, fn (Builder $q) => $q->whereDate('paid_at', '>=', $start))
+            ->when($end, fn (Builder $q) => $q->whereDate('paid_at', '<=', $end));
+    }
+
+    /** Bookings made in the period, whatever their payment state. */
+    private function bookingsMade(?string $start, ?string $end): Builder
+    {
+        return Booking::query()
+            ->when($start, fn (Builder $q) => $q->whereDate('created_at', '>=', $start))
+            ->when($end, fn (Builder $q) => $q->whereDate('created_at', '<=', $end));
+    }
+
+    private function discountList(?string $start, ?string $end, ?string $paymentFilter): Builder
+    {
+        $query = $paymentFilter === 'paid'
+            ? $this->paidSales($start, $end)
+            : $this->bookingsMade($start, $end);
+
+        if ($paymentFilter === 'unpaid') {
+            $query->where('payment_status', '!=', 'paid');
+        }
+
+        return $query
+            ->with(['tour', 'session', 'agent', 'customer'])
+            ->whereNotNull('discount_code')
+            ->orderByDesc('id');
     }
 }

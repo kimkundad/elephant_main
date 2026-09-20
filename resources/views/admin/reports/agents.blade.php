@@ -46,27 +46,30 @@
 
         <div class="card mb-7">
           <div class="card-body">
-            <h3 class="mb-4">สรุปยอดขายตามพนักงาน</h3>
+            <h3 class="mb-2">สรุปยอดขายตามพนักงาน</h3>
+            <div class="text-muted fs-7 mb-4">
+              ยอดขายนับเฉพาะรายการที่ลูกค้าชำระเงินแล้ว ตามวันที่ชำระ ส่วนจำนวนการจองนับตามวันที่ทำรายการจอง
+            </div>
             <table class="table table-bordered align-middle">
               <thead>
                 <tr>
                   <th>พนักงานขาย</th>
-                  <th>Sales (paid)</th>
-                  <th>Discount (paid)</th>
-                  <th>Total bookings</th>
-                  <th>Paid</th>
-                  <th>Unpaid</th>
+                  <th class="text-end">ยอดขาย (ชำระแล้ว)</th>
+                  <th class="text-end">ส่วนลดที่ใช้</th>
+                  <th class="text-end">จำนวนที่ชำระแล้ว</th>
+                  <th class="text-end">การจองทั้งหมด</th>
+                  <th class="text-end">ยังไม่ชำระ</th>
                 </tr>
               </thead>
               <tbody>
                 @forelse($summary as $row)
                   <tr>
                     <td>{{ $row['agent']->name }}</td>
-                    <td>{{ number_format($row['total_sales'], 2) }}</td>
-                    <td>{{ number_format($row['total_discount'], 2) }}</td>
-                    <td>{{ $row['booking_count'] }}</td>
-                    <td>{{ $row['paid_count'] }}</td>
-                    <td>{{ $row['unpaid_count'] }}</td>
+                    <td class="text-end fw-bold">{{ number_format($row['total_sales'], 2) }}</td>
+                    <td class="text-end">{{ number_format($row['total_discount'], 2) }}</td>
+                    <td class="text-end">{{ $row['paid_count'] }}</td>
+                    <td class="text-end">{{ $row['booking_count'] }}</td>
+                    <td class="text-end">{{ $row['unpaid_count'] }}</td>
                   </tr>
                 @empty
                   <tr>
@@ -74,6 +77,18 @@
                   </tr>
                 @endforelse
               </tbody>
+              @if($summary->isNotEmpty())
+                <tfoot>
+                  <tr class="fw-bold">
+                    <td>รวม</td>
+                    <td class="text-end">{{ number_format($summary->sum('total_sales'), 2) }}</td>
+                    <td class="text-end">{{ number_format($summary->sum('total_discount'), 2) }}</td>
+                    <td class="text-end">{{ $summary->sum('paid_count') }}</td>
+                    <td class="text-end">{{ $summary->sum('booking_count') }}</td>
+                    <td class="text-end">{{ $summary->sum('unpaid_count') }}</td>
+                  </tr>
+                </tfoot>
+              @endif
             </table>
           </div>
         </div>

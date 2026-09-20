@@ -20,6 +20,8 @@ class Booking extends Model
 
     protected $casts = [
         'self_drive' => 'boolean',
+        'paid_at' => 'datetime',
+        'confirmation_email_sent_at' => 'datetime',
     ];
 
     public function customer()
