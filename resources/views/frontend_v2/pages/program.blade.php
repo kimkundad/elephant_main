@@ -326,12 +326,18 @@
   min-height:220px;
 }
 .program-title{
-height: 50px;
-    overflow: hidden;
-    font-size: 16px;
+  font-size:16px;
+  line-height:1.35;
   font-weight:700;
   color:#fff;
   margin-bottom:12px;
+  /* Clamp to two whole lines: a fixed height cut the second line in half
+     once the font grew on smaller screens. min-height keeps cards aligned. */
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:2.7em;
 }
 .program-meta{
   display:flex;
