@@ -423,7 +423,8 @@
   height:8px;
 }
 @media (max-width: 992px){
-  .program-title{ font-size:22px; }
+  /* Same size as desktop: 22px pushed long titles past two lines here. */
+  .program-title{ font-size:16px; }
   .program-filter__result{ font-size:16px; }
 }
 @media (max-width: 767px){
