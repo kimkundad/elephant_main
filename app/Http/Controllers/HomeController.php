@@ -78,14 +78,27 @@ class HomeController extends Controller
             ->visible()
             ->with(['tags', 'translations', 'province'])
             ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
-                $query->where(function ($inner) use ($searchTerm) {
-                    $inner->where('name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                        ->orWhereHas('tags', function ($tagQuery) use ($searchTerm) {
-                            $tagQuery->where('name_th', 'like', '%' . $searchTerm . '%')
-                                ->orWhere('name_en', 'like', '%' . $searchTerm . '%')
-                                ->orWhere('slug', 'like', '%' . $searchTerm . '%');
+                $like = '%' . $searchTerm . '%';
+
+                $query->where(function ($inner) use ($like) {
+                    $inner->where('name', 'like', $like)
+                        ->orWhere('short_description', 'like', $like)
+                        ->orWhere('description', 'like', $like)
+                        // The tours table holds the Thai copy; the English one
+                        // lives in tour_translations, so search both.
+                        ->orWhereHas('translations', function ($translationQuery) use ($like) {
+                            $translationQuery->where('name', 'like', $like)
+                                ->orWhere('short_description', 'like', $like)
+                                ->orWhere('description', 'like', $like);
+                        })
+                        ->orWhereHas('province', function ($provinceQuery) use ($like) {
+                            $provinceQuery->where('name_th', 'like', $like)
+                                ->orWhere('name_en', 'like', $like);
+                        })
+                        ->orWhereHas('tags', function ($tagQuery) use ($like) {
+                            $tagQuery->where('name_th', 'like', $like)
+                                ->orWhere('name_en', 'like', $like)
+                                ->orWhere('slug', 'like', $like);
                         });
                 });
             })
