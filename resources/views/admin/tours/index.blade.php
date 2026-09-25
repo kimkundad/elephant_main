@@ -46,7 +46,14 @@
                                 <tbody>
                                     @foreach ($tours as $tour)
                                         <tr>
-                                            <td>{{ $tour->name }}</td>
+                                            <td>
+                                                @php($nameTh = $tour->translations->firstWhere('locale', 'th')?->name ?: $tour->name)
+                                                @php($nameEn = $tour->translations->firstWhere('locale', 'en')?->name)
+                                                <div class="fw-bold">{{ $nameTh }}</div>
+                                                @if($nameEn && $nameEn !== $nameTh)
+                                                    <div class="text-muted fs-7">{{ $nameEn }}</div>
+                                                @endif
+                                            </td>
                                             <td>{{ $tour->province?->name_th ?? '-' }}</td>
                                             <td>{{ number_format($tour->min_price) }} -
                                                 {{ number_format($tour->max_price) }}</td>

@@ -19,7 +19,7 @@ class TourController extends Controller
     {
         $provinces = Province::orderBy('name_th')->get();
 
-        $tours = Tour::with('province')
+        $tours = Tour::with(['province', 'translations'])
             ->when($request->query('province_id'), fn ($query, $provinceId) => $query->where('province_id', $provinceId))
             ->orderBy('id', 'desc')
             ->get();
