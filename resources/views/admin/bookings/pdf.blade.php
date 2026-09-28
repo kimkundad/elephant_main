@@ -119,6 +119,8 @@
         $site = \App\Models\SiteSetting::first();
         $siteName = $site?->site_name ?: 'SmallElephants.com';
         $contactPhones = array_filter([$site?->phone, $site?->phone_secondary]);
+        $whatsappUrl = $site?->whatsappUrl();
+        $whatsappLabel = $site?->whatsappLabel();
     @endphp
 
     {{-- INVOICE HEADER --}}
@@ -141,7 +143,10 @@
                     {{ $site->email }}<br>
                 @endif
                 @if($site?->phone)
-                    Phone: {{ $site->phone }}
+                    Phone: {{ $site->phone }}<br>
+                @endif
+                @if($whatsappUrl)
+                    WhatsApp: <a href="{{ $whatsappUrl }}">{{ $whatsappLabel ?: 'Chat with us' }}</a>
                 @endif
             </p>
         </div>
@@ -241,6 +246,9 @@
             Questions? Email {{ $site->email }}@if($contactPhones) or call {{ implode(' / ', $contactPhones) }}@endif.<br>
         @elseif($contactPhones)
             Questions? Call {{ implode(' / ', $contactPhones) }}.<br>
+        @endif
+        @if($whatsappUrl)
+            Message us on WhatsApp: <a href="{{ $whatsappUrl }}">{{ $whatsappLabel ?: 'Chat with us' }}</a><br>
         @endif
         @if($site?->address)
             {{ $site->address }}

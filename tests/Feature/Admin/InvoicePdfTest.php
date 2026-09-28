@@ -71,6 +71,30 @@ class InvoicePdfTest extends TestCase
         $this->assertStringNotContainsString('090-000-0000', $html);
     }
 
+    public function test_the_invoice_offers_whatsapp_when_it_is_configured(): void
+    {
+        SiteSetting::query()->delete();
+        SiteSetting::create([
+            'site_name' => 'SmallElephants.com',
+            'contact_whatsapp_line' => '+66 95 846 7417',
+        ]);
+
+        $html = $this->invoiceHtml($this->booking());
+
+        $this->assertStringContainsString('https://wa.me/66958467417', $html);
+        $this->assertSame(2, substr_count($html, 'wa.me/66958467417'), 'The sender block and the footer both offer it.');
+    }
+
+    public function test_the_invoice_says_nothing_about_whatsapp_without_a_number(): void
+    {
+        SiteSetting::query()->delete();
+        SiteSetting::create(['contact_whatsapp_line' => '#']);
+
+        $html = $this->invoiceHtml($this->booking());
+
+        $this->assertStringNotContainsString('WhatsApp', $html);
+    }
+
     public function test_the_invoice_prints_the_english_tour_name(): void
     {
         $html = $this->invoiceHtml($this->booking());
