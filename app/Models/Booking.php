@@ -61,6 +61,23 @@ class Booking extends Model
         return $this->pickupLocation?->name ?: ($this->pickup_place_name ?: '-');
     }
 
+    /**
+     * When the guest has to be at the pickup point, e.g. "08:30". Null when the
+     * tour has no pickup lead time set.
+     */
+    public function pickupTime(): ?string
+    {
+        return $this->tour?->pickupTimeFor($this->session?->start_time);
+    }
+
+    /** What to call that time: guests we pick up wait for us, self drivers arrive themselves. */
+    public function pickupTimeLabel(?string $locale = null): string
+    {
+        return $this->self_drive
+            ? __('booking.create.arrive_time_label', [], $locale)
+            : __('booking.create.pickup_time_label', [], $locale);
+    }
+
     /** Extra pickup details: the guest's note, or the address saved by the old Google flow. */
     public function pickupDetail(): ?string
     {

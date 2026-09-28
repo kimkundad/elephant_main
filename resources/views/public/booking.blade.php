@@ -136,6 +136,12 @@
             <div class="muted" style="margin-top:4px; white-space:pre-line;">{{ $booking->pickupDetail() }}</div>
           @endif
         </div>
+        @if($booking->pickupTime())
+          <div class="row">
+            <div class="label">{{ $booking->pickupTimeLabel('en') }}</div>
+            <div class="value">{{ $booking->pickupTime() }}</div>
+          </div>
+        @endif
         <div class="row">
           <div class="label">Amount</div>
           <div class="value">

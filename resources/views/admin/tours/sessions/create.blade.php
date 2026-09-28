@@ -57,6 +57,8 @@
                                 </div>
                             </div>
 
+                            @include('admin.tours.sessions._pickup-time')
+
                             <div class="row mb-4">
                                 <div class="col-md-6">
                                     <label class="form-label">Default Capacity (จำนวนคนสูงสุดที่รองรับได้)</label>

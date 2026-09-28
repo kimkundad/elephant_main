@@ -8,6 +8,8 @@ return [
     'no_sessions' => 'ไม่มีรอบที่ว่างสำหรับวันนี้',
     'session_fallback' => 'รอบทัวร์',
     'remaining' => 'คงเหลือ',
+    'pickup_time' => 'รับ :time น.',
+    'hours_short' => 'ชม.',
     'book' => 'จอง',
     'dow' => [
         'su' => 'อา',

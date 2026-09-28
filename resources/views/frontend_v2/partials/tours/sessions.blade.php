@@ -15,7 +15,12 @@
 
       <div class="session-info">
         <div class="session-title">{{ $s->title ?? $s->name ?? __('tour_show.session_fallback') }}</div>
-        <div class="session-sub">{{ __('tour_show.remaining') }}: {{ $s->remainingCapacity($selectedDate) }}</div>
+        <div class="session-sub">
+          {{ __('tour_show.remaining') }}: {{ $s->remainingCapacity($selectedDate) }}
+          @if($pickupTime = $tour->pickupTimeFor($s->start_time))
+            &middot; {{ __('tour_show.pickup_time', ['time' => $pickupTime]) }}
+          @endif
+        </div>
       </div>
 
       <div class="session-action">

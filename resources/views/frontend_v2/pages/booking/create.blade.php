@@ -141,6 +141,40 @@
   max-width:100%;
   box-shadow:0 6px 16px rgba(0,0,0,.04);
 }
+.pickup-time-note{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:0 0 18px 28px;
+  padding:14px 18px;
+  border:1px solid #cfe9d8;
+  border-left:4px solid #2f9e5f;
+  border-radius:14px;
+  background:#f1faf4;
+  max-width:100%;
+}
+.pickup-time-note__clock{
+  flex:0 0 auto;
+  font-size:22px;
+  font-weight:800;
+  color:#1b6b40;
+  letter-spacing:.01em;
+}
+.pickup-time-note__label{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#2f9e5f;
+}
+.pickup-time-note__hint{
+  font-size:14px;
+  line-height:1.5;
+  color:#3f4a42;
+}
+@media (max-width:575px){
+  .pickup-time-note{ margin-left:0; }
+}
 .self-drive-check input{
   flex:0 0 auto;
   width:20px;
@@ -415,6 +449,24 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
             <input type="checkbox" name="self_drive" id="self_drive" value="1" @checked(old('self_drive'))>
             <span>{{ __('booking.create.self_drive') }}</span>
           </label>
+
+          @php
+            $pickupTime = $tour->pickupTimeFor($session->start_time);
+            $pickupLead = $tour->pickupLeadLabel();
+          @endphp
+          @if($pickupTime)
+            <div class="pickup-time-note" id="pickupTimeNote"
+                 data-pickup-label="{{ __('booking.create.pickup_time_label') }}"
+                 data-pickup-hint="{{ __('booking.create.pickup_time_hint', ['time' => $pickupTime, 'hours' => $pickupLead]) }}"
+                 data-arrive-label="{{ __('booking.create.arrive_time_label') }}"
+                 data-arrive-hint="{{ __('booking.create.arrive_time_hint', ['time' => $pickupTime, 'hours' => $pickupLead]) }}">
+              <div class="pickup-time-note__clock">{{ $pickupTime }}</div>
+              <div>
+                <div class="pickup-time-note__label">{{ __('booking.create.pickup_time_label') }}</div>
+                <div class="pickup-time-note__hint">{{ __('booking.create.pickup_time_hint', ['time' => $pickupTime, 'hours' => $pickupLead]) }}</div>
+              </div>
+            </div>
+          @endif
 
           <div id="pickupFields">
             <label class="f-label" for="pickup_location_id">
@@ -784,10 +836,19 @@ const BOOKING_I18N = @json($bookingI18n);
   const pickupSelect = document.getElementById('pickup_location_id');
   if (!selfDrive || !pickupFields || !pickupSelect) return;
 
-  // Travelling by themselves means no pickup point is needed.
+  const timeNote = document.getElementById('pickupTimeNote');
+
+  // Travelling by themselves means no pickup point is needed, and the same
+  // clock time is the time they have to reach the camp on their own.
   const syncPickupMode = () => {
     pickupFields.style.display = selfDrive.checked ? 'none' : '';
     pickupSelect.required = !selfDrive.checked;
+
+    if (timeNote) {
+      const mode = selfDrive.checked ? 'arrive' : 'pickup';
+      timeNote.querySelector('.pickup-time-note__label').textContent = timeNote.dataset[mode + 'Label'];
+      timeNote.querySelector('.pickup-time-note__hint').textContent = timeNote.dataset[mode + 'Hint'];
+    }
   };
 
   selfDrive.addEventListener('change', syncPickupMode);

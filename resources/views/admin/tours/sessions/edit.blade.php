@@ -93,6 +93,8 @@
                                 </div>
                             </div>
 
+                            @include('admin.tours.sessions._pickup-time')
+
                             {{-- Capacity --}}
                             <div class="row mb-4">
                                 <div class="col-md-6">

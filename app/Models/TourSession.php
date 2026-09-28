@@ -35,6 +35,15 @@ class TourSession extends Model
             ->implode(' - ');
     }
 
+    /**
+     * When guests have to be at the pickup point for this session, e.g. "08:30".
+     * Null when the tour has no pickup lead time set.
+     */
+    public function getPickupTimeAttribute(): ?string
+    {
+        return $this->tour?->pickupTimeFor($this->start_time);
+    }
+
     public function tour()
     {
         return $this->belongsTo(Tour::class);

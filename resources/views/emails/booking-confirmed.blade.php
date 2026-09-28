@@ -4,6 +4,7 @@
 @php
   $siteSetting = \App\Models\SiteSetting::first();
   $logoUrl = $siteSetting?->logo_header_url ?: asset('img/logo.webp');
+  $pickupTime = $booking->pickupTime();
   $whatsappUrl = $siteSetting?->whatsappUrl();
   $whatsappLabel = $siteSetting?->whatsappLabel();
 @endphp
@@ -41,6 +42,9 @@
             <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->pickupLabel() }}</div>
             @if($booking->pickupDetail())
               <div style="font-size:13px;color:#425466;white-space:pre-line;">{{ $booking->pickupDetail() }}</div>
+            @endif
+            @if($pickupTime)
+              <div style="font-size:13px;color:#0f7a43;font-weight:700;margin-top:4px;">{{ $booking->pickupTimeLabel('en') }}: {{ $pickupTime }}</div>
             @endif
           </div>
           <div>

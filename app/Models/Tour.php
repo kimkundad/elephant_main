@@ -16,6 +16,7 @@ class Tour extends Model
         'description',
         'price_adult',
         'price_child',
+        'pickup_lead_hours',
         'thumbnail',
         'gallery_images',
         'is_active',
@@ -23,6 +24,7 @@ class Tour extends Model
 
     protected $casts = [
         'gallery_images' => 'array',
+        'pickup_lead_hours' => 'float',
         'is_active' => 'boolean',
     ];
 
@@ -57,6 +59,38 @@ class Tour extends Model
     public function translations()
     {
         return $this->hasMany(TourTranslation::class);
+    }
+
+    /**
+     * When guests have to be at the pickup point for a session that starts at
+     * $startTime, e.g. "08:30" for a 09:30 start on a tour with a one hour
+     * lead. Null when the tour has no lead time set.
+     */
+    public function pickupTimeFor(?string $startTime): ?string
+    {
+        $lead = (float) $this->pickup_lead_hours;
+
+        if (!$startTime || $lead <= 0) {
+            return null;
+        }
+
+        return \Carbon\Carbon::parse($startTime)
+            ->subMinutes((int) round($lead * 60))
+            ->format(TourSession::TIME_FORMAT);
+    }
+
+    /** The pickup lead time as guests read it, e.g. "1 hr" or "2.5 ชม.". */
+    public function pickupLeadLabel(?string $locale = null): ?string
+    {
+        $lead = (float) $this->pickup_lead_hours;
+
+        if ($lead <= 0) {
+            return null;
+        }
+
+        $number = rtrim(rtrim(number_format($lead, 2), '0'), '.');
+
+        return $number . ' ' . __('tour_show.hours_short', [], $locale);
     }
 
     /**

@@ -8,6 +8,8 @@ return [
     'no_sessions' => 'No available sessions for this date.',
     'session_fallback' => 'Session',
     'remaining' => 'Remaining',
+    'pickup_time' => 'Pickup :time',
+    'hours_short' => 'hr',
     'book' => 'Book',
     'dow' => [
         'su' => 'Su',
