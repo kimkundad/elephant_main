@@ -33,8 +33,8 @@
                                 <thead>
                                     <tr>
                                         <th>Title</th>
-                                        <th>Session Time</th>
                                         <th>Start - End</th>
+                                        <th>เวลารับลูกค้า</th>
                                         <th>Default Cap.</th>
                                         <th>Override Cap.</th>
                                         <th>Status</th>
@@ -46,7 +46,6 @@
                                     @forelse($sessions as $s)
                                         <tr>
                                             <td>{{ $s->title }}</td>
-                                            <td>{{ $s->session_time ?? '-' }}</td>
 
                                             <td>
                                                 @if($s->start_time && $s->end_time)
@@ -55,6 +54,8 @@
                                                     -
                                                 @endif
                                             </td>
+
+                                            <td>{{ $tour->pickupTimeFor($s->start_time) ?? '-' }}</td>
 
                                             <td>{{ $s->default_capacity }}</td>
                                             <td>{{ $s->capacity ?? '-' }}</td>

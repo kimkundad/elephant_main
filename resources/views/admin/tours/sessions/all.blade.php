@@ -31,8 +31,8 @@
                                 <tr>
                                     <th>โปรแกรมทัวร์</th>
                                     <th>Title</th>
-                                    <th>Session Time</th>
                                     <th>Start - End</th>
+                                    <th>เวลารับลูกค้า</th>
                                     <th>Default Cap.</th>
                                     <th>Override Cap.</th>
                                     <th>Status</th>
@@ -45,7 +45,6 @@
                                     <tr>
                                         <td>{{ $s->tour->name }}</td>
                                         <td>{{ $s->title ?? '-' }}</td>
-                                        <td>{{ $s->session_time ?? '-' }}</td>
                                         <td>
                                             @if($s->start_time && $s->end_time)
                                                 {{ $s->time_range }}
@@ -53,6 +52,7 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td>{{ $s->pickup_time ?? '-' }}</td>
                                         <td>{{ $s->default_capacity }}</td>
                                         <td>{{ $s->capacity ?? '-' }}</td>
 

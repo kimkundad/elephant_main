@@ -95,6 +95,26 @@ class PickupTimeTest extends TestCase
             ->assertSee('เวลารับลูกค้า (Pickup time)');
     }
 
+    public function test_the_session_tables_list_the_pickup_time(): void
+    {
+        $tour = $this->tourWithLead(1);
+        $this->makeSession($tour);
+
+        $this->actingAsAdmin()
+            ->get(route('admin.sessions.all'))
+            ->assertOk()
+            ->assertSee('เวลารับลูกค้า')
+            ->assertSee('08:30')
+            ->assertDontSee('Session Time');
+
+        $this->actingAsAdmin()
+            ->get(route('admin.tours.sessions.index', $tour->id))
+            ->assertOk()
+            ->assertSee('เวลารับลูกค้า')
+            ->assertSee('08:30')
+            ->assertDontSee('Session Time');
+    }
+
     public function test_admin_can_save_the_lead_time_on_a_tour(): void
     {
         $tour = $this->tourWithLead(null);
