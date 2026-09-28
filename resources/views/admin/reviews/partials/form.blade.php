@@ -46,7 +46,7 @@
             @error('author_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="col-md-6">
-            <label class="form-label">Reviewer Email</label>
+            <label class="form-label">Reviewer Email <span class="text-muted fw-normal">(ไม่บังคับ)</span></label>
             <input type="email" class="form-control @error('author_email') is-invalid @enderror" name="author_email" value="{{ old('author_email', $review->author_email ?? '') }}">
             @error('author_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>

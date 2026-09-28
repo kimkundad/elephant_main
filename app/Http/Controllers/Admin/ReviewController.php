@@ -41,8 +41,8 @@ class ReviewController extends Controller
     {
         $data = $this->validateReview($request);
         $data['source'] = Review::SOURCE_ADMIN;
-        $data['avatar_color'] = $data['avatar_color'] ?: Review::randomAvatarColor();
-        $data['avatar_variant'] = $data['avatar_variant'] ?: Review::randomAvatarVariant();
+        $data['avatar_color'] = ($data['avatar_color'] ?? null) ?: Review::randomAvatarColor();
+        $data['avatar_variant'] = ($data['avatar_variant'] ?? null) ?: Review::randomAvatarVariant();
 
         Review::create($data);
 
@@ -61,8 +61,8 @@ class ReviewController extends Controller
     {
         $data = $this->validateReview($request);
         $data['source'] = $review->source ?: Review::SOURCE_ADMIN;
-        $data['avatar_color'] = $data['avatar_color'] ?: ($review->avatar_color ?: Review::randomAvatarColor());
-        $data['avatar_variant'] = $data['avatar_variant'] ?: ($review->avatar_variant ?: Review::randomAvatarVariant());
+        $data['avatar_color'] = ($data['avatar_color'] ?? null) ?: ($review->avatar_color ?: Review::randomAvatarColor());
+        $data['avatar_variant'] = ($data['avatar_variant'] ?? null) ?: ($review->avatar_variant ?: Review::randomAvatarVariant());
 
         $review->update($data);
 

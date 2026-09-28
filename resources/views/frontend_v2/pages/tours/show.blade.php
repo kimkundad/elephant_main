@@ -352,6 +352,9 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap:16px;
 }
+.tour-form-group .req{
+  color:#c0392b;
+}
 .tour-form-group{
   display:flex;
   flex-direction:column;
@@ -674,14 +677,14 @@ textarea.tour-form-control{
 
             <div class="tour-review-grid">
               <div class="tour-form-group">
-                <label for="author_name">Your Name</label>
+                <label for="author_name">Your Name <span class="req">*</span></label>
                 <input id="author_name" type="text" name="author_name" class="tour-form-control" value="{{ old('author_name') }}" required>
                 @error('author_name')<div class="tour-field-error">{{ $message }}</div>@enderror
               </div>
 
               <div class="tour-form-group">
-                <label for="author_email">Email</label>
-                <input id="author_email" type="email" name="author_email" class="tour-form-control" value="{{ old('author_email') }}">
+                <label for="author_email">Email <span class="req">*</span></label>
+                <input id="author_email" type="email" name="author_email" class="tour-form-control" value="{{ old('author_email') }}" required>
                 @error('author_email')<div class="tour-field-error">{{ $message }}</div>@enderror
               </div>
             </div>
@@ -700,7 +703,7 @@ textarea.tour-form-control{
             </div>
 
             <div class="tour-form-group" style="margin-top:16px;">
-              <label for="review_text">Your Review</label>
+              <label for="review_text">Your Review <span class="req">*</span></label>
               <textarea id="review_text" name="review_text" class="tour-form-control" required>{{ old('review_text') }}</textarea>
               @error('review_text')<div class="tour-field-error">{{ $message }}</div>@enderror
             </div>

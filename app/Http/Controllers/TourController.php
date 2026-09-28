@@ -197,7 +197,7 @@ public function show(string $slug, Request $request)
 
         $rules = [
             'author_name' => ['required', 'string', 'max:255'],
-            'author_email' => ['nullable', 'email', 'max:255'],
+            'author_email' => ['required', 'email', 'max:255'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'review_text' => ['required', 'string', 'min:20', 'max:5000'],
             'website' => ['nullable', 'max:0'],

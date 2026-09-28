@@ -76,6 +76,18 @@ class ReviewRecaptchaTest extends TestCase
         $this->assertFalse(Review::first()->is_active, 'Reviews still wait for admin approval.');
     }
 
+    public function test_the_public_form_insists_on_an_email(): void
+    {
+        config(['services.recaptcha.site_key' => null, 'services.recaptcha.secret_key' => null]);
+
+        $tour = $this->tour();
+
+        $this->post(route('frontend.tours.reviews.store.v2', $tour->slug), $this->reviewPayload(['author_email' => '']))
+            ->assertSessionHasErrors('author_email');
+
+        $this->assertDatabaseCount('reviews', 0);
+    }
+
     public function test_a_rejected_token_is_turned_away(): void
     {
         $this->withKeys();
