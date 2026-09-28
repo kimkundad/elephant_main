@@ -515,7 +515,7 @@
           <div class="program-content">
             <div class="program-title">{{ $tr?->name ?? $tour->name }}</div>
             <div class="program-meta">
-              <span>From THB {{ number_format($tour->min_price ?? 0) }}</span>
+              <span>From THB {{ number_format($tour->price_child ?? 0) }}</span>
               @if($tour->province)<span class="program-province">{{ $tour->province->name() }}</span>@endif
             </div>
             <div class="program-desc">

@@ -36,11 +36,7 @@ class BookingController extends Controller
         $tour = Tour::with('translations')->findOrFail($tourId);
         $session = TourSession::findOrFail($sessionId);
 
-        $prices = [
-            'adult' => (int) ($tour->min_price ?? 0),
-            'child' => (int) round(($tour->min_price ?? 0) * 0.5),
-            'infant' => 0,
-        ];
+        $prices = (new BookingPricing())->unitPrices($tour);
 
         $meetingPoints = PickupLocation::query()
             ->where('is_active', 1)
@@ -73,11 +69,7 @@ class BookingController extends Controller
         $tour = Tour::visible()->with(['translations', 'province'])->findOrFail($tourId);
         $session = TourSession::findOrFail($sessionId);
 
-        $prices = [
-            'adult' => (int) ($tour->min_price ?? 0),
-            'child' => (int) round(($tour->min_price ?? 0) * 0.5),
-            'infant' => 0,
-        ];
+        $prices = (new BookingPricing())->unitPrices($tour);
 
         $pickupLocations = PickupLocation::availableIn((int) $tour->province_id)
             ->orderBy('name')

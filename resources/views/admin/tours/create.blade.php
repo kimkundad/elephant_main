@@ -70,8 +70,8 @@
                                         @endforelse
                                     </div>
                                 </div>
-                                <div class="mb-3"><label class="form-label">Child Price *</label><input type="number" name="min_price" class="form-control" value="{{ old('min_price') }}" required></div>
-                                <div class="mb-3"><label class="form-label">Adult Price *</label><input type="number" name="max_price" class="form-control" value="{{ old('max_price') }}" required></div>
+                                <div class="mb-3"><label class="form-label">Adult Price *</label><input type="number" step="0.01" min="0" name="price_adult" class="form-control" value="{{ old('price_adult') }}" required></div>
+                                <div class="mb-3"><label class="form-label">Child Price *</label><input type="number" step="0.01" min="0" name="price_child" class="form-control" value="{{ old('price_child') }}" required></div>
                                 <div class="mb-3"><label class="form-label">Thumbnail *</label><input type="file" name="thumbnail" class="form-control js-tour-thumbnail" required accept="image/*"><div class="form-text js-thumbnail-help">The system will optimize the image before upload.</div></div>
                                 <div class="mb-3">
                                     <label class="form-label">จังหวัด *</label>

@@ -27,7 +27,7 @@ class AdminBookingFormTest extends TestCase
         parent::setUp();
 
         $this->province = $this->makeProvince('phuket');
-        $this->tour = $this->makeTour($this->province, ['min_price' => 1000]);
+        $this->tour = $this->makeTour($this->province, ['price_adult' => 1000, 'price_child' => 500]);
         $this->session = $this->makeSession($this->tour);
         $this->customer = Customer::create([
             'full_name' => 'Anna Schmidt',

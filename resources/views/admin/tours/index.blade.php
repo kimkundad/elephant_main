@@ -55,8 +55,10 @@
                                                 @endif
                                             </td>
                                             <td>{{ $tour->province?->name_th ?? '-' }}</td>
-                                            <td>{{ number_format($tour->min_price) }} -
-                                                {{ number_format($tour->max_price) }}</td>
+                                            <td>
+                                                ผู้ใหญ่ {{ number_format($tour->price_adult) }}
+                                                <div class="text-muted fs-7">เด็ก {{ number_format($tour->price_child) }}</div>
+                                            </td>
 
                                             <td>
                                                 <a href="{{ route('admin.tours.toggle', $tour->id) }}">

@@ -18,7 +18,7 @@ class DashboardTest extends TestCase
     private function booking(array $attrs = []): Booking
     {
         $province = $this->makeProvince('phuket-' . uniqid(), ['name_th' => 'ภูเก็ต']);
-        $tour = $this->makeTour($province, ['name' => 'Phuket Walk', 'min_price' => 1000]);
+        $tour = $this->makeTour($province, ['name' => 'Phuket Walk', 'price_adult' => 1000, 'price_child' => 500]);
 
         return Booking::create(array_merge([
             'customer_name' => 'Anna',

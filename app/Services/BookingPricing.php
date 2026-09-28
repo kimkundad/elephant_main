@@ -16,12 +16,25 @@ class BookingPricing
     public const VAT_RATE = 0.07;
 
     /**
+     * What one guest of each age costs. Infants are free.
+     *
+     * @return array{adult: int, child: int, infant: int}
+     */
+    public function unitPrices(Tour $tour): array
+    {
+        return [
+            'adult' => (int) ($tour->price_adult ?? 0),
+            'child' => (int) ($tour->price_child ?? 0),
+            'infant' => 0,
+        ];
+    }
+
+    /**
      * @return array{price_adult: int, price_child: int, subtotal: float, vat: float, fee: float, discount: float, grand_total: float}
      */
     public function for(Tour $tour, int $adults, int $children, int $infants, float $discount = 0.0): array
     {
-        $priceAdult = (int) ($tour->min_price ?? 0);
-        $priceChild = (int) round($priceAdult * 0.5);
+        ['adult' => $priceAdult, 'child' => $priceChild] = $this->unitPrices($tour);
 
         $subtotal = ($adults * $priceAdult) + ($children * $priceChild);
         $vat = round($subtotal * self::VAT_RATE, 2);

@@ -117,8 +117,8 @@ class ProvinceFieldsAdminTest extends TestCase
             ->put(route('admin.tours.update', $tour->id), [
                 'name_th' => 'ทัวร์',
                 'name_en' => 'Tour',
-                'min_price' => 1000,
-                'max_price' => 1000,
+                'price_adult' => 1000,
+                'price_child' => 500,
             ])
             ->assertSessionHasErrors('province_id');
     }

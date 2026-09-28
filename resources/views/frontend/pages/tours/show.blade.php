@@ -75,7 +75,7 @@
         </div>
 
         <div class="tour-price-badge">
-          THB {{ number_format($tour->min_price ?? 0) }}
+          THB {{ number_format($tour->price_adult ?? 0) }}
         </div>
       </div>
 

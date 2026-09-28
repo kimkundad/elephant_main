@@ -32,8 +32,8 @@ trait CreatesTours
             'province_id' => $province->id,
             'name' => 'Tour ' . Str::random(6),
             'slug' => 'tour-' . Str::lower(Str::random(10)),
-            'min_price' => 1000,
-            'max_price' => 1000,
+            'price_adult' => 1000,
+            'price_child' => 500,
             'is_active' => true,
         ], $attrs));
     }

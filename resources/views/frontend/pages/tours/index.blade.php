@@ -38,7 +38,7 @@
 
             <div class="margin-t16">
               <span class="tour-price-badge">
-                From THB {{ number_format($tour->min_price ?? 0) }}
+                From THB {{ number_format($tour->price_child ?? 0) }}
               </span>
             </div>
 

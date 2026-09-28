@@ -88,8 +88,8 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6 mb-3"><label class="form-label">Child Price *</label><input type="number" name="min_price" class="form-control" value="{{ $tour->min_price }}" required></div>
-                                <div class="col-md-6 mb-3"><label class="form-label">Adult Price *</label><input type="number" name="max_price" class="form-control" value="{{ $tour->max_price }}" required></div>
+                                <div class="col-md-6 mb-3"><label class="form-label">Adult Price *</label><input type="number" step="0.01" min="0" name="price_adult" class="form-control" value="{{ old('price_adult', $tour->price_adult) }}" required></div>
+                                <div class="col-md-6 mb-3"><label class="form-label">Child Price *</label><input type="number" step="0.01" min="0" name="price_child" class="form-control" value="{{ old('price_child', $tour->price_child) }}" required></div>
                             </div>
 
                             <div class="mb-3"><label class="form-label">Current Thumbnail</label><br><img src="{{ $tour->thumbnail }}" width="150" class="rounded mb-3"></div>
