@@ -7,7 +7,7 @@
 
         <div class="app-toolbar py-3 py-lg-6">
             <div class="app-container container-xxl d-flex flex-stack">
-                <h1 class="fs-3 fw-bold">รายการจุดรับส่ง</h1>
+                <h1 class="page-heading fs-3 fw-bold">Pick-up Locations</h1>
                 <a href="{{ route('admin.pickup-locations.create') }}" class="btn btn-primary">
                     + เพิ่มจุดรับส่ง
                 </a>

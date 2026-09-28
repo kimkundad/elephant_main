@@ -7,7 +7,7 @@
         <div class="app-toolbar py-3 py-lg-6">
             <div class="app-container container-xxl d-flex flex-stack">
                 <div class="page-title">
-                    <h1 class="fs-3 fw-bold">สร้าง Booking ใหม่</h1>
+                    <h1 class="page-heading fs-3 fw-bold">Add Booking</h1>
                 </div>
             </div>
         </div>

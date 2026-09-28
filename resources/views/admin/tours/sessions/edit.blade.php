@@ -15,9 +15,7 @@
 
                 {{-- TITLE --}}
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">
-                        แก้ไข Session: {{ $session->title ?? 'ไม่มีชื่อ' }}
-                    </h1>
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Edit Tour Session: {{ $session->title ?? $session->name }}</h1>
                     <div class="text-muted fs-7">
                         โปรแกรม: {{ $tour->name }}
                     </div>

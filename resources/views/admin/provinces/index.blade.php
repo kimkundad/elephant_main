@@ -5,7 +5,7 @@
   <div class="d-flex flex-column flex-column-fluid">
     <div class="app-toolbar py-3 py-lg-6">
       <div class="app-container container-xxl d-flex flex-stack">
-        <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">จังหวัด</h1>
+        <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Provinces / จังหวัด</h1>
         <a href="{{ route('admin.provinces.create') }}" class="btn btn-primary">+ เพิ่มจังหวัด</a>
       </div>
     </div>

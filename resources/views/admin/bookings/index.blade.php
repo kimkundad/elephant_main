@@ -7,7 +7,7 @@
             <div class="app-toolbar py-3 py-lg-6">
                 <div class="app-container container-xxl d-flex flex-stack">
                     <div class="page-title">
-                        <h1 class="fs-3 fw-bold">รายการจองทั้งหมด</h1>
+                        <h1 class="page-heading fs-3 fw-bold">Bookings</h1>
                     </div>
 
                     <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">

@@ -40,7 +40,7 @@
     <div class="app-toolbar py-3 py-lg-6">
       <div class="app-container container-xxl d-flex flex-stack flex-wrap gap-3">
         <div class="page-title d-flex flex-column justify-content-center">
-          <h1 class="page-heading text-dark fw-bold fs-2 my-0">ภาพรวมระบบ</h1>
+          <h1 class="page-heading text-dark fw-bold fs-2 my-0">Dashboard</h1>
           <div class="text-muted fs-7 mt-1">ข้อมูล ณ {{ now()->format('d/m/Y H:i') }}</div>
         </div>
         <div class="d-flex gap-2">

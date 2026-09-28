@@ -5,7 +5,7 @@
   <div class="d-flex flex-column flex-column-fluid">
     <div class="app-toolbar py-3 py-lg-6">
       <div class="app-container container-xxl d-flex flex-stack">
-        <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">แก้ไขจังหวัด</h1>
+        <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Edit Province</h1>
       </div>
     </div>
 

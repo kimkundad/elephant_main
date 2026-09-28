@@ -9,7 +9,7 @@
             <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
 
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <h1 class="page-heading fs-3 fw-bold">Availability รายวัน - {{ $tour->name }}</h1>
+                    <h1 class="page-heading fs-3 fw-bold">Availability: {{ $tour->name }}</h1>
                 </div>
 
                 <form method="GET">

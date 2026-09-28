@@ -7,7 +7,7 @@
 
         <div class="app-toolbar py-3">
             <div class="app-container container-xxl d-flex flex-stack">
-                <h1 class="fs-3">เพิ่มจุดรับส่งลูกค้า</h1>
+                <h1 class="page-heading fs-3">Add Pick-up Location</h1>
             </div>
         </div>
 

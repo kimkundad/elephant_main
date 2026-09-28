@@ -9,7 +9,7 @@
             <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
 
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <h1 class="page-heading fs-3 fw-bold">แก้ไขจุดรับ–ส่งลูกค้า</h1>
+                    <h1 class="page-heading fs-3 fw-bold">Edit Pick-up Location</h1>
                 </div>
 
             </div>

@@ -47,7 +47,7 @@ class DashboardTest extends TestCase
         $this->actingAsAdmin()
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertSee('ภาพรวมระบบ')
+            ->assertSee('Dashboard')
             ->assertSee('ยังไม่มีการจอง');
     }
 

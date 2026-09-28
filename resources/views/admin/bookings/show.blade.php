@@ -27,9 +27,7 @@
     <div class="app-toolbar py-3 py-lg-6">
       <div class="app-container container-xxl d-flex flex-stack flex-wrap gap-3">
         <div class="page-title d-flex flex-column justify-content-center">
-          <h1 class="page-heading text-dark fw-bold fs-2 my-0">
-            การจอง #{{ str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}
-          </h1>
+          <h1 class="page-heading text-dark fw-bold fs-2 my-0">Booking #{{ str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}</h1>
           <div class="text-muted fs-7 mt-1">
             จองเมื่อ {{ $booking->created_at?->format('d/m/Y H:i') ?? '-' }}
             @if($booking->creator)

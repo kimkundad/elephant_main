@@ -56,7 +56,7 @@ class BookingShowTest extends TestCase
         $this->actingAsAdmin()
             ->get(route('admin.bookings.show', $booking->id))
             ->assertOk()
-            ->assertSee('การจอง #' . str_pad($booking->id, 6, '0', STR_PAD_LEFT))
+            ->assertSee('Booking #' . str_pad($booking->id, 6, '0', STR_PAD_LEFT))
             ->assertSee('Phuket Walk')
             ->assertSee('ภูเก็ต')
             ->assertSee('Test Guest')

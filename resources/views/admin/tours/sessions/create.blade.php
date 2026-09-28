@@ -9,9 +9,7 @@
             <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
 
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">
-                        เพิ่ม Session ให้โปรแกรม: {{ $tour->name }}
-                    </h1>
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 my-0">Add Tour Session: {{ $tour->name }}</h1>
                 </div>
 
                 <div class="d-flex align-items-center gap-2 gap-lg-3">
