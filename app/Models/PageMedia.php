@@ -26,14 +26,22 @@ class PageMedia extends Model
         'sort_order' => 'integer',
     ];
 
+    /** Looked up media, kept for the rest of the request. */
+    protected static array $resolveCache = [];
+
+    /** Forget what was looked up, e.g. after media changed in the same process. */
+    public static function forgetResolved(): void
+    {
+        static::$resolveCache = [];
+    }
+
     public static function resolve(string $key, ?string $locale = null): ?self
     {
         $locale = static::normalizeLocale($locale ?: app()->getLocale());
         $cacheKey = $locale . '|' . $key;
-        static $cache = [];
 
-        if (!array_key_exists($cacheKey, $cache)) {
-            $cache[$cacheKey] = static::query()
+        if (!array_key_exists($cacheKey, static::$resolveCache)) {
+            static::$resolveCache[$cacheKey] = static::query()
                 ->where('key', $key)
                 ->where('is_active', true)
                 ->whereIn('locale', [$locale, ''])
@@ -43,7 +51,7 @@ class PageMedia extends Model
                 ->first();
         }
 
-        return $cache[$cacheKey];
+        return static::$resolveCache[$cacheKey];
     }
 
     public static function url(string $key, string $fallback = '', ?string $locale = null): string

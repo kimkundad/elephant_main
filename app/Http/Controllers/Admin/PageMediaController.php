@@ -14,6 +14,9 @@ class PageMediaController extends Controller
     private const PRESET_KEYS = [
         'v2.header.menu.active_image',
         'v2.header.menu.hover_image',
+        'v2.header.menu.about_image',
+        'v2.header.menu.programs_image',
+        'v2.header.menu.contact_image',
         'v2.home.hero.video',
         'v2.home.hero.video_poster',
         'v2.home.welcome.image_1',
@@ -32,7 +35,10 @@ class PageMediaController extends Controller
 
     private const KEY_DESCRIPTIONS = [
         'v2.header.menu.active_image' => 'ใช้ในรูปฝั่งซ้ายของเมนู hamburger ตอนเปิดเมนู',
-        'v2.header.menu.hover_image' => 'ใช้เป็นอีกรูปในเมนู hamburger ฝั่งซ้าย เวลาเมนูเปิด',
+        'v2.header.menu.hover_image' => 'รูปสำรองในเมนู hamburger ใช้เมื่อเมนูนั้นๆ ยังไม่ได้ใส่รูปของตัวเอง',
+        'v2.header.menu.about_image' => 'รูปที่ขึ้นในเมนู hamburger ตอนเอาเมาส์ชี้เมนู About',
+        'v2.header.menu.programs_image' => 'รูปที่ขึ้นในเมนู hamburger ตอนเอาเมาส์ชี้เมนู Programs',
+        'v2.header.menu.contact_image' => 'รูปที่ขึ้นในเมนู hamburger ตอนเอาเมาส์ชี้เมนู Contact',
         'v2.home.hero.video' => 'วิดีโอใหญ่สุดบนหน้า Home ส่วน hero แรกของหน้า',
         'v2.home.hero.video_poster' => 'รูป poster หรือภาพปกของวิดีโอ hero บนหน้า Home',
         'v2.home.welcome.image_1' => 'รูปซ้ายใน section Welcome ของหน้า Home',

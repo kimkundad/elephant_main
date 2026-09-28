@@ -7,6 +7,14 @@
     $menuHoverImage = \App\Models\PageMedia::url('v2.header.menu.hover_image', Vite::asset('resources/frontend/images/bg-chang.webp'));
     $menuActiveAlt = \App\Models\PageMedia::alt('v2.header.menu.active_image', 'Small Elephants');
     $menuHoverAlt = \App\Models\PageMedia::alt('v2.header.menu.hover_image', 'Small Elephants');
+
+    // Each menu item can show its own picture on hover, falling back to the
+    // shared hover image when it has none of its own.
+    $menuLinkImages = [
+        'about' => \App\Models\PageMedia::url('v2.header.menu.about_image', $menuHoverImage),
+        'programs' => \App\Models\PageMedia::url('v2.header.menu.programs_image', $menuHoverImage),
+        'contact' => \App\Models\PageMedia::url('v2.header.menu.contact_image', $menuHoverImage),
+    ];
 @endphp
 @unless($hideBookMobile)
 <div class="book-mobile">
@@ -63,7 +71,7 @@
                 <div class="col-xs-6">
                     <nav>
                         <ul>
-                            <li class="nav-link " data-src="/assets/images/cover-menu/room.jpg">
+                            <li class="nav-link " data-src="{{ $menuLinkImages['about'] }}">
                                 <a href="{{ route('frontend.about') }}">
                                     <div class="real">About</div>
                                     <div class="hover">
@@ -72,7 +80,7 @@
                                     </div>
                                 </a>
                             </li>
-                            <li class="nav-link " data-src="/assets/images/cover-menu/experience.jpg">
+                            <li class="nav-link " data-src="{{ $menuLinkImages['programs'] }}">
                                 <a href="{{ route('frontend.program') }}">
                                     <div class="real">Programs</div>
                                     <div class="hover">
@@ -81,7 +89,7 @@
                                     </div>
                                 </a>
                             </li>
-                            <li class="nav-link " data-src="/assets/images/cover-menu/contact.jpg">
+                            <li class="nav-link " data-src="{{ $menuLinkImages['contact'] }}">
                                 <a href="{{ route('frontend.contact') }}">
                                     <div class="real">Contact</div>
                                     <div class="hover">
