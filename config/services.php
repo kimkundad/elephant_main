@@ -61,9 +61,13 @@ return [
     ],
 
 
+    /*
+     * Google Analytics. The dashboard only links to it, so these are the ids
+     * that build the link, not API credentials.
+     */
     'ga4' => [
-        'property_id' => env('GA4_PROPERTY_ID'),
-        'credentials' => env('GA4_CREDENTIALS', storage_path('app/google/ga4-service-account.json')),
+        'account_id' => env('GA4_ACCOUNT_ID', '307529747'),
+        'property_id' => env('GA4_PROPERTY_ID', '552637548'),
     ],
 
     'recaptcha' => [

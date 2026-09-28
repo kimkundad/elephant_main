@@ -169,57 +169,20 @@
               </div>
             </div>
 
-            {{-- VISITORS (Google Analytics) --}}
+            {{-- VISITORS --}}
             <div class="card mb-6">
               <div class="card-header">
                 <h3 class="card-title fw-bold">ผู้เข้าชมเว็บไซต์</h3>
-                <div class="card-toolbar">
-                  <span class="text-muted fs-8">Google Analytics · นับ 1 คนต่อวัน</span>
-                </div>
               </div>
-              <div class="card-body">
-                @if(!$visitors['configured'])
-                  <div class="text-muted fs-7">
-                    ยังไม่ได้เชื่อม Google Analytics — ตั้งค่า <code>GA4_PROPERTY_ID</code>
-                    และวางไฟล์ service account ไว้ที่ <code>storage/app/google/ga4-service-account.json</code>
-                    แล้วตัวเลขจะขึ้นเอง
-                  </div>
-                @elseif($visitors['error'])
-                  <div class="text-danger fs-7">อ่านข้อมูลจาก Google Analytics ไม่ได้ — ดูรายละเอียดใน Integration Logs</div>
-                @else
-                  @php($maxUsers = max(1, collect($visitors['trend'])->max('users') ?: 1))
-
-                  <div class="row g-4 mb-5">
-                    @foreach([
-                      'วันนี้' => $visitors['today'],
-                      '7 วันล่าสุด' => $visitors['last_7_days'],
-                      '30 วันล่าสุด' => $visitors['last_30_days'],
-                      'เดือนนี้' => $visitors['this_month'],
-                    ] as $label => $value)
-                      <div class="col-6 col-md-3">
-                        <div class="text-muted fs-8">{{ $label }}</div>
-                        <div class="fs-2 fw-bold">{{ number_format($value) }}</div>
-                      </div>
-                    @endforeach
-                  </div>
-
-                  <div class="d-flex align-items-end gap-1" style="height:120px;">
-                    @foreach($visitors['trend'] as $day)
-                      <div class="flex-grow-1 d-flex flex-column justify-content-end" style="height:100%;"
-                           title="{{ $day['label'] }}: {{ number_format($day['users']) }} คน">
-                        <div style="background:#3e97ff;border-radius:4px 4px 0 0;height:{{ max(2, round($day['users'] / $maxUsers * 100)) }}%;"></div>
-                      </div>
-                    @endforeach
-                  </div>
-
-                  <div class="d-flex justify-content-between text-muted fs-8 mt-2">
-                    <span>{{ $visitors['trend'][0]['label'] ?? '' }}</span>
-                    <span>{{ $visitors['trend'][count($visitors['trend']) - 1]['label'] ?? '' }}</span>
-                  </div>
-                @endif
+              <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-4">
+                <div class="text-muted fs-7">
+                  จำนวนผู้เข้าชมรายวัน/รายเดือน ดูได้ที่ Google Analytics ซึ่งนับผู้เข้าชม 1 คนต่อ 1 วันอยู่แล้ว
+                </div>
+                <a href="{{ $analyticsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
+                  เปิด Google Analytics
+                </a>
               </div>
             </div>
-
             {{-- UPCOMING --}}
             <div class="card mb-6">
               <div class="card-header">

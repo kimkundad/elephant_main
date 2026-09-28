@@ -8,7 +8,6 @@ use App\Models\Contact;
 use App\Models\IntegrationLog;
 use App\Models\Review;
 use App\Models\TourAvailability;
-use App\Services\Ga4Analytics;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -35,8 +34,18 @@ class DashboardController extends Controller
             'channels' => $this->splitBy('payment_channel', $monthStart),
             'provinces' => $this->provinceSplit($monthStart),
             'attention' => $this->attention($today),
-            'visitors' => (new Ga4Analytics())->summary(),
+            'analyticsUrl' => $this->analyticsUrl(),
         ]);
+    }
+
+    /** Where the Google Analytics reports for this site live. */
+    private function analyticsUrl(): string
+    {
+        return sprintf(
+            'https://analytics.google.com/analytics/web/#/a%sp%s/reports/intelligenthome',
+            config('services.ga4.account_id'),
+            config('services.ga4.property_id')
+        );
     }
 
     /** @return array<string, mixed> */
