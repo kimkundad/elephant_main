@@ -91,6 +91,13 @@
                                 <div class="col-md-6 mb-3"><label class="form-label">Adult Price *</label><input type="number" step="0.01" min="0" name="price_adult" class="form-control" value="{{ old('price_adult', $tour->price_adult) }}" required></div>
                                 <div class="col-md-6 mb-3"><label class="form-label">Child Price *</label><input type="number" step="0.01" min="0" name="price_child" class="form-control" value="{{ old('price_child', $tour->price_child) }}" required></div>
                                 <div class="col-md-6 mb-3"><label class="form-label">ชั่วโมงก่อนเริ่มทัวร์ (Pickup lead time)</label><input type="number" step="0.25" min="0" max="24" name="pickup_lead_hours" class="form-control" value="{{ old('pickup_lead_hours', $tour->pickup_lead_hours) }}" placeholder="เช่น 1 หรือ 2.5"><div class="form-text">เวลาที่ลูกค้าต้องมาถึงจุดรับส่งก่อนทัวร์เริ่ม เช่น 1 = 1 ชม., 2.5 = 2 ชม. 30 นาที (เว้นว่างได้ถ้าไม่ต้องการแสดง)</div></div>
+                                <div class="col-12 mb-3"><label class="form-label">Google Map</label><textarea name="map_embed_url" rows="2" class="form-control" placeholder="https://maps.app.goo.gl/... หรือ <iframe src=...>">{{ old('map_embed_url', $tour->map_embed_url) }}</textarea><div class="form-text">วางลิงก์แชร์จาก Google Maps, ลิงก์ embed หรือโค้ด &lt;iframe&gt; ทั้งก้อนก็ได้</div>
+                                    @if($tour->mapEmbedSrc())
+                                        <iframe src="{{ $tour->mapEmbedSrc() }}" width="100%" height="260" style="border:0;border-radius:12px;margin-top:12px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                                    @elseif($tour->mapLink())
+                                        <a href="{{ $tour->mapLink() }}" target="_blank" rel="noopener" class="btn btn-light-primary btn-sm mt-3">เปิดใน Google Maps</a>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="mb-3"><label class="form-label">Current Thumbnail</label><br><img src="{{ $tour->thumbnail }}" width="150" class="rounded mb-3"></div>

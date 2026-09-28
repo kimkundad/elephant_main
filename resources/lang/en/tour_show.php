@@ -10,6 +10,8 @@ return [
     'remaining' => 'Remaining',
     'pickup_time' => 'Pickup :time',
     'hours_short' => 'hr',
+    'map' => 'Map',
+    'open_in_google_maps' => 'Open in Google Maps',
     'book' => 'Book',
     'dow' => [
         'su' => 'Su',

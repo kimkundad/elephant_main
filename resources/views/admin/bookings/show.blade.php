@@ -114,6 +114,35 @@
               </div>
             </div>
 
+            {{-- Map --}}
+            @php
+              $mapEmbedSrc = $booking->tour?->mapEmbedSrc();
+              $mapLink = $booking->tour?->mapLink();
+            @endphp
+            @if($mapEmbedSrc || $mapLink)
+              <div class="card mb-6">
+                <div class="card-header">
+                  <h3 class="card-title fw-bold">แผนที่</h3>
+                  @if($mapLink)
+                    <div class="card-toolbar">
+                      <a href="{{ $mapLink }}" target="_blank" rel="noopener" class="btn btn-sm btn-light-primary">เปิดใน Google Maps</a>
+                    </div>
+                  @endif
+                </div>
+                @if($mapEmbedSrc)
+                  <div class="card-body pt-0">
+                    <iframe src="{{ $mapEmbedSrc }}"
+                            width="100%"
+                            height="320"
+                            style="border:0;border-radius:12px;"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+                  </div>
+                @endif
+              </div>
+            @endif
+
             {{-- Customer --}}
             <div class="card mb-6">
               <div class="card-header">

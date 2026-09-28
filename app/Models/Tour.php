@@ -17,6 +17,7 @@ class Tour extends Model
         'price_adult',
         'price_child',
         'pickup_lead_hours',
+        'map_embed_url',
         'thumbnail',
         'gallery_images',
         'is_active',
@@ -77,6 +78,55 @@ class Tour extends Model
         return \Carbon\Carbon::parse($startTime)
             ->subMinutes((int) round($lead * 60))
             ->format(TourSession::TIME_FORMAT);
+    }
+
+    /**
+     * The map as an iframe src. Admins paste anything Google gives them, so
+     * accept a whole <iframe> snippet, an embed URL, coordinates or a place
+     * name. Share links (maps.app.goo.gl, /maps/place/...) cannot be framed,
+     * so those return null and only mapLink() is shown.
+     */
+    public function mapEmbedSrc(): ?string
+    {
+        $value = trim((string) $this->map_embed_url);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/<iframe[^>]*\ssrc=["\']([^"\']+)["\']/i', $value, $matches)) {
+            return $matches[1];
+        }
+
+        if (str_contains($value, '/maps/embed')) {
+            return $value;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return null;
+        }
+
+        return 'https://www.google.com/maps?q=' . urlencode($value) . '&output=embed';
+    }
+
+    /** The map as a link to open in Google Maps. */
+    public function mapLink(): ?string
+    {
+        $value = trim((string) $this->map_embed_url);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/<iframe[^>]*\ssrc=["\']([^"\']+)["\']/i', $value, $matches)) {
+            return $matches[1];
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return 'https://www.google.com/maps?q=' . urlencode($value);
     }
 
     /** The pickup lead time as guests read it, e.g. "1 hr" or "2.5 ชม.". */

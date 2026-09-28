@@ -5,6 +5,7 @@
   $siteSetting = \App\Models\SiteSetting::first();
   $logoUrl = $siteSetting?->logo_header_url ?: asset('img/logo.webp');
   $pickupTime = $booking->pickupTime();
+  $mapLink = $booking->tour?->mapLink();
   $whatsappUrl = $siteSetting?->whatsappUrl();
   $whatsappLabel = $siteSetting?->whatsappLabel();
 @endphp
@@ -72,8 +73,34 @@
         </div>
       </div>
 
-      @if($whatsappUrl)
+      @if($mapLink)
+        {{-- Mail clients strip iframes, so the map is a link to open in Google Maps. --}}
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:22px;border-collapse:separate;">
+          <tr>
+            <td style="background:#f6f9fc;border:1px solid #e6ebf1;border-radius:12px;padding:18px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <div style="font-size:12px;letter-spacing:.06em;color:#6b7c93;font-weight:700;margin-bottom:4px;">HOW TO FIND US</div>
+                    <div style="font-size:16px;color:#1a1f36;font-weight:600;line-height:1.5;">{{ $booking->tour?->nameIn('en') }}</div>
+                    @if($booking->tour?->province)
+                      <div style="font-size:14px;color:#425466;line-height:1.6;">{{ $booking->tour->province->name('en') }}</div>
+                    @endif
+                  </td>
+                  <td style="vertical-align:middle;text-align:right;white-space:nowrap;padding-left:12px;">
+                    <a href="{{ $mapLink }}" style="display:inline-block;background:#1a1f36;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;">
+                      Open in Google Maps
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      @endif
+
+      @if($whatsappUrl)
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:14px;border-collapse:separate;">
           <tr>
             <td style="background:#e7fbf1;border:1px solid #25d366;border-radius:12px;padding:18px 20px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
