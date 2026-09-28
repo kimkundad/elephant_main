@@ -115,6 +115,12 @@
 
     <h1>Invoice</h1>
 
+    @php
+        $site = \App\Models\SiteSetting::first();
+        $siteName = $site?->site_name ?: 'SmallElephants.com';
+        $contactPhones = array_filter([$site?->phone, $site?->phone_secondary]);
+    @endphp
+
     {{-- INVOICE HEADER --}}
     <div class="invoice-header">
         <strong>Invoice number:</strong> INV-{{ $booking->id }}<br>
@@ -127,10 +133,16 @@
         <div class="col-6">
             <div class="label">From</div>
             <p>
-                Elephant Sanctuary Co., Ltd.<br>
-                Chiang Mai, Thailand<br>
-                info@elephant.com<br>
-                Phone: 090-000-0000
+                {{ $siteName }}<br>
+                @if($site?->company_name)
+                    {{ $site->company_name }}<br>
+                @endif
+                @if($site?->email)
+                    {{ $site->email }}<br>
+                @endif
+                @if($site?->phone)
+                    Phone: {{ $site->phone }}
+                @endif
             </p>
         </div>
 
@@ -180,7 +192,8 @@
 
         <tr>
             <td>
-                {{ $booking->tour->name }}<br>
+                {{-- The invoice is written in English, so ask for the English name. --}}
+                {{ $booking->tour->nameIn('en') }}<br>
                 {{ $booking->session->title }} ({{ $booking->session->time_range }})<br>
                 Date: {{ $booking->date }}
             </td>
@@ -222,10 +235,8 @@
     <div style="clear: both;"></div>
 
     {{-- FOOTER --}}
-    @php($site = \App\Models\SiteSetting::first())
-    @php($contactPhones = array_filter([$site?->phone, $site?->phone_secondary]))
     <div class="footer-text">
-        Thank you for booking with Small Elephants.<br>
+        Thank you for booking with {{ $siteName }}.<br>
         @if($site?->email)
             Questions? Email {{ $site->email }}@if($contactPhones) or call {{ implode(' / ', $contactPhones) }}@endif.<br>
         @elseif($contactPhones)

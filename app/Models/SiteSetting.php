@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 class SiteSetting extends Model
 {
     protected $fillable = [
+        'site_name',
+        'company_name',
         'footer_about',
         'address',
         'address_th',

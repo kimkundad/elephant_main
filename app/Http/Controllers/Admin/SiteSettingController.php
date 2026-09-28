@@ -22,6 +22,8 @@ class SiteSettingController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
+            'site_name' => ['nullable', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
             'footer_about' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
             'address_th' => ['nullable', 'string'],

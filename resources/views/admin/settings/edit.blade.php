@@ -93,6 +93,19 @@
 
               <div class="row mb-6">
                 <div class="col-md-6">
+                  <label class="form-label">ชื่อเว็บไซต์ (Site name)</label>
+                  <input class="form-control" name="site_name" value="{{ old('site_name', $setting->site_name) }}" placeholder="SmallElephants.com">
+                  <div class="form-text">ชื่อแบรนด์ที่แสดงบนใบแจ้งหนี้ (Invoice)</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">ชื่อบริษัท (Company name)</label>
+                  <input class="form-control" name="company_name" value="{{ old('company_name', $setting->company_name) }}" placeholder="GWealthcome Co,.Ltd">
+                  <div class="form-text">ชื่อนิติบุคคลที่ออกใบแจ้งหนี้</div>
+                </div>
+              </div>
+
+              <div class="row mb-6">
+                <div class="col-md-6">
                   <label class="form-label">Address (EN)</label>
                   <textarea class="form-control" name="address_en" rows="4">{{ old('address_en', $setting->address_en) }}</textarea>
                   <div class="form-text">English address</div>
