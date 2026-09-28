@@ -16,6 +16,7 @@ class BookingPdfTest extends TestCase
     public function test_the_footer_uses_the_real_contact_details(): void
     {
         SiteSetting::create([
+            'site_name' => 'Small Elephants',
             'email' => 'info@smallelephants.com',
             'phone' => '0863261564',
             'phone_secondary' => '0922560213',
