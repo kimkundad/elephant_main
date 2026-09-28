@@ -34,18 +34,7 @@ class DashboardController extends Controller
             'channels' => $this->splitBy('payment_channel', $monthStart),
             'provinces' => $this->provinceSplit($monthStart),
             'attention' => $this->attention($today),
-            'analyticsUrl' => $this->analyticsUrl(),
         ]);
-    }
-
-    /** Where the Google Analytics reports for this site live. */
-    private function analyticsUrl(): string
-    {
-        return sprintf(
-            'https://analytics.google.com/analytics/web/#/a%sp%s/reports/intelligenthome',
-            config('services.ga4.account_id'),
-            config('services.ga4.property_id')
-        );
     }
 
     /** @return array<string, mixed> */

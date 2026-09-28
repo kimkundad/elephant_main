@@ -169,20 +169,6 @@
               </div>
             </div>
 
-            {{-- VISITORS --}}
-            <div class="card mb-6">
-              <div class="card-header">
-                <h3 class="card-title fw-bold">ผู้เข้าชมเว็บไซต์</h3>
-              </div>
-              <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-4">
-                <div class="text-muted fs-7">
-                  จำนวนผู้เข้าชมรายวัน/รายเดือน ดูได้ที่ Google Analytics ซึ่งนับผู้เข้าชม 1 คนต่อ 1 วันอยู่แล้ว
-                </div>
-                <a href="{{ $analyticsUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
-                  เปิด Google Analytics
-                </a>
-              </div>
-            </div>
             {{-- UPCOMING --}}
             <div class="card mb-6">
               <div class="card-header">
