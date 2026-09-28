@@ -9,8 +9,8 @@ use App\Models\Contact;
 use App\Models\Elephant;
 use App\Models\TourTag;
 use App\Models\Province;
+use App\Services\Recaptcha;
 use App\Support\PhoneNumber;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 
 class HomeController extends Controller
@@ -152,7 +152,7 @@ class HomeController extends Controller
     public function contactV2()
     {
         return view('frontend_v2.pages.contact', [
-            'recaptchaSiteKey' => (string) config('services.recaptcha.site_key'),
+            'recaptchaSiteKey' => (new Recaptcha())->siteKey(),
             'contactFormIssuedAt' => now()->timestamp,
             'contactFormIssuedSignature' => $this->signContactFormTimestamp(now()->timestamp),
         ]);
@@ -191,7 +191,7 @@ class HomeController extends Controller
                 ->withInput();
         }
 
-        if (!$this->recaptchaIsValid($request)) {
+        if (!(new Recaptcha())->isValid($request)) {
             RateLimiter::hit($rateKey, 600);
 
             return back()
@@ -213,38 +213,6 @@ class HomeController extends Controller
         return redirect()
             ->route('frontend.contact')
             ->with('contact_success', true);
-    }
-
-    /**
-     * Verify a reCAPTCHA v2 checkbox token against Google's siteverify endpoint.
-     *
-     * Fails closed: a missing token, an unconfigured secret, or an unreachable
-     * endpoint all reject the submission rather than letting it through.
-     */
-    private function recaptchaIsValid(Request $request): bool
-    {
-        $secret = trim((string) config('services.recaptcha.secret_key'));
-        $token = trim((string) $request->input('g-recaptcha-response'));
-
-        if ($secret === '' || $token === '') {
-            return false;
-        }
-
-        try {
-            $response = Http::asForm()
-                ->timeout(10)
-                ->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => $secret,
-                    'response' => $token,
-                    'remoteip' => $request->ip(),
-                ]);
-        } catch (\Throwable $e) {
-            report($e);
-
-            return false;
-        }
-
-        return $response->successful() && $response->json('success') === true;
     }
 
     private function signContactFormTimestamp(int $issuedAt): string

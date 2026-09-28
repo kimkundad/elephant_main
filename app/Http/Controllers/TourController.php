@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Services\Recaptcha;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -132,6 +133,7 @@ public function show(string $slug, Request $request)
 
         $tourReviews = $this->approvedReviewsForTour($tour);
         $reviewCaptcha = $this->createReviewCaptcha($tour->slug);
+        $recaptchaSiteKey = (new Recaptcha())->siteKey();
 
         $selectedDate = $request->query('date', now()->toDateString());
         $month = $request->query('month', now()->format('Y-m'));
@@ -150,7 +152,7 @@ public function show(string $slug, Request $request)
             $sessionsForSelected = $this->getBookableSessionsForDate($sessions, $selectedDate, $fallbackNow);
 
             return view('frontend_v2.pages.tours.show', compact(
-                'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha'
+                'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha', 'recaptchaSiteKey'
             ));
         }
 
@@ -172,7 +174,7 @@ public function show(string $slug, Request $request)
             ->values();
 
         return view('frontend_v2.pages.tours.show', compact(
-            'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha'
+            'tour', 'selectedDate', 'month', 'sessionsForSelected', 'tourReviews', 'reviewCaptcha', 'recaptchaSiteKey'
         ));
     }
 
@@ -191,33 +193,54 @@ public function show(string $slug, Request $request)
                 ->withInput();
         }
 
-        $data = $request->validate([
+        $recaptcha = new Recaptcha();
+
+        $rules = [
             'author_name' => ['required', 'string', 'max:255'],
             'author_email' => ['nullable', 'email', 'max:255'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'review_text' => ['required', 'string', 'min:20', 'max:5000'],
-            'captcha_answer' => ['required', 'integer'],
-            'captcha_left' => ['required', 'integer', 'min:1', 'max:9'],
-            'captcha_right' => ['required', 'integer', 'min:1', 'max:9'],
-            'captcha_signature' => ['required', 'string', 'size:64'],
             'website' => ['nullable', 'max:0'],
-        ]);
+        ];
 
-        $expectedSignature = hash_hmac(
-            'sha256',
-            "{$tour->slug}|{$data['captcha_left']}|{$data['captcha_right']}",
-            (string) config('app.key')
-        );
+        // reCAPTCHA replaces the arithmetic question when the site has keys;
+        // without keys the form still has to stop bots on its own.
+        if (!$recaptcha->configured()) {
+            $rules += [
+                'captcha_answer' => ['required', 'integer'],
+                'captcha_left' => ['required', 'integer', 'min:1', 'max:9'],
+                'captcha_right' => ['required', 'integer', 'min:1', 'max:9'],
+                'captcha_signature' => ['required', 'string', 'size:64'],
+            ];
+        }
 
-        if (
-            !hash_equals($expectedSignature, (string) $data['captcha_signature'])
-            || (int) $data['captcha_answer'] !== ((int) $data['captcha_left'] + (int) $data['captcha_right'])
-        ) {
-            RateLimiter::hit($rateKey, 3600);
+        $data = $request->validate($rules);
 
-            return back()
-                ->withErrors(['captcha_answer' => 'Incorrect captcha answer. Please try again.'])
-                ->withInput();
+        if ($recaptcha->configured()) {
+            if (!$recaptcha->isValid($request)) {
+                RateLimiter::hit($rateKey, 3600);
+
+                return back()
+                    ->withErrors(['recaptcha' => 'Please confirm you are not a robot and try again.'])
+                    ->withInput();
+            }
+        } else {
+            $expectedSignature = hash_hmac(
+                'sha256',
+                "{$tour->slug}|{$data['captcha_left']}|{$data['captcha_right']}",
+                (string) config('app.key')
+            );
+
+            if (
+                !hash_equals($expectedSignature, (string) $data['captcha_signature'])
+                || (int) $data['captcha_answer'] !== ((int) $data['captcha_left'] + (int) $data['captcha_right'])
+            ) {
+                RateLimiter::hit($rateKey, 3600);
+
+                return back()
+                    ->withErrors(['captcha_answer' => 'Incorrect captcha answer. Please try again.'])
+                    ->withInput();
+            }
         }
 
         Review::create([
