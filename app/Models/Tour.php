@@ -59,6 +59,14 @@ class Tour extends Model
         return $this->hasMany(TourTranslation::class);
     }
 
+    /**
+     * The tour name in one language, falling back to the stored name.
+     */
+    public function nameIn(string $locale): string
+    {
+        return $this->translations->firstWhere('locale', $locale)?->name ?: (string) $this->name;
+    }
+
     public function translation(?string $locale = null): ?TourTranslation
     {
         $locale = $locale ?: app()->getLocale();

@@ -29,6 +29,54 @@ class SiteSetting extends Model
         'og_image_path',
     ];
 
+    /**
+     * The WhatsApp contact as it should be shown, e.g. "+66 95 846 7417".
+     */
+    public function whatsappLabel(): ?string
+    {
+        $value = trim((string) $this->contact_whatsapp_line);
+
+        if ($value === '' || $value === '#') {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            $digits = $this->whatsappDigits($value);
+
+            return $digits ? '+' . $digits : $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * A clickable wa.me link, built from whatever the admin typed in the
+     * WhatsApp field: a phone number, or a ready-made link.
+     */
+    public function whatsappUrl(): ?string
+    {
+        $value = trim((string) $this->contact_whatsapp_line);
+
+        if ($value === '' || $value === '#') {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        $digits = $this->whatsappDigits($value);
+
+        return $digits ? 'https://wa.me/' . $digits : null;
+    }
+
+    private function whatsappDigits(string $value): ?string
+    {
+        $digits = preg_replace('/\D/', '', $value);
+
+        return strlen((string) $digits) >= 8 ? $digits : null;
+    }
+
     public function getLogoHeaderUrlAttribute(): ?string
     {
         $path = $this->logo_header_path ?: $this->logo_path;

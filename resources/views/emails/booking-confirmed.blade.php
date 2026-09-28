@@ -4,6 +4,8 @@
 @php
   $siteSetting = \App\Models\SiteSetting::first();
   $logoUrl = $siteSetting?->logo_header_url ?: asset('img/logo.webp');
+  $whatsappUrl = $siteSetting?->whatsappUrl();
+  $whatsappLabel = $siteSetting?->whatsappLabel();
 @endphp
 
 <!doctype html>
@@ -19,7 +21,7 @@
     </div>
 
     <div style="background:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.06);padding:28px;">
-      <h1 style="margin:0 0 8px;font-size:26px;color:#1a1f36;">Booking Confirmed ??</h1>
+      <h1 style="margin:0 0 8px;font-size:26px;color:#1a1f36;">Booking Confirmed 🎉</h1>
       <p style="margin:0 0 18px;color:#425466;line-height:1.6;">
         Hi {{ $booking->customer_name }}, your payment was successful. Please keep this QR code for check-in.
       </p>
@@ -28,7 +30,7 @@
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">PROGRAM</div>
-            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->tour?->name ?? '-' }}@if($booking->tour?->province) ({{ $booking->tour->province->name('en') }})@endif</div>
+            <div style="font-size:16px;color:#1a1f36;font-weight:600;">{{ $booking->tour?->nameIn('en') ?? '-' }}@if($booking->tour?->province) ({{ $booking->tour->province->name('en') }})@endif</div>
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">DATE & TIME</div>
@@ -43,7 +45,7 @@
           </div>
           <div>
             <div style="font-size:12px;color:#6b7c93;margin-bottom:4px;">TOTAL</div>
-            <div style="font-size:16px;color:#1a1f36;font-weight:700;">?{{ number_format($booking->grand_total ?? $booking->total_price ?? 0, 2) }}</div>
+            <div style="font-size:16px;color:#1a1f36;font-weight:700;">THB {{ number_format($booking->grand_total ?? $booking->total_price ?? 0, 2) }}</div>
           </div>
         </div>
       </div>
@@ -66,9 +68,33 @@
         </div>
       </div>
 
+      @if($whatsappUrl)
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:22px;border-collapse:separate;">
+          <tr>
+            <td style="background:#e7fbf1;border:1px solid #25d366;border-radius:12px;padding:18px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    <div style="font-size:12px;letter-spacing:.06em;color:#0f7a43;font-weight:700;margin-bottom:4px;">WHATSAPP</div>
+                    <div style="font-size:16px;color:#0b3b25;font-weight:600;line-height:1.5;">Need help before your trip?</div>
+                    <div style="font-size:14px;color:#2f6b4f;line-height:1.6;">Chat with our team{{ $whatsappLabel ? ' at ' . $whatsappLabel : '' }}</div>
+                  </td>
+                  <td style="vertical-align:middle;text-align:right;white-space:nowrap;padding-left:12px;">
+                    <a href="{{ $whatsappUrl }}" style="display:inline-block;background:#25d366;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;">
+                      Chat on WhatsApp
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      @endif
+
       <hr style="border:none;border-top:1px solid #e6ebf1;margin:22px 0;">
 
-      <p style="margin:0;color:#6b7c93;font-size:12px;line-height:1.6;">If you have any questions, reply to this email.</p>
+      <p style="margin:0;color:#6b7c93;font-size:12px;line-height:1.6;">If you have any questions, reply to this email
+        @if($whatsappUrl) or message us on <a href="{{ $whatsappUrl }}" style="color:#0f7a43;font-weight:600;text-decoration:none;">WhatsApp</a>@endif.</p>
     </div>
   </div>
 </body>

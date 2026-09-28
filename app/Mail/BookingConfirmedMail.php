@@ -22,6 +22,8 @@ class BookingConfirmedMail extends Mailable
 
     public function build()
     {
+        $this->booking->loadMissing('tour.translations', 'tour.province', 'session');
+
         return $this->subject('Your booking is confirmed')
             ->view('emails.booking-confirmed');
     }
