@@ -493,17 +493,32 @@ textarea.tour-form-control{
 @media (max-width: 575px){
   .tour-gallery{ column-count:1; }
   .tour-title{ font-size: 26px; }
+  /* The intro runs long on a phone; smaller and tighter keeps the price and
+     the session list within reach of the fold. */
+  .tour-sub{
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  /* Side by side the three parts leave the button a sliver of the row, so
+     they stack and the button spans the card. */
   .session-card.session-card-link{
-    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 14px;
   }
   .session-time{
-    min-width: 68px;
-    font-size: 13px;
+    min-width: 0;
+    font-size: 14px;
   }
   .session-title{ font-size:15px; }
-  .session-sub{ font-size: 11px; }
+  .session-sub{ font-size: 12px; }
+  .session-card.session-card-link .session-action{
+    width: 100%;
+  }
   .session-card.session-card-link .session-btn{
-    padding: 8px 12px;
+    width: 100%;
+    padding: 12px 16px;
     font-size: 13px;
   }
 }
