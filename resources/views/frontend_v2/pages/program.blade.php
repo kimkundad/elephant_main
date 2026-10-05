@@ -333,8 +333,12 @@
   flex-direction:column;
   gap:8px;
   min-height:220px;
+  /* Fill the card so the description takes the slack and every Book Now
+     button lines up, however long the text above it is. */
+  flex:1 1 auto;
 }
 .program-title{
+  text-align:center;
   font-size:16px;
   line-height:1.35;
   font-weight:700;
@@ -351,6 +355,7 @@
 .program-meta{
   display:flex;
   flex-wrap:wrap;
+  justify-content:center;
   gap:14px;
   font-size:14px;
   letter-spacing:.08em;
@@ -360,6 +365,7 @@
 .program-price{
   display:flex;
   flex-direction:column;
+  align-items:center;
   gap:2px;
   line-height:1.4;
   letter-spacing:.04em;
