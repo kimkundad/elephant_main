@@ -65,8 +65,9 @@
 }
 
 .experience-section-v2 .elephant-name{
-height: 50px;
+    height: 50px;
     overflow: hidden;
+    text-align: center;
     font-size: 16px;
     font-weight: 700;
     color: #fff;
