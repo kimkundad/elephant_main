@@ -123,6 +123,12 @@
   line-height:1.8;
   margin-bottom:14px;
 }
+.tour-price-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
 .tour-price-badge{
   display:inline-block;
   background:#2b2621;
@@ -130,7 +136,37 @@
   padding:8px 14px;
   border-radius:999px;
   font-size:13px;
+  font-weight:700;
   letter-spacing:.08em;
+}
+.tour-price-badge--child{
+  background:#fff;
+  color:#2b2621;
+  border:1px solid rgba(0,0,0,.14);
+  font-weight:600;
+}
+
+/* The Book button is what the page is for, so it carries the site accent
+   instead of the plain outline it shared with the card border. */
+.session-card.session-card-link .session-btn{
+  background:#b5db2a;
+  border-color:#b5db2a;
+  color:#fff;
+  padding:12px 26px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:14px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  box-shadow:0 6px 14px rgba(181,219,42,.35);
+  transition:background .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.session-card.session-card-link:hover .session-btn,
+.session-card.session-card-link:focus-visible .session-btn{
+  background:#a6cb24;
+  border-color:#a6cb24;
+  box-shadow:0 10px 20px rgba(181,219,42,.45);
+  transform:translateY(-1px);
 }
 .tour-gallery{
   column-count:3;
@@ -575,8 +611,9 @@ textarea.tour-form-control{
             {{ $tourShortDescription }}
           </div>
 
-          <div class="tour-price-badge">
-            THB {{ number_format($tour->price_adult ?? 0) }}
+          <div class="tour-price-row">
+            <span class="tour-price-badge">{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</span>
+            <span class="tour-price-badge tour-price-badge--child">{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</span>
           </div>
         </div>
 
