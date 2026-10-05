@@ -307,10 +307,19 @@
   100%{ background-position: -120% 0; }
 }
 .program-media{
+  display:block;
   width:100%;
   aspect-ratio: 4 / 3;
   overflow:hidden;
   background:#eae6e1;
+}
+.program-title a{
+  color:inherit;
+  text-decoration:none;
+}
+.program-title a:hover,
+.program-title a:focus-visible{
+  text-decoration:underline;
 }
 .program-media img{
   width:100%;
@@ -525,11 +534,11 @@
       @forelse($tours as $tour)
         @php($tr = $tour->translation())
         <div class="program-item js-program-item" data-tour-tags="{{ json_encode($tour->tags->pluck('slug')->values()->all()) }}">
-          <div class="program-media">
+          <a class="program-media" href="{{ route('frontend.tours.show.v2', $tour->slug) }}" tabindex="-1" aria-hidden="true">
             <img src="{{ $tour->thumbnail }}" alt="{{ $tr?->name ?? $tour->name }}">
-          </div>
+          </a>
           <div class="program-content">
-            <div class="program-title">{{ $tr?->name ?? $tour->name }}</div>
+            <div class="program-title"><a href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ $tr?->name ?? $tour->name }}</a></div>
             <div class="program-meta">
               <span class="program-price">
                 <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>

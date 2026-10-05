@@ -44,9 +44,20 @@
 }
 
 .experience-section-v2 .elephant-card__media{
+    display: block;
     width: 100%;
     aspect-ratio: 4 / 3;
     overflow: hidden;
+}
+
+.experience-section-v2 .elephant-name a{
+    color: inherit;
+    text-decoration: none;
+}
+
+.experience-section-v2 .elephant-name a:hover,
+.experience-section-v2 .elephant-name a:focus-visible{
+    text-decoration: underline;
 }
 
 .experience-section-v2 .elephant-card__media img{
@@ -1030,14 +1041,14 @@
                                 @php($tr = $tour->translation())
                                 <div class="item">
                                     <div class="elephant-card">
-                                        <div class="elephant-card__media">
+                                        <a class="elephant-card__media" href="{{ route('frontend.tours.show.v2', $tour->slug) }}" tabindex="-1" aria-hidden="true">
                                             <img
                                                 src="{{ $tour->thumbnail ? asset($tour->thumbnail) : asset('images/placeholder-tour.jpg') }}"
                                                 alt="{{ $tr?->name ?? $tour->name }}"
                                             >
-                                        </div>
+                                        </a>
                                         <div class="elephant-card__body">
-                                            <div class="elephant-name">{{ $tr?->name ?? $tour->name }}</div>
+                                            <div class="elephant-name"><a href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ $tr?->name ?? $tour->name }}</a></div>
                                             <div class="elephant-rescued">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
                                             <span class="elephant-price">
                                                 <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
