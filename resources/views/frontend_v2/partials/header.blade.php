@@ -1,8 +1,4 @@
 @php
-    $hideBookMobile = request()->routeIs('frontend.booking.create')
-        || request()->routeIs('frontend.booking.create.v2')
-        || request()->is('booking')
-        || request()->is('v2/booking');
     $menuActiveImage = \App\Models\PageMedia::url('v2.header.menu.active_image', Vite::asset('resources/frontend/images/NEW-home-page-image.webp'));
     $menuHoverImage = \App\Models\PageMedia::url('v2.header.menu.hover_image', Vite::asset('resources/frontend/images/bg-chang.webp'));
     $menuActiveAlt = \App\Models\PageMedia::alt('v2.header.menu.active_image', 'Small Elephants');
@@ -16,13 +12,6 @@
         'contact' => \App\Models\PageMedia::url('v2.header.menu.contact_image', $menuHoverImage),
     ];
 @endphp
-@unless($hideBookMobile)
-<div class="book-mobile">
-        <a href="{{ url('/programs') }}" aria-label="Book Now" >
-            Book Now
-        </a>
-    </div>
-@endunless
 <header class="scroll_nonefix  v2-header">
     <article class="navbar-header">
         <div class="pull-left">
