@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tour extends Model
 {
-    //
+    /** How early a guest driving themselves is asked to reach the camp. */
+    public const SELF_DRIVE_ARRIVE_MINUTES = 20;
+
     protected $fillable = [
         'province_id',
         'name',
@@ -17,15 +19,22 @@ class Tour extends Model
         'price_adult',
         'price_child',
         'pickup_lead_hours',
+        'allows_self_drive',
         'map_embed_url',
         'thumbnail',
         'gallery_images',
         'is_active',
     ];
 
+    /** Matches the column default, so a tour built in memory behaves like a saved one. */
+    protected $attributes = [
+        'allows_self_drive' => true,
+    ];
+
     protected $casts = [
         'gallery_images' => 'array',
         'pickup_lead_hours' => 'float',
+        'allows_self_drive' => 'boolean',
         'is_active' => 'boolean',
     ];
 

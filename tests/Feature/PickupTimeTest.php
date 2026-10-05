@@ -71,11 +71,11 @@ class PickupTimeTest extends TestCase
         $tour = $this->tourWithLead(1);
         $booking = $this->bookingFor($tour, ['self_drive' => true]);
 
-        $this->assertSame('Arrive at the camp by', $booking->pickupTimeLabel('en'));
+        $this->assertSame('Arrive at the venue by', $booking->pickupTimeLabel('en'));
 
         $this->get(route('booking.public', $booking->public_code))
             ->assertOk()
-            ->assertSee('Arrive at the camp by');
+            ->assertSee('Arrive at the venue by');
     }
 
     public function test_admin_session_form_shows_the_computed_pickup_time(): void

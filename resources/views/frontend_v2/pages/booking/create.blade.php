@@ -445,21 +445,30 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
 
         <div class="card">
           <div class="card-title">{{ __('booking.create.additional_info') }}</div>
-          <label class="checkbox self-drive-check">
-            <input type="checkbox" name="self_drive" id="self_drive" value="1" @checked(old('self_drive'))>
-            <span>{{ __('booking.create.self_drive') }}</span>
-          </label>
+          @if($tour->allows_self_drive)
+            <label class="checkbox self-drive-check">
+              <input type="checkbox" name="self_drive" id="self_drive" value="1" @checked(old('self_drive'))>
+              <span>{{ __('booking.create.self_drive') }}</span>
+            </label>
+          @endif
 
           @php
             $pickupTime = $tour->pickupTimeFor($session->start_time);
             $pickupLead = $tour->pickupLeadLabel();
+            // Self drivers make their own way, so they are asked to be at the
+            // camp shortly before the start rather than at a pickup point.
+            $arriveTime = $session->start_time
+                ? \Carbon\Carbon::parse($session->start_time)->subMinutes(\App\Models\Tour::SELF_DRIVE_ARRIVE_MINUTES)->format(\App\Models\TourSession::TIME_FORMAT)
+                : null;
           @endphp
           @if($pickupTime)
             <div class="pickup-time-note" id="pickupTimeNote"
                  data-pickup-label="{{ __('booking.create.pickup_time_label') }}"
+                 data-pickup-clock="{{ $pickupTime }}"
                  data-pickup-hint="{{ __('booking.create.pickup_time_hint', ['time' => $pickupTime, 'hours' => $pickupLead]) }}"
                  data-arrive-label="{{ __('booking.create.arrive_time_label') }}"
-                 data-arrive-hint="{{ __('booking.create.arrive_time_hint', ['time' => $pickupTime, 'hours' => $pickupLead]) }}">
+                 data-arrive-clock="{{ $arriveTime }}"
+                 data-arrive-hint="{{ __('booking.create.arrive_time_hint', ['minutes' => \App\Models\Tour::SELF_DRIVE_ARRIVE_MINUTES]) }}">
               <div class="pickup-time-note__clock">{{ $pickupTime }}</div>
               <div>
                 <div class="pickup-time-note__label">{{ __('booking.create.pickup_time_label') }}</div>
@@ -846,8 +855,15 @@ const BOOKING_I18N = @json($bookingI18n);
 
     if (timeNote) {
       const mode = selfDrive.checked ? 'arrive' : 'pickup';
+      const clock = timeNote.querySelector('.pickup-time-note__clock');
+
       timeNote.querySelector('.pickup-time-note__label').textContent = timeNote.dataset[mode + 'Label'];
       timeNote.querySelector('.pickup-time-note__hint').textContent = timeNote.dataset[mode + 'Hint'];
+
+      // Self drivers are given the time to be at the camp, not the pickup time.
+      if (clock && timeNote.dataset.arriveClock) {
+        clock.textContent = selfDrive.checked ? timeNote.dataset.arriveClock : timeNote.dataset.pickupClock;
+      }
     }
   };
 

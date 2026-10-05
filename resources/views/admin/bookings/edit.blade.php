@@ -50,7 +50,7 @@
                             <label class="form-label">โปรแกรมทัวร์</label>
                             <select id="tourSelect" name="tour_id" class="form-control" required>
                                 @foreach($tours as $t)
-                                    <option value="{{ $t->id }}" data-province="{{ $t->province_id }}"
+                                    <option value="{{ $t->id }}" data-province="{{ $t->province_id }}" data-self-drive="{{ $t->allows_self_drive ? 1 : 0 }}"
                                         {{ $booking->tour_id == $t->id ? 'selected' : '' }}>
                                         {{ $t->name }}
                                     </option>
@@ -80,7 +80,7 @@
                         </div>
 
                         {{-- PICKUP --}}
-                        <div class="form-check form-switch mb-3">
+                        <div class="form-check form-switch mb-3 js-self-drive-field">
                             <input class="form-check-input" type="checkbox" id="selfDrive" name="self_drive" value="1" @checked(old('self_drive', $booking->self_drive))>
                             <label class="form-check-label" for="selfDrive">ลูกค้าเดินทางมาเอง (ไม่ต้องรับส่ง)</label>
                         </div>
@@ -285,11 +285,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const fields = document.querySelectorAll('.js-pickup-field');
     if (!selfDrive || !fields.length) return;
 
+    // Tours that cannot be reached without our transport do not offer it.
+    const tourSelect = document.getElementById('tourSelect');
+    const selfDriveField = document.querySelector('.js-self-drive-field');
+
+    const tourAllowsSelfDrive = () => {
+        const option = tourSelect?.selectedOptions?.[0];
+
+        return !option || option.dataset.selfDrive !== '0';
+    };
+
     const syncSelfDrive = () => {
+        const allowed = tourAllowsSelfDrive();
+
+        if (!allowed) {
+            selfDrive.checked = false;
+        }
+
+        if (selfDriveField) {
+            selfDriveField.style.display = allowed ? '' : 'none';
+        }
+
         fields.forEach((field) => { field.style.display = selfDrive.checked ? 'none' : ''; });
     };
 
     selfDrive.addEventListener('change', syncSelfDrive);
+    tourSelect?.addEventListener('change', syncSelfDrive);
     syncSelfDrive();
 })();
 </script>

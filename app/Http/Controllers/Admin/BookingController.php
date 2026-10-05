@@ -273,7 +273,10 @@ private function bookingRules(): array
 /** @return array<string, mixed> */
 private function pickupAttributes(Request $request): array
 {
-    $selfDrive = $request->boolean('self_drive');
+    // A tour that cannot be reached without our transport never takes a self
+    // driver, however the form was submitted.
+    $selfDrive = $request->boolean('self_drive')
+        && (bool) optional(Tour::find($request->tour_id))->allows_self_drive;
     $pickupLocationId = $selfDrive ? null : $request->pickup_location_id;
 
     return [

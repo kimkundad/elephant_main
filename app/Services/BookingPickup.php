@@ -19,6 +19,12 @@ class BookingPickup
      */
     public function resolve(Tour $tour, bool $selfDrive, ?int $pickupLocationId, ?string $note): array
     {
+        if ($selfDrive && !$tour->allows_self_drive) {
+            throw ValidationException::withMessages([
+                'self_drive' => __('booking.errors.self_drive_not_allowed'),
+            ]);
+        }
+
         if ($selfDrive) {
             return [
                 'pickup_location_id' => null,
