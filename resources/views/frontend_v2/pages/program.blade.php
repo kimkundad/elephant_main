@@ -348,6 +348,22 @@
   text-transform:uppercase;
   color:#d7d7d7;
 }
+.program-price{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  line-height:1.4;
+  letter-spacing:.04em;
+}
+.program-price b{
+  font-weight:700;
+  color:#fff;
+}
+.program-price i{
+  font-style:normal;
+  font-size:12px;
+  color:#bdbdbd;
+}
 .program-provinces{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
 .program-provinces a{ text-decoration:none; }
 .program-province{ opacity:.8; }
@@ -515,7 +531,10 @@
           <div class="program-content">
             <div class="program-title">{{ $tr?->name ?? $tour->name }}</div>
             <div class="program-meta">
-              <span>From THB {{ number_format($tour->price_child ?? 0) }}</span>
+              <span class="program-price">
+                <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
+                <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
+              </span>
               @if($tour->province)<span class="program-province">{{ $tour->province->name() }}</span>@endif
             </div>
             <div class="program-desc">

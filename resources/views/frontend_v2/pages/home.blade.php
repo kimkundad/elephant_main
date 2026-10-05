@@ -80,6 +80,29 @@ height: 50px;
     letter-spacing: .06em;
 }
 
+.experience-section-v2 .elephant-price,
+.meet-elephants-section-v2 .elephant-price{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    line-height: 1.4;
+}
+
+.experience-section-v2 .elephant-price b,
+.meet-elephants-section-v2 .elephant-price b{
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.experience-section-v2 .elephant-price i,
+.meet-elephants-section-v2 .elephant-price i{
+    font-style: normal;
+    font-size: 12px;
+    color: #d7d7d7;
+}
+
 .experience-section-v2 .elephant-desc{
     font-size: 13px;
     line-height: 1.6;
@@ -1015,7 +1038,10 @@ height: 50px;
                                         <div class="elephant-card__body">
                                             <div class="elephant-name">{{ $tr?->name ?? $tour->name }}</div>
                                             <div class="elephant-rescued">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
-                                            <span>From THB {{ number_format($tour->price_child ?? 0) }}</span>
+                                            <span class="elephant-price">
+                                                <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
+                                                <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
+                                            </span>
                                             <div class="elephant-desc">{{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 170) }}</div>
                                             <a href="{{ route('frontend.tours.show.v2', $tour->slug) }}" class="btn-book" aria-label="Read more">{{ __('common.book_now') }}</a>
                                         </div>
