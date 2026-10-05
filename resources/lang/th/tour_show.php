@@ -10,8 +10,6 @@ return [
     'remaining' => 'คงเหลือ',
     'pickup_time' => 'รับ :time น.',
     'hours_short' => 'ชม.',
-    'map' => 'แผนที่',
-    'open_in_google_maps' => 'เปิดใน Google Maps',
     'book' => 'จอง',
     'dow' => [
         'su' => 'อา',

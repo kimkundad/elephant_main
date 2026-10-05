@@ -48,23 +48,14 @@ class TourMapTest extends TestCase
         $this->assertNull($tour->mapLink());
     }
 
-    public function test_tour_page_shows_the_map_card(): void
+    public function test_the_tour_page_keeps_the_map_to_itself(): void
     {
         $tour = $this->makeTour($this->chiangMai(), ['map_embed_url' => self::EMBED]);
 
+        // Guests get directions by email once they book, so the page stays clear.
         $this->get(route('frontend.tours.show', $tour->slug))
             ->assertOk()
-            ->assertSee('<iframe class="tour-map-frame"', false)
-            ->assertSee(self::EMBED, false);
-    }
-
-    public function test_tour_page_without_a_map_has_no_card(): void
-    {
-        $tour = $this->makeTour($this->chiangMai());
-
-        $this->get(route('frontend.tours.show', $tour->slug))
-            ->assertOk()
-            ->assertDontSee('<iframe class="tour-map-frame"', false);
+            ->assertDontSee(self::EMBED, false);
     }
 
     public function test_email_links_to_google_maps(): void

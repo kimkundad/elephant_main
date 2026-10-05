@@ -265,30 +265,6 @@
   font-weight:800;
   margin-bottom:10px;
 }
-.tour-map-box{
-  margin-top:18px;
-}
-.tour-map-frame{
-  width:100%;
-  height:360px;
-  border:0;
-  border-radius:14px;
-  display:block;
-}
-.tour-map-link{
-  display:inline-block;
-  margin-top:14px;
-  padding:10px 16px;
-  border-radius:999px;
-  background:#2b2621;
-  color:#fff;
-  font-weight:700;
-  font-size:14px;
-  text-decoration:none;
-}
-@media (max-width:767px){
-  .tour-map-frame{ height:260px; }
-}
 .tour-details-body{
   color:#4b4238;
   line-height:1.9;
@@ -665,29 +641,6 @@ textarea.tour-form-control{
           <div class="tour-details-title">{{ __('tour_show.details') }}</div>
           <div class="tour-details-body">{!! $tourDescription !!}</div>
         </div>
-
-        @php
-          $mapEmbedSrc = $tour->mapEmbedSrc();
-          $mapLink = $tour->mapLink();
-        @endphp
-        @if($mapEmbedSrc || $mapLink)
-          <div class="tour-details-box tour-map-box">
-            <div class="tour-details-title">{{ __('tour_show.map') }}</div>
-            @if($mapEmbedSrc)
-              <iframe class="tour-map-frame"
-                      src="{{ $mapEmbedSrc }}"
-                      title="{{ $tourName }}"
-                      loading="lazy"
-                      referrerpolicy="no-referrer-when-downgrade"
-                      allowfullscreen></iframe>
-            @endif
-            @if($mapLink)
-              <a class="tour-map-link" href="{{ $mapLink }}" target="_blank" rel="noopener">
-                {{ __('tour_show.open_in_google_maps') }}
-              </a>
-            @endif
-          </div>
-        @endif
 
         <div class="tour-reviews-card">
           <div class="tour-details-title">Customer Reviews</div>
