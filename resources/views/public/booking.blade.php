@@ -42,6 +42,7 @@
     .btn { padding:11px 18px; border:0; border-radius:10px; font-weight:700; font-size:15px; cursor:pointer; }
     .btn--go { background:#059669; color:#fff; }
     .btn--undo { background:transparent; color:#64748b; text-decoration:underline; padding:4px 0; font-size:13px; }
+    .btn--map { display:inline-block; background:#1a1f36; color:#fff; text-decoration:none; }
     .warn { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fffbeb; color:#92400e; font-size:13px; }
     .err { margin-top:10px; padding:10px 12px; border-radius:10px; background:#fef2f2; color:#991b1b; font-size:13px; }
 
@@ -151,6 +152,14 @@
             @endif
           </div>
         </div>
+        @if($mapLink = $booking->tour?->mapLink())
+          <div class="row">
+            <div class="label">Getting there</div>
+            <div class="value">
+              <a class="btn btn--map" href="{{ $mapLink }}" target="_blank" rel="noopener">Open in Google Maps</a>
+            </div>
+          </div>
+        @endif
         <div class="row">
           <div class="label">Payment</div>
           <div class="value">

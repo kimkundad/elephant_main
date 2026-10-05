@@ -67,37 +67,18 @@
           <div style="font-size:13px;color:#6b7c93;margin-bottom:6px;">SCAN AT CHECK-IN</div>
           <div style="color:#425466;line-height:1.6;font-size:14px;">Staff can scan this QR code to verify your booking status instantly.</div>
 
-          <a href="{{ $publicUrl }}" style="display:inline-block;margin-top:12px;background:#635bff;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:600;">
+          <a href="{{ $publicUrl }}" style="display:inline-block;margin-top:12px;margin-right:8px;background:#635bff;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:600;">
             View booking details
           </a>
+
+          @if($mapLink)
+            {{-- Mail clients strip iframes, so the map is a link out to Google Maps. --}}
+            <a href="{{ $mapLink }}" style="display:inline-block;margin-top:12px;background:#1a1f36;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:600;">
+              Open in Google Maps
+            </a>
+          @endif
         </div>
       </div>
-
-      @if($mapLink)
-        {{-- Mail clients strip iframes, so the map is a link to open in Google Maps. --}}
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:22px;border-collapse:separate;">
-          <tr>
-            <td style="background:#f6f9fc;border:1px solid #e6ebf1;border-radius:12px;padding:18px 20px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr>
-                  <td style="vertical-align:middle;">
-                    <div style="font-size:12px;letter-spacing:.06em;color:#6b7c93;font-weight:700;margin-bottom:4px;">HOW TO FIND US</div>
-                    <div style="font-size:16px;color:#1a1f36;font-weight:600;line-height:1.5;">{{ $booking->tour?->nameIn('en') }}</div>
-                    @if($booking->tour?->province)
-                      <div style="font-size:14px;color:#425466;line-height:1.6;">{{ $booking->tour->province->name('en') }}</div>
-                    @endif
-                  </td>
-                  <td style="vertical-align:middle;text-align:right;white-space:nowrap;padding-left:12px;">
-                    <a href="{{ $mapLink }}" style="display:inline-block;background:#1a1f36;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;">
-                      Open in Google Maps
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      @endif
 
       @if($whatsappUrl)
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:14px;border-collapse:separate;">

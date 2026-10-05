@@ -58,18 +58,47 @@ class TourMapTest extends TestCase
             ->assertDontSee(self::EMBED, false);
     }
 
+    public function test_the_qr_page_links_to_google_maps(): void
+    {
+        $tour = $this->makeTour($this->chiangMai(), ['map_embed_url' => 'https://maps.app.goo.gl/abc123']);
+        $booking = $this->paidBooking($tour);
+
+        $this->get(route('booking.public', $booking->public_code))
+            ->assertOk()
+            ->assertSee('https://maps.app.goo.gl/abc123', false)
+            ->assertSee('Open in Google Maps');
+    }
+
+    public function test_the_qr_page_says_nothing_about_maps_without_one(): void
+    {
+        $booking = $this->paidBooking($this->makeTour($this->chiangMai()));
+
+        $this->get(route('booking.public', $booking->public_code))
+            ->assertOk()
+            ->assertDontSee('Open in Google Maps');
+    }
+
     public function test_email_links_to_google_maps(): void
     {
         $tour = $this->makeTour($this->chiangMai(), ['map_embed_url' => 'https://maps.app.goo.gl/abc123']);
-        $session = $this->makeSession($tour);
+        $booking = $this->paidBooking($tour);
 
-        $booking = Booking::create([
+        $html = (new BookingConfirmedMail($booking, 'fake-png', 'https://example.test/b/MAPCODE1234'))->render();
+
+        $this->assertStringContainsString('https://maps.app.goo.gl/abc123', $html);
+        $this->assertStringContainsString('Open in Google Maps', $html);
+        $this->assertStringNotContainsString('<iframe', $html);
+    }
+
+    private function paidBooking(Tour $tour): Booking
+    {
+        return Booking::create([
             'public_code' => 'MAPCODE1234',
             'customer_name' => 'Anna Schmidt',
             'customer_email' => 'anna@example.com',
             'customer_phone' => '+66958467417',
             'tour_id' => $tour->id,
-            'session_id' => $session->id,
+            'session_id' => $this->makeSession($tour)->id,
             'date' => now()->addDays(3)->toDateString(),
             'adults' => 2,
             'children' => 0,
@@ -84,12 +113,6 @@ class TourMapTest extends TestCase
             'payment_status' => 'paid',
             'paid_at' => now(),
         ]);
-
-        $html = (new BookingConfirmedMail($booking, 'fake-png', 'https://example.test/b/MAPCODE1234'))->render();
-
-        $this->assertStringContainsString('https://maps.app.goo.gl/abc123', $html);
-        $this->assertStringContainsString('Open in Google Maps', $html);
-        $this->assertStringNotContainsString('<iframe', $html);
     }
 
     public function test_admin_can_save_a_map_on_a_tour(): void
