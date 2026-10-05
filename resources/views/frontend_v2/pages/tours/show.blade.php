@@ -486,6 +486,18 @@ textarea.tour-form-control{
 
 @media (max-width: 992px){
   .tour-grid{ grid-template-columns: 1fr; }
+  /* Stacked, the description sat between the calendar and the sessions, so
+     booking meant scrolling past it. Prices and sessions come first and the
+     description reads after them. */
+  .tour-detail-col{
+    display: flex;
+    flex-direction: column;
+  }
+  .tour-detail-col > *{ order: 5; }
+  .tour-detail-col > .tour-detail-head{ order: 1; margin-bottom: 14px; }
+  .tour-detail-col > .tour-price-row{ order: 2; margin-bottom: 14px; }
+  .tour-detail-col > .tour-sessions{ order: 3; margin-top: 0; }
+  .tour-detail-col > .tour-sub{ order: 4; margin-top: 22px; }
   .tour-title{ font-size:34px; }
   .tour-gallery{ column-count:2; }
   .tour-review-grid{ grid-template-columns: 1fr; }
@@ -611,7 +623,7 @@ textarea.tour-form-control{
       </div>
 
       {{-- RIGHT: Details --}}
-      <div >
+      <div class="tour-detail-col">
         <div class="tour-detail-head">
           <div class="tour-date-line">
             {{ \Carbon\Carbon::parse($selectedDate)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}
@@ -622,14 +634,15 @@ textarea.tour-form-control{
             <div class="tour-province">{{ __('common.province') }}: {{ $tour->province->name() }}</div>
           @endif
 
-          <div class="tour-sub">
-            {{ $tourShortDescription }}
-          </div>
+        </div>
 
-          <div class="tour-price-row">
-            <span class="tour-price-badge">{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</span>
-            <span class="tour-price-badge tour-price-badge--child">{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</span>
-          </div>
+        <div class="tour-sub">
+          {{ $tourShortDescription }}
+        </div>
+
+        <div class="tour-price-row">
+          <span class="tour-price-badge">{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</span>
+          <span class="tour-price-badge tour-price-badge--child">{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</span>
         </div>
 
         <div class="tour-sessions" id="sessions-wrap">
