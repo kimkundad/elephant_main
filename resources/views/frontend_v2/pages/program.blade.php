@@ -343,7 +343,7 @@
   line-height:1.35;
   font-weight:700;
   color:#fff;
-  margin-bottom:12px;
+  margin-bottom:0;
   /* Clamp to two whole lines: a fixed height cut the second line in half
      once the font grew on smaller screens. min-height keeps cards aligned. */
   display:-webkit-box;
@@ -353,12 +353,9 @@
   min-height:2.7em;
 }
 .program-meta{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:14px;
-  font-size:14px;
-  letter-spacing:.08em;
+  text-align:center;
+  font-size:12px;
+  letter-spacing:.06em;
   text-transform:uppercase;
   color:#d7d7d7;
 }
@@ -371,13 +368,14 @@
   letter-spacing:.04em;
 }
 .program-price b{
+  font-size:15px;
   font-weight:700;
   color:#fff;
 }
 .program-price i{
   font-style:normal;
   font-size:12px;
-  color:#bdbdbd;
+  color:#d7d7d7;
 }
 .program-provinces{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
 .program-provinces a{ text-decoration:none; }
@@ -464,7 +462,6 @@
   }
   .program-title{
     font-size:15px;
-    margin-bottom:8px;
   }
   /* At one item per view the card is tall enough that the arrows' 40% offset
      lands on the program title. Anchor them to the media block instead: this
@@ -545,13 +542,11 @@
           </a>
           <div class="program-content">
             <div class="program-title"><a href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ $tr?->name ?? $tour->name }}</a></div>
-            <div class="program-meta">
-              <span class="program-price">
-                <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
-                <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
-              </span>
-              @if($tour->province)<span class="program-province">{{ $tour->province->name() }}</span>@endif
-            </div>
+            <div class="program-meta">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
+            <span class="program-price">
+              <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
+              <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
+            </span>
             <div class="program-desc">
               {{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 220) }}
             </div>
