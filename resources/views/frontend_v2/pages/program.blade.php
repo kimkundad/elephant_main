@@ -650,6 +650,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     url.hash = 'program-list';
 
+    // Clearing filters that are already clear asks for the page we are on, and
+    // a same-document navigation never reloads, so the spinner would sit there
+    // for good. Jump to the list instead.
+    var here = new URL(window.location.href);
+    if (here.pathname === url.pathname && here.search === url.search) {
+      isNavigating = false;
+      if (selectedCountEl) selectedCountEl.textContent = String(selectedTags.length);
+      window.location.hash = 'program-list';
+      return;
+    }
+
     if (selectedCountEl) selectedCountEl.textContent = String(selectedTags.length);
     if (resultCountEl) resultCountEl.textContent = '...';
     if (programList) programList.classList.add('is-loading');
