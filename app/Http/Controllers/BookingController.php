@@ -317,8 +317,15 @@ class BookingController extends Controller
         $currency = env('STRIPE_CURRENCY', 'thb');
         $amountSatang = (int) round($grandAfterDiscount * 100);
 
+        // Stripe writes its own receipts and they are read by the card issuer
+        // as much as by the guest, so the line reads in English whatever
+        // language the booking was made in.
+        $stripeDescription = __('booking.stripe.product_name', [
+            'id' => $booking->id,
+            'tour' => $tour->nameIn('en'),
+        ], 'en');
+
         if ($data['payment_channel'] === 'card') {
-            $tourName = optional($tour->translation(app()->getLocale()))->name ?: ($tour->name ?? __('booking.labels.tour_fallback'));
             $successRoute = $isV2 ? route('frontend.booking.success.v2', $booking->id) : route('frontend.booking.success', $booking->id);
             $cancelRoute = $isV2 ? route('frontend.booking.cancel.v2', $booking->id) : route('frontend.booking.cancel', $booking->id);
 
@@ -331,7 +338,7 @@ class BookingController extends Controller
                         'currency' => $currency,
                         'unit_amount' => $amountSatang,
                         'product_data' => [
-                            'name' => __('booking.stripe.product_name', ['id' => $booking->id, 'tour' => $tourName]),
+                            'name' => $stripeDescription,
                         ],
                     ],
                 ]],
@@ -367,6 +374,7 @@ class BookingController extends Controller
                     ],
                 ],
                 'receipt_email' => $booking->customer_email,
+                'description' => $stripeDescription,
                 'metadata' => [
                     'booking_id' => (string) $booking->id,
                     'discount_code' => $discountCode,
