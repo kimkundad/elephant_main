@@ -4,6 +4,7 @@ return [
     'program'           => 'โปรแกรม',
     'book_now'          => 'จองเลย',
     'menu'              => 'เมนู',
+    'language_switch'   => 'เปลี่ยนภาษา',
     'search'            => 'ค้นหา',
     'nav_home'          => 'หน้าแรก',
     'nav_programs'      => 'โปรแกรมทัวร์',

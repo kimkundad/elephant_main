@@ -79,14 +79,37 @@
 .pillhdr__icon svg{ width:20px; height:20px; }
 .pillhdr__icon:hover{ color:#7f9c13; }
 
-.pillhdr__lang{
-  display:flex; align-items:center; gap:6px;
-  font-size:14px; font-weight:700; letter-spacing:.04em;
-  color:#fff;
+.pillhdr__lang{ position:relative; }
+.pillhdr__flag{
+  display:inline-grid; place-items:center;
+  width:46px; height:46px; padding:0;
+  border:0; background:none; cursor:pointer;
 }
-.pillhdr__lang a{ color:inherit; text-decoration:none; opacity:.7; }
-.pillhdr__lang a.is-active{ opacity:1; text-decoration:underline; text-underline-offset:4px; }
-.pillhdr.is-stuck .pillhdr__lang{ color:#2b2621; }
+.pillhdr__flag .flag-icon{
+  width:40px; height:40px;
+  border-radius:50%;
+  box-shadow:0 0 0 2px rgba(255,255,255,.75);
+  transition:box-shadow .2s ease;
+}
+.pillhdr.is-stuck .pillhdr__flag .flag-icon{ box-shadow:0 0 0 1px rgba(0,0,0,.12); }
+.pillhdr__flag:hover .flag-icon,
+.pillhdr__flag[aria-expanded="true"] .flag-icon{ box-shadow:0 0 0 2px #b5db2a; }
+
+.pillhdr__langmenu{
+  position:absolute; right:0; top:calc(100% + 10px); z-index:20;
+  min-width:190px; padding:8px;
+  background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,.14);
+}
+.pillhdr__langmenu[hidden]{ display:none; }
+.pillhdr__langitem{
+  display:flex; align-items:center; gap:10px;
+  min-height:44px; padding:0 12px; border-radius:12px;
+  font-size:15px; font-weight:600; color:#2b2621; text-decoration:none;
+}
+.pillhdr__langitem:hover{ background:#f6f4f0; color:#2b2621; }
+.pillhdr__langitem .flag-icon{ width:22px; height:22px; border-radius:50%; flex:0 0 auto; }
+.pillhdr__langcheck{ width:16px; height:16px; margin-left:auto; color:#7f9c13; }
 
 /* The theme's own hamburger styles still drive the full screen menu, so this
    only decides when it shows and keeps the bars visible on a light bar. */
@@ -131,10 +154,25 @@
                     </svg>
                 </a>
 
-                <div class="pillhdr__lang" role="group" aria-label="Language">
-                    <a href="{{ route('frontend.locale.switch', 'en') }}" class="{{ $locale === 'en' ? 'is-active' : '' }}">EN</a>
-                    <span aria-hidden="true">/</span>
-                    <a href="{{ route('frontend.locale.switch', 'th') }}" class="{{ $locale === 'th' ? 'is-active' : '' }}">TH</a>
+                {{-- The flag is the button; the menu lists the languages by name. --}}
+                <div class="pillhdr__lang" id="localeMenu">
+                    <button type="button" class="pillhdr__flag js-locale-toggle" aria-haspopup="true" aria-expanded="false"
+                            aria-label="{{ __('common.language_switch') }}">
+                        @include('frontend_v2.partials.locale-flag', ['locale' => $locale, 'size' => 40])
+                    </button>
+
+                    <div class="pillhdr__langmenu" role="menu" hidden>
+                        @foreach(['en' => 'English', 'th' => 'ไทย'] as $code => $name)
+                            <a class="pillhdr__langitem" role="menuitemradio" aria-checked="{{ $locale === $code ? 'true' : 'false' }}"
+                               href="{{ route('frontend.locale.switch', $code) }}">
+                                @include('frontend_v2.partials.locale-flag', ['locale' => $code, 'size' => 22])
+                                <span>{{ $name }}</span>
+                                @if($locale === $code)
+                                    <svg class="pillhdr__langcheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Keeps the class the theme script binds the full screen menu to. --}}
@@ -215,5 +253,32 @@
 
     sync();
     window.addEventListener('scroll', sync, { passive: true });
+})();
+
+// Language menu: the flag opens it, a click anywhere else or Escape closes it.
+(function () {
+    var anchor = document.getElementById('localeMenu');
+    if (!anchor) return;
+
+    var toggle = anchor.querySelector('.js-locale-toggle');
+    var menu = anchor.querySelector('.pillhdr__langmenu');
+
+    function setOpen(open) {
+        menu.hidden = !open;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setOpen(menu.hidden);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!anchor.contains(e.target)) setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setOpen(false);
+    });
 })();
 </script>
