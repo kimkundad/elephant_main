@@ -34,10 +34,12 @@
   display:flex;
   align-items:center;
   gap:20px;
-  min-height:56px;
+  /* A fixed row, not a minimum: the logo is taller than the bar on purpose
+     and must not push the rest of the header down with it. */
+  height:56px;
 }
 .pillhdr__brand{ flex:0 0 auto; display:inline-flex; align-items:center; }
-.pillhdr__brand img{ display:block; width:auto; height:46px; }
+.pillhdr__brand img{ display:block; width:auto; height:75px; }
 
 .pillhdr__nav{
   display:flex;
