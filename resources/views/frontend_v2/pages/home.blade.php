@@ -616,6 +616,10 @@
     letter-spacing: .01em;
 }
 
+#home-content-1 .welcome-intro-slider {
+    display: contents;
+}
+
 #home-content-1 .welcome-intro-image {
     display: flex;
     align-items: flex-start;
@@ -863,12 +867,35 @@
         margin-bottom: 18px;
     }
 
+    /* Two tall photographs stacked took most of a phone screen between the
+       hero and the copy, so they become a strip you swipe. */
+    #home-content-1 .welcome-intro-slider {
+        display: flex;
+        order: 2;
+        width: 100%;
+        gap: 12px;
+        padding: 0 15px 4px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #home-content-1 .welcome-intro-slider::-webkit-scrollbar { display: none; }
+
+    #home-content-1 .welcome-intro-slider .welcome-intro-image {
+        flex: 0 0 84%;
+        max-width: 84%;
+        padding: 0;
+        margin-bottom: 0;
+        scroll-snap-align: center;
+    }
+
     #home-content-1 .welcome-intro-image img {
-        max-width: 320px;
+        max-width: none;
+        width: 100%;
         height: auto;
         aspect-ratio: 4 / 5;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     .single-post-content img,
@@ -1013,13 +1040,17 @@
 
                           
 
-                          <div class="col-lg-3 offset-lg-1 col-md-6 mb-20 mt-45 welcome-intro-image welcome-intro-image-a">
+                          {{-- display:contents keeps the two columns in the row on wider
+                               screens; on a phone this becomes the swipeable strip. --}}
+                          <div class="welcome-intro-slider">
+                                <div class="col-lg-3 offset-lg-1 col-md-6 mb-20 mt-45 welcome-intro-image welcome-intro-image-a">
                                     <img src="{{ $welcomeImageOne }}" alt="Welcome 1">
                                 </div>
                                 <!-- /col-md-6 -->
                                 <div class="col-lg-3 col-md-6 mb-20 welcome-intro-image welcome-intro-image-b">
                                     <img src="{{ $welcomeImageTwo }}" alt="Welcome 2">
                                 </div>
+                          </div>
 
 
                           <!-- <div class="col-md-3">
