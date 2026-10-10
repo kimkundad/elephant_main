@@ -130,7 +130,8 @@
   .pillhdr__burger{ display:block; }
   .pillhdr__actions{ margin-left:auto; }
   .pillhdr__bar{ padding-block:14px; }
-  .pillhdr__brand img{ height:40px; }
+  /* Taller than the 56px row on purpose, as on a desktop, just less so. */
+  .pillhdr__brand img{ height:62px; }
 }
 </style>
 
