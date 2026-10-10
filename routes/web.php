@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AgentReportController;
 use App\Http\Controllers\Admin\SiteTextController;
 use App\Http\Controllers\Admin\TourTagController;
 use App\Http\Controllers\Admin\PageMediaController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ReviewController;
 
 Route::get('/api/google-reviews', [GoogleReviewsController::class, 'index']);
@@ -200,6 +201,12 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
         Route::resource('elephants', ElephantController::class);
         Route::get('/elephants/{elephant}/toggle', [ElephantController::class, 'toggle'])
             ->name('elephants.toggle');
+
+        // Contact form enquiries
+        Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
+        Route::get('/contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
+        Route::post('/contacts/{contact}/toggle', [AdminContactController::class, 'toggle'])->name('contacts.toggle');
+        Route::delete('/contacts/{contact}', [AdminContactController::class, 'destroy'])->name('contacts.destroy');
 
         // Agents & Discount Codes
         Route::resource('agents', AgentController::class);
