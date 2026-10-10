@@ -201,6 +201,19 @@
         }
         .btn-outline-soft:hover{ background:rgba(255,255,255,.12); color:#fff; }
 
+        /* One container width for every v2 page. Each page used to repeat
+           these two rules and the home page never did, so it ran full width. */
+        @media (min-width: 1200px) {
+          .container, .elementor-section.elementor-section-boxed > .elementor-container {
+            max-width: 1140px;
+          }
+        }
+        @media (min-width: 1500px) {
+          .container, .elementor-section.elementor-section-boxed > .elementor-container {
+            max-width: 1350px;
+          }
+        }
+
         @media (max-width: 991px){
           .about-hero__title{ font-size:40px; }
         }

@@ -36,36 +36,22 @@
 
 @push('styles')
 <style>
+/* The header partial styles itself as an overlay from a <style> inside
+   <body>, which comes after this one, so these need the extra specificity. */
+body .pillhdr{ position:relative; }
+body .pillhdr .pillhdr__bar{ background:#fff; padding-block:14px; }
+body .pillhdr.is-stuck{ position:relative; }
+body .pillhdr.is-stuck .pillhdr__bar{ box-shadow:none; padding-block:14px; }
+body .pillhdr .pillhdr__flag .flag-icon{ box-shadow:0 0 0 1px rgba(0,0,0,.12); }
+body .pillhdr .pillhdr__burger span{ background:#2b2621; }
+
 .booking-v2{
   background:#f7f5f1;
-  padding:70px 0 90px;
+  padding:40px 0 90px;
 }
 .booking-v2 .container{
   padding: 0 16px;
 }
-.booking-hero{
-  display:flex;
-  gap:24px;
-  align-items:center;
-  background:#fff;
-  border-radius:18px;
-  padding:15px;
-  box-shadow:0 18px 40px rgba(0,0,0,.08);
-  border:1px solid rgba(0,0,0,.06);
-  margin-bottom:24px;
-}
-.booking-hero-img{
-  width:220px;
-  height:140px;
-  border-radius:12px;
-  overflow:hidden;
-  flex:0 0 auto;
-}
-.booking-hero-img img{ width:100%; height:100%; object-fit:cover; }
-.booking-hero-title{ font-size:24px; font-weight:800; color:#2b2621; }
-.booking-hero-sub{ color:#6b6156; margin:6px 0 8px; }
-.booking-hero-desc{ color:#7a7166; font-size:14px; line-height:1.7; }
-
 .booking-grid{
   display:grid;
   grid-template-columns: minmax(0,1fr) minmax(0,360px);
@@ -218,32 +204,15 @@
 .tiny{ font-size:12px; color:#8b8177; }
 
 @media (max-width: 992px){
-  .booking-hero{ flex-direction:column; align-items:flex-start; }
-  .booking-hero-img{ width:100%; height:200px; }
   .booking-grid{ grid-template-columns: 1fr; }
   .grid-2{ grid-template-columns: 1fr; }
 }
 @media (max-width: 575px){
-  .booking-hero-title{ font-size:20px; }
-  .booking-hero-sub{ font-size:12px; }
-  .booking-hero-desc{ font-size:10px; }
   .self-drive-check{
     margin-left:12px;
     width:calc(100% - 12px);
   }
 }
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
-}
-
-@media (min-width: 1500px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1350px;
-    }
-}
-
 /* Validation feedback. The controller bounces back with withErrors() from six
    places plus validate(); without these the form just reloaded silently. */
 .booking-errors{
@@ -359,28 +328,8 @@ textarea.f-input.pickup-note{ box-sizing:border-box; resize:vertical; min-height
 @endpush
 
 @section('content')
-<section class="about-hero" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}'); min-height: 250px;">
-  <div class="about-hero__overlay"></div>
-</section>
-
-
 <section class="booking-v2">
   <div class="container">
-    <div class="booking-hero">
-      <div class="booking-hero-img">
-        <img src="{{ $tour->thumbnail }}" alt="{{ $tourName }}">
-      </div>
-      <div>
-        <div class="booking-hero-title">{{ $tourName }}</div>
-        <div class="booking-hero-sub">
-          {{ \Carbon\Carbon::parse($date)->locale(app()->getLocale())->translatedFormat('l, d F Y') }}
-          @ {{ $session->time_range }}
-          @if($tour->province) &middot; {{ $tour->province->name() }} @endif
-        </div>
-        <div class="booking-hero-desc">{{ $tourShortDescription }}</div>
-      </div>
-    </div>
-
     <form method="POST" action="{{ route('frontend.booking.store') }}" class="booking-grid" id="booking-form">
       @csrf
       <input type="hidden" name="booking_v2" value="1">

@@ -58,10 +58,14 @@ class HomeController extends Controller
     public function programV2(Request $request)
     {
         $searchTerm = trim((string) $request->query('q', ''));
-        $selectedTags = collect($request->query('tags', []))
-            ->filter(fn ($tag) => is_string($tag) && $tag !== '')
+        $list = fn (string $key) => collect((array) $request->query($key, []))
+            ->filter(fn ($value) => is_string($value) && $value !== '')
             ->values()
             ->all();
+
+        $selectedTags = $list('tags');
+        $selectedDurations = array_values(array_intersect($list('duration'), Tour::DURATIONS));
+        $selectedExperiences = array_values(array_intersect($list('experience'), Tour::EXPERIENCE_TYPES));
 
         $availableTags = TourTag::query()
             ->where('is_active', true)
@@ -70,14 +74,20 @@ class HomeController extends Controller
             ->get();
 
         $provinces = Province::active()->orderBy('name_th')->get();
-        $selectedProvince = $provinces->firstWhere('slug', (string) $request->query('province', ''));
 
-        $filterByTags = count($selectedTags) > 0;
+        // province was a single value before the filter panel; both forms work.
+        $selectedProvinces = $list('province');
+        if (!$selectedProvinces && is_string($request->query('province')) && $request->query('province') !== '') {
+            $selectedProvinces = [(string) $request->query('province')];
+        }
+        $selectedProvinces = array_values(array_intersect($selectedProvinces, $provinces->pluck('slug')->all()));
 
-        $tours = Tour::query()
+        $selectedCount = count($selectedTags) + count($selectedDurations) + count($selectedExperiences) + count($selectedProvinces);
+
+        $candidates = Tour::query()
             ->visible()
             ->with(['tags', 'translations', 'province'])
-            ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
+            ->when($searchTerm !== '', function ($query) use ($searchTerm) {
                 $like = '%' . $searchTerm . '%';
 
                 $query->where(function ($inner) use ($like) {
@@ -102,16 +112,88 @@ class HomeController extends Controller
                         });
                 });
             })
-            ->when($filterByTags, function ($query) use ($selectedTags) {
-                $query->whereHas('tags', function ($tagQuery) use ($selectedTags) {
-                    $tagQuery->whereIn('slug', $selectedTags);
-                });
-            })
-            ->when($selectedProvince, fn ($query) => $query->where('province_id', $selectedProvince->id))
             ->orderByDesc('id')
             ->get();
 
-        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags', 'searchTerm', 'provinces', 'selectedProvince'));
+        /**
+         * A tour has to answer every group that has a box ticked, and any one
+         * of the boxes within a group: Chiang Mai AND a full day, not Chiang
+         * Mai OR a full day. $skip leaves one group out, which is how each
+         * group counts what is still open to it.
+         */
+        $matches = function (Tour $tour, array $picked, ?string $skip = null): bool {
+            foreach ($picked as $group => $values) {
+                if (!$values || $group === $skip) {
+                    continue;
+                }
+
+                $has = match ($group) {
+                    'province' => in_array($tour->province?->slug, $values, true),
+                    'duration' => in_array($tour->duration, $values, true),
+                    'experience' => in_array($tour->experience_type, $values, true),
+                    'tags' => (bool) array_intersect($tour->tags->pluck('slug')->all(), $values),
+                };
+
+                if (!$has) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        $picked = [
+            'province' => $selectedProvinces,
+            'duration' => $selectedDurations,
+            'experience' => $selectedExperiences,
+            'tags' => $selectedTags,
+        ];
+
+        $tours = $candidates->filter(fn (Tour $tour) => $matches($tour, $picked))->values();
+
+        // How many tours each box would still leave, counted against the other
+        // groups only, so ticking one box never empties its own group.
+        $options = [
+            'province' => $provinces->pluck('slug')->all(),
+            'duration' => Tour::DURATIONS,
+            'experience' => Tour::EXPERIENCE_TYPES,
+            'tags' => $availableTags->pluck('slug')->all(),
+        ];
+
+        $facets = [];
+
+        foreach ($options as $group => $values) {
+            $pool = $candidates->filter(fn (Tour $tour) => $matches($tour, $picked, $group));
+
+            foreach ($values as $value) {
+                $facets[$group][$value] = $pool
+                    ->filter(fn (Tour $tour) => $matches($tour, [$group => [$value]]))
+                    ->count();
+            }
+        }
+
+        // The filter panel asks for just the cards, so it can swap them in
+        // without reloading the page.
+        if ($request->boolean('partial')) {
+            return response()->json([
+                'count' => $tours->count(),
+                'facets' => $facets,
+                'html' => view('frontend_v2.partials.programs.cards', compact('tours'))->render(),
+            ]);
+        }
+
+        return view('frontend_v2.pages.program', compact(
+            'tours',
+            'availableTags',
+            'selectedTags',
+            'selectedDurations',
+            'selectedExperiences',
+            'selectedProvinces',
+            'selectedCount',
+            'facets',
+            'searchTerm',
+            'provinces'
+        ));
     }
 
     public function home()

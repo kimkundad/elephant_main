@@ -1,0 +1,15 @@
+/*
+ * intl-tel-input wraps the field in a .iti element of its own and leaves it
+ * inline-block, so the phone input kept its default width while every other
+ * input in the form stretched to the row. The wrapper fills the row instead,
+ * and the input fills the wrapper.
+ */
+.iti {
+    display: block;
+    width: 100%;
+}
+
+.iti > input,
+.iti > input[type="tel"] {
+    width: 100%;
+}

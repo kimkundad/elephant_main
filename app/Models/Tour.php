@@ -10,6 +10,22 @@ class Tour extends Model
     /** How early a guest driving themselves is asked to reach the camp. */
     public const SELF_DRIVE_ARRIVE_MINUTES = 20;
 
+    /**
+     * How long a tour runs. One of the four groups in the filter panel; the
+     * keys are stored, the labels come from the tour_filter translations.
+     */
+    public const DURATIONS = [
+        'full_day',
+        'half_day_morning',
+        'one_hour',
+    ];
+
+    /** How close the guests get to the elephants. */
+    public const EXPERIENCE_TYPES = [
+        'observation',
+        'interactive',
+    ];
+
     protected $fillable = [
         'province_id',
         'name',
@@ -19,6 +35,8 @@ class Tour extends Model
         'price_adult',
         'price_child',
         'pickup_lead_hours',
+        'duration',
+        'experience_type',
         'allows_self_drive',
         'map_embed_url',
         'thumbnail',

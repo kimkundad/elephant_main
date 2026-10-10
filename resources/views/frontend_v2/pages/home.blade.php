@@ -409,7 +409,7 @@
     flex: 0 0 auto;
     border: 0;
     border-radius: 999px;
-    background: #0f8a4a;
+    background: #b5db2a;
     color: #fff;
     font-weight: 700;
     font-size: 17px;
@@ -418,8 +418,10 @@
     transition: transform .2s ease, background .2s ease;
 }
 
+.hero-discovery__button-icon{ display: none; }
+
 .hero-discovery__button:hover{
-    background: #0c733e;
+    background: #a6cb24;
     transform: translateY(-1px);
 }
 
@@ -614,6 +616,14 @@
     letter-spacing: .01em;
 }
 
+#home-content-1 .welcome-intro-slider {
+    display: contents;
+}
+
+#home-content-1 .welcome-intro-dots {
+    display: none;
+}
+
 #home-content-1 .welcome-intro-image {
     display: flex;
     align-items: flex-start;
@@ -749,12 +759,12 @@
         margin-bottom: 14px;
     }
 
+    /* One pill with the button inside it, as the field is the whole point of
+       the hero on a phone and a stacked button pushed it up the screen. */
     .hero-discovery__search{
-        flex-direction: column;
-        align-items: stretch;
-        border-radius: 24px;
-        padding: 16px;
-        gap: 10px;
+        border-radius: 999px;
+        padding: 7px 7px 7px 22px;
+        gap: 8px;
     }
 
     .hero-discovery__field{
@@ -763,10 +773,16 @@
     }
 
     .hero-discovery__button{
-        width: 100%;
-        padding: 14px 18px;
-        font-size: 15px;
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border-radius: 50%;
     }
+
+    .hero-discovery__button-label{ display: none; }
+    .hero-discovery__button-icon{ display: block; width: 21px; height: 21px; }
 
     .hero-discovery__autocomplete{
         border-radius: 20px;
@@ -855,12 +871,62 @@
         margin-bottom: 18px;
     }
 
+    /* Two tall photographs stacked took most of a phone screen between the
+       hero and the copy, so they become a strip you swipe. */
+    #home-content-1 .welcome-intro-slider {
+        display: flex;
+        order: 2;
+        width: 100%;
+        gap: 12px;
+        padding: 0 15px 4px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #home-content-1 .welcome-intro-slider::-webkit-scrollbar { display: none; }
+
+    #home-content-1 .welcome-intro-slider .welcome-intro-image {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0;
+        margin-bottom: 0;
+        scroll-snap-align: center;
+    }
+
+    /* One photograph at a time leaves nothing peeking to say it slides, so
+       the dots do that job. */
+    #home-content-1 .welcome-intro-dots {
+        display: flex;
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    #home-content-1 .welcome-intro-dots button {
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(43, 38, 33, .25);
+        cursor: pointer;
+        transition: background-color .2s ease, transform .2s ease;
+    }
+
+    #home-content-1 .welcome-intro-dots button.is-active {
+        background: #b5db2a;
+        transform: scale(1.3);
+    }
+
     #home-content-1 .welcome-intro-image img {
-        max-width: 320px;
+        max-width: none;
+        width: 100%;
         height: auto;
         aspect-ratio: 4 / 5;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     .single-post-content img,
@@ -876,6 +942,26 @@
     overflow: hidden;
     height: 70px;
 }
+/* Reviews carousel: owl lays its items out as inline blocks, so the cards took
+   their own heights and one long review stretched the whole row. The stage
+   becomes a flex row, every card fills its slot and the text stops at seven
+   lines. */
+#google-review-slider .owl-stage{ display:flex; }
+#google-review-slider .owl-item{ display:flex; height:auto; }
+#google-review-slider .item{ display:flex; width:100%; }
+#google-review-slider .testimonial-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+}
+#google-review-slider .testimonial-box p{
+    display:-webkit-box;
+    -webkit-line-clamp:7;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
 .box_primary {
     position: relative;
     padding: 20px 150px;
@@ -940,8 +1026,12 @@
                                 autocomplete="off"
                                 aria-label="Search programs"
                             >
-                            <button class="hero-discovery__button" type="submit">
-                                {{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}
+                            <button class="hero-discovery__button" type="submit" aria-label="{{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}">
+                                <span class="hero-discovery__button-label">{{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}</span>
+                                {{-- Shown in place of the word on phones, where the field needs the room. --}}
+                                <svg class="hero-discovery__button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                                </svg>
                             </button>
                         </form>
                     </div>
@@ -981,13 +1071,22 @@
 
                           
 
-                          <div class="col-lg-3 offset-lg-1 col-md-6 mb-20 mt-45 welcome-intro-image welcome-intro-image-a">
+                          {{-- display:contents keeps the two columns in the row on wider
+                               screens; on a phone this becomes the swipeable strip. --}}
+                          <div class="welcome-intro-slider">
+                                <div class="col-lg-3 offset-lg-1 col-md-6 mb-20 mt-45 welcome-intro-image welcome-intro-image-a">
                                     <img src="{{ $welcomeImageOne }}" alt="Welcome 1">
                                 </div>
                                 <!-- /col-md-6 -->
                                 <div class="col-lg-3 col-md-6 mb-20 welcome-intro-image welcome-intro-image-b">
                                     <img src="{{ $welcomeImageTwo }}" alt="Welcome 2">
                                 </div>
+                          </div>
+
+                          <div class="welcome-intro-dots" aria-hidden="true">
+                                <button type="button" class="is-active" data-slide="0"></button>
+                                <button type="button" data-slide="1"></button>
+                          </div>
 
 
                           <!-- <div class="col-md-3">
@@ -1153,6 +1252,100 @@
 
         @push('scripts')
 <script>
+// The welcome photographs scroll as a strip on phones; the dots follow along
+// and jump to a picture when tapped.
+document.addEventListener('DOMContentLoaded', function () {
+  const strip = document.querySelector('.welcome-intro-slider');
+  const dots = Array.from(document.querySelectorAll('.welcome-intro-dots button'));
+  if (!strip || !dots.length) return;
+
+  const slides = Array.from(strip.querySelectorAll('.welcome-intro-image'));
+
+  // Measured against the strip itself: offsetLeft answers to whichever
+  // ancestor is positioned, which is not this element.
+  const centreOf = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.left + r.width / 2;
+  };
+
+  const nearestSlide = () => {
+    const middle = centreOf(strip);
+    let index = 0;
+    let best = Infinity;
+
+    slides.forEach((slide, i) => {
+      const distance = Math.abs(centreOf(slide) - middle);
+      if (distance < best) { best = distance; index = i; }
+    });
+
+    return index;
+  };
+
+  let current = 0;
+
+  const sync = () => {
+    current = nearestSlide();
+    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+  };
+
+  const goTo = (index) => {
+    current = (index + slides.length) % slides.length;
+    strip.scrollBy({ left: centreOf(slides[current]) - centreOf(strip), behavior: 'smooth' });
+  };
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', function () {
+      pauseAutoplay();
+      goTo(i);
+    });
+  });
+
+  // Autoplay, unless the visitor asked for less motion. It pauses while the
+  // section is off screen and for a while after a swipe, so it never fights
+  // someone looking at a picture.
+  const stillMoment = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let timer = null;
+  let resume = null;
+  let visible = true;
+
+  const isSlider = () => window.getComputedStyle(strip).display === 'flex';
+
+  const stopAutoplay = () => {
+    window.clearInterval(timer);
+    timer = null;
+  };
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (stillMoment.matches || !visible || !isSlider()) return;
+    timer = window.setInterval(() => goTo(nearestSlide() + 1), 4500);
+  };
+
+  function pauseAutoplay() {
+    stopAutoplay();
+    window.clearTimeout(resume);
+    resume = window.setTimeout(startAutoplay, 9000);
+  }
+
+  ['pointerdown', 'touchstart', 'wheel'].forEach((event) => {
+    strip.addEventListener(event, pauseAutoplay, { passive: true });
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      visible ? startAutoplay() : stopAutoplay();
+    }, { threshold: 0.4 }).observe(strip);
+  }
+
+  stillMoment.addEventListener('change', startAutoplay);
+  window.addEventListener('resize', startAutoplay);
+
+  strip.addEventListener('scroll', sync, { passive: true });
+  sync();
+  startAutoplay();
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const heroSearchInput = document.getElementById('hero-search-input');
   const heroAutocomplete = document.getElementById('hero-autocomplete');
@@ -1373,7 +1566,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   autoplayTimeout: 5000,
   autoplayHoverPause: true,
   nav: true,
-  dots: true,
+  dots: false,
   navText: [
     '<span class="gr-nav gr-prev">‹</span>',
     '<span class="gr-nav gr-next">›</span>'

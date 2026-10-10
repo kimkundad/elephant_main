@@ -56,6 +56,7 @@
             'province' => '<path opacity="0.3" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z" fill="currentColor"/><path d="M12 11.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" fill="currentColor"/>',
             'pickup' => '<path opacity="0.3" d="M4 6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3h2.2a2 2 0 0 1 1.7 1l1.6 2.7c.3.4.5 1 .5 1.5V17a1 1 0 0 1-1 1H4a2 2 0 0 1-2-2V6Z" fill="currentColor"/><path d="M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="currentColor"/>',
             'elephant' => '<path opacity="0.3" d="M12 21s-7-4.4-7-9.6A4.4 4.4 0 0 1 12 8a4.4 4.4 0 0 1 7 3.4C19 16.6 12 21 12 21Z" fill="currentColor"/><path d="M12 8a4.4 4.4 0 0 0-7 3.4c0 1.5.6 2.9 1.5 4.1C6.2 14 6 12.8 6 11.6 6 9.6 7.6 8 9.6 8c.9 0 1.7.3 2.4.8V8Z" fill="currentColor"/>',
+            'mail' => '<path opacity="0.3" d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" fill="currentColor"/><path d="m4 7 8 5.5L20 7v2l-8 5.5L4 9V7Z" fill="currentColor"/>',
             'review' => '<path opacity="0.3" d="M12 3l2.6 5.27 5.82.85-4.21 4.11.99 5.79L12 16.29 6.8 19.02l.99-5.79-4.21-4.11 5.82-.85L12 3Z" fill="currentColor"/><path d="M12 5.84l1.45 2.93 3.23.47-2.34 2.28.55 3.21L12 13.21l-2.89 1.52.55-3.21-2.34-2.28 3.23-.47L12 5.84Z" fill="currentColor"/>',
             'text' => '<path opacity="0.3" d="M18 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10l4 4v12a2 2 0 0 1-2 2Z" fill="currentColor"/><path d="M8 11h8v2H8v-2Zm0 4h8v2H8v-2Zm7-12v5h5l-5-5Z" fill="currentColor"/>',
             'media' => '<path opacity="0.3" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" fill="currentColor"/><path d="M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM4 18l4.5-5 3 3.2L15 12l5 6H4Z" fill="currentColor"/>',
@@ -77,6 +78,7 @@
                 'items' => [
                     ['title' => 'Bookings', 'url' => route('admin.bookings.index'), 'icon' => 'booking'],
                     ['title' => 'Customers', 'url' => url('admin/customers'), 'icon' => 'customer'],
+                    ['title' => 'Contact Messages', 'url' => route('admin.contacts.index'), 'icon' => 'mail'],
                     ['title' => 'Sales Agents', 'url' => route('admin.agents.index'), 'icon' => 'agent'],
                     ['title' => 'Discount Codes', 'url' => route('admin.discount-codes.index'), 'icon' => 'discount'],
                     ['title' => 'Agent Reports', 'url' => route('admin.reports.agents'), 'icon' => 'report'],

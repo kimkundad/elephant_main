@@ -40,14 +40,14 @@ class TourCardPriceTest extends TestCase
             ->assertDontSee('From THB');
     }
 
-    public function test_the_tour_page_shows_both_prices(): void
+    public function test_the_tour_page_leaves_the_prices_to_the_booking_page(): void
     {
         $tour = \App\Models\Tour::first();
 
         $this->get(route('frontend.tours.show', $tour->slug))
             ->assertOk()
-            ->assertSee('Adult THB 2,500')
-            ->assertSee('Child THB 1,800');
+            ->assertDontSee('Adult THB 2,500')
+            ->assertDontSee('Child THB 1,800');
     }
 
     public function test_the_labels_follow_the_language(): void

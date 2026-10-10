@@ -80,16 +80,208 @@
   .program-title{ font-size:24px; }
 }
 
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
+/* Filter panel */
+.program-filter{
+  position:relative;
+  margin-bottom:18px;
+}
+.program-filter__bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.program-filter__toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-height:46px;
+  padding:0 20px;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:999px;
+  background:#fff;
+  color:#2b2621;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.program-filter__toggle svg{ width:18px; height:18px; }
+.program-filter__toggle:hover,
+.program-filter__toggle[aria-expanded="true"]{
+  border-color:#b5db2a;
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+.program-filter__count{
+  font-size:14px;
+  font-weight:600;
+  color:#7f9c13;
+}
+.program-filter__count[hidden]{ display:none; }
+
+.program-filter__panel{
+  position:absolute;
+  top:calc(100% + 10px);
+  left:0;
+  z-index:20;
+  width:min(720px, 100%);
+  padding:20px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  box-shadow:0 24px 60px rgba(0,0,0,.16);
+}
+.program-filter__panel[hidden]{ display:none; }
+.program-filter__head{
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-size:17px;
+}
+.program-filter__close{
+  border:0;
+  background:none;
+  font-size:26px;
+  line-height:1;
+  color:#2b2621;
+  cursor:pointer;
+}
+.program-filter__groups{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:18px 24px;
+}
+.program-filter__group{
+  margin:0;
+  padding:0;
+  border:0;
+}
+.program-filter__group--wide{ grid-column:1 / -1; }
+.program-filter__group legend{
+  padding:0;
+  margin-bottom:8px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#8a7f73;
+}
+.program-filter__group--wide{
+  display:block;
+}
+.program-filter__group--wide legend{ margin-bottom:10px; }
+.program-filter__option{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 8px 8px 0;
+  padding:8px 14px;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:999px;
+  font-size:14px;
+  color:#2b2621;
+  cursor:pointer;
+  transition:border-color .2s ease, background-color .2s ease;
+}
+.program-filter__option input{
+  width:16px;
+  height:16px;
+  accent-color:#7f9c13;
+  margin:0;
+}
+.program-filter__option:has(input:checked){
+  border-color:#b5db2a;
+  background:#f4fae1;
+}
+.program-filter__left{
+  font-style:normal;
+  font-size:12px;
+  color:#8a7f73;
+}
+/* Nothing left behind this box given the other groups: shown, so the choice
+   is still visible, but not selectable. */
+.program-filter__option.is-empty{
+  opacity:.4;
+  cursor:not-allowed;
+}
+.program-filter__option.is-empty input{ cursor:not-allowed; }
+.program-filter__actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.program-filter__clear{
+  color:#6b6156;
+  font-size:14px;
+  text-decoration:underline;
+}
+.program-filter__apply{
+  min-height:46px;
+  padding:0 24px;
+  border:0;
+  border-radius:999px;
+  background:#b5db2a;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  cursor:pointer;
+}
+.program-filter__apply:hover{ background:#a6cb24; }
+
+/* On a phone the panel takes the screen, which is the only way the four
+   groups fit without pinching. */
+@media (max-width:767px){
+  .program-filter__panel{
+    position:fixed;
+    inset:auto 0 0 0;
+    top:auto;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    border-radius:20px 20px 0 0;
+    z-index:1000;
+  }
+  .program-filter__head{ display:flex; }
+  .program-filter__groups{ grid-template-columns:1fr; }
+  .program-filter__actions{
+    position:sticky;
+    bottom:0;
+    background:#fff;
+    margin-top:14px;
+  }
 }
 
 /* Program list v2 */
+/* With no hero for it to float over, the header sits in the flow here as a
+   plain white strip. The partial styles itself from a <style> inside <body>,
+   which comes after this one, hence the extra specificity. */
+body .pillhdr{ position:relative; }
+body .pillhdr .pillhdr__bar{ background:#fff; padding-block:14px; }
+body .pillhdr.is-stuck{ position:relative; }
+body .pillhdr.is-stuck .pillhdr__bar{ box-shadow:none; padding-block:14px; }
+body .pillhdr .pillhdr__flag .flag-icon{ box-shadow:0 0 0 1px rgba(0,0,0,.12); }
+body .pillhdr .pillhdr__burger span{ background:#2b2621; }
+
 .program-list{
-  padding: 80px 0 40px;
+  padding: 36px 0 40px;
   background:#f7f5f1;
+}
+.program-heading{
+  margin:0 0 20px;
+  font-size:38px;
+  line-height:1.1;
+  color:#2b2621;
+}
+@media (max-width:767px){
+  .program-heading{ font-size:28px; margin-bottom:16px; }
 }
 .program-list.is-loading .program-grid,
 .program-list.is-loading .program-empty{
@@ -477,53 +669,101 @@
 @endpush
 
 @section('content')
-@php
-  $programHeroBackground = \App\Models\PageMedia::url('v2.program.hero.background', Vite::asset('resources/frontend/images/bg-chang.webp'));
-@endphp
-
-{{-- HERO --}}
-<section class="about-hero" style="background-image:url('{{ $programHeroBackground }}')">
-  <div class="about-hero__overlay"></div>
-  <div class="container about-hero__inner">
-    <div class="about-hero__kicker">SMALL ELEPHANTS</div>
-    <h1 class="about-hero__title">{{ app()->getLocale() === 'en' ? 'Our Elephant Tours' : 'โปรแกรมท่องเที่ยว' }}</h1>
-  </div>
-</section>
 
 
 <section id="program-list" class="program-list">
   <div class="container">
-    @if($provinces->count() > 1)
-      <div class="program-provinces" aria-label="{{ __('common.province') }}">
-        <a href="{{ request()->fullUrlWithoutQuery(['province']) }}" class="program-chip program-chip--selectable {{ $selectedProvince ? '' : 'is-active' }}">{{ __('common.all_provinces') }}</a>
-        @foreach($provinces as $province)
-          <a href="{{ request()->fullUrlWithQuery(['province' => $province->slug]) }}" class="program-chip program-chip--selectable {{ $selectedProvince?->is($province) ? 'is-active' : '' }}">{{ $province->name() }}</a>
-        @endforeach
-      </div>
-    @endif
-    <div class="program-filter">
-      <div class="program-filter__rail">
-        <button type="button" class="program-filter__prev js-filter-prev" aria-label="Scroll filters left">&#8249;</button>
-        <div class="program-filter__row">
-          <button type="button" class="program-chip program-chip--lead js-filter-reset">
-            <span>&#9881;</span>
-            <span>{{ app()->getLocale() === 'en' ? 'Filters' : 'ตัวกรอง' }}</span>
-            <span class="program-chip__count js-selected-count">{{ count($selectedTags ?? []) }}</span>
-          </button>
-          @foreach(($availableTags ?? collect()) as $tag)
-            @php($active = in_array($tag->slug, $selectedTags ?? [], true))
-            <button type="button" class="program-chip program-chip--selectable js-filter-chip {{ $active ? 'is-active' : '' }}" data-tag-slug="{{ $tag->slug }}">
-              {{ $tag->label }} <span class="program-chip__close">&times;</span>
-            </button>
-          @endforeach
+    <h1 class="program-heading">{{ app()->getLocale() === 'en' ? 'Our Elephant Tours' : 'โปรแกรมท่องเที่ยว' }}</h1>
+
+    {{-- One button, and everything to choose from behind it. It is a plain GET
+         form, so the filters work without JavaScript; the script only opens the
+         panel and keeps the count on the button fresh. --}}
+    <form class="program-filter" method="GET" action="{{ route('frontend.program') }}" id="programFilters">
+      @if($searchTerm !== '')
+        <input type="hidden" name="q" value="{{ $searchTerm }}">
+      @endif
+
+      <div class="program-filter__bar">
+        <button type="button" class="program-filter__toggle js-filter-toggle" aria-expanded="false" aria-controls="programFilterPanel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 6h16M7 12h10M10 18h4"/>
+          </svg>
+          <span>{{ __('tour_filter.title') }}</span>
+          {{-- Spelled out, so it is not read as a count of the tours found. --}}
+          <span class="program-filter__count js-selected-count" data-label="{{ __('tour_filter.selected', ['count' => ':count']) }}" @if(!$selectedCount) hidden @endif>&middot; {{ __('tour_filter.selected', ['count' => $selectedCount]) }}</span>
+        </button>
+
+        <div class="program-filter__result">
+          <strong class="js-result-count">{{ $tours->count() }}</strong>
+          {{ app()->getLocale() === 'en' ? 'results' : 'ผลลัพธ์' }}
         </div>
-        <button type="button" class="program-filter__next js-filter-next" aria-label="Scroll filters">&#8250;</button>
       </div>
-      <div class="program-filter__result">
-        <strong class="js-result-count">{{ $tours->count() }}</strong> {{ app()->getLocale() === 'en' ? 'results' : 'ผลลัพธ์' }}
-        <span class="program-filter__info">i</span>
+
+      <div class="program-filter__panel" id="programFilterPanel" hidden>
+        <div class="program-filter__head">
+          <strong>{{ __('tour_filter.title') }}</strong>
+          <button type="button" class="program-filter__close js-filter-close" aria-label="{{ __('tour_filter.close') }}">&times;</button>
+        </div>
+
+        <div class="program-filter__groups">
+          @if($provinces->count() > 1)
+            <fieldset class="program-filter__group">
+              <legend>{{ __('tour_filter.groups.location') }}</legend>
+              @foreach($provinces as $province)
+                @php($left = $facets['province'][$province->slug] ?? 0)
+                <label class="program-filter__option @if(!$left && !in_array($province->slug, $selectedProvinces, true)) is-empty @endif" data-group="province" data-value="{{ $province->slug }}">
+                  <input type="checkbox" name="province[]" value="{{ $province->slug }}" @checked(in_array($province->slug, $selectedProvinces, true)) @disabled(!$left && !in_array($province->slug, $selectedProvinces, true))>
+                  <span>{{ $province->name() }}</span>
+                  <i class="program-filter__left">{{ $left }}</i>
+                </label>
+              @endforeach
+            </fieldset>
+          @endif
+
+          <fieldset class="program-filter__group">
+            <legend>{{ __('tour_filter.groups.duration') }}</legend>
+            @foreach(\App\Models\Tour::DURATIONS as $duration)
+              @php($left = $facets['duration'][$duration] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($duration, $selectedDurations, true)) is-empty @endif" data-group="duration" data-value="{{ $duration }}">
+                <input type="checkbox" name="duration[]" value="{{ $duration }}" @checked(in_array($duration, $selectedDurations, true)) @disabled(!$left && !in_array($duration, $selectedDurations, true))>
+                <span>{{ __('tour_filter.durations.' . $duration) }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
+              </label>
+            @endforeach
+          </fieldset>
+
+          <fieldset class="program-filter__group">
+            <legend>{{ __('tour_filter.groups.experience_type') }}</legend>
+            @foreach(\App\Models\Tour::EXPERIENCE_TYPES as $type)
+              @php($left = $facets['experience'][$type] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($type, $selectedExperiences, true)) is-empty @endif" data-group="experience" data-value="{{ $type }}">
+                <input type="checkbox" name="experience[]" value="{{ $type }}" @checked(in_array($type, $selectedExperiences, true)) @disabled(!$left && !in_array($type, $selectedExperiences, true))>
+                <span>{{ __('tour_filter.experience_types.' . $type) }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
+              </label>
+            @endforeach
+          </fieldset>
+
+          <fieldset class="program-filter__group program-filter__group--wide">
+            <legend>{{ __('tour_filter.groups.activities') }}</legend>
+            @foreach(($availableTags ?? collect()) as $tag)
+              @php($left = $facets['tags'][$tag->slug] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($tag->slug, $selectedTags, true)) is-empty @endif" data-group="tags" data-value="{{ $tag->slug }}">
+                <input type="checkbox" name="tags[]" value="{{ $tag->slug }}" @checked(in_array($tag->slug, $selectedTags, true)) @disabled(!$left && !in_array($tag->slug, $selectedTags, true))>
+                <span>{{ $tag->label }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
+              </label>
+            @endforeach
+          </fieldset>
+        </div>
+
+        <div class="program-filter__actions">
+          <a class="program-filter__clear js-filter-clear" href="{{ route('frontend.program') }}#program-list">{{ __('tour_filter.clear') }}</a>
+          {{-- data-label keeps the wording for the script to count into. --}}
+          <button type="submit" class="program-filter__apply js-filter-apply" data-label="{{ __('tour_filter.apply', ['count' => ':count']) }}">{{ __('tour_filter.apply', ['count' => $tours->count()]) }}</button>
+        </div>
       </div>
-    </div>
+    </form>
 
     <div class="program-loading js-program-loading" hidden aria-live="polite" aria-label="{{ app()->getLocale() === 'en' ? 'Loading programs' : 'กำลังโหลดโปรแกรม' }}">
       <div class="program-loading__panel">
@@ -534,28 +774,7 @@
     </div>
 
     <div class="program-grid owl-carousel owl-theme js-program-slider">
-      @forelse($tours as $tour)
-        @php($tr = $tour->translation())
-        <div class="program-item js-program-item" data-tour-tags="{{ json_encode($tour->tags->pluck('slug')->values()->all()) }}">
-          <a class="program-media" href="{{ route('frontend.tours.show.v2', $tour->slug) }}" tabindex="-1" aria-hidden="true">
-            <img src="{{ $tour->thumbnail }}" alt="{{ $tr?->name ?? $tour->name }}">
-          </a>
-          <div class="program-content">
-            <div class="program-title"><a href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ $tr?->name ?? $tour->name }}</a></div>
-            <div class="program-meta">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
-            <span class="program-price">
-              <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
-              <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
-            </span>
-            <div class="program-desc">
-              {{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 220) }}
-            </div>
-            <a class="btn-primary" href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ __('common.book_now') }}</a>
-          </div>
-        </div>
-      @empty
-        <p>{{ __('common.no_tours_list') }}</p>
-      @endforelse
+      @include('frontend_v2.partials.programs.cards')
     </div>
     <p class="program-empty js-program-empty" hidden>{{ __('common.no_tours_filter') }}</p>
   </div>
@@ -564,24 +783,17 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var programList = document.querySelector('.program-list');
-  var row = document.querySelector('.program-filter__row');
-  var prevBtn = document.querySelector('.js-filter-prev');
-  var nextBtn = document.querySelector('.js-filter-next');
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.js-filter-chip'));
-  var resetBtn = document.querySelector('.js-filter-reset');
-  var selectedCountEl = document.querySelector('.js-selected-count');
-  var resultCountEl = document.querySelector('.js-result-count');
-  var loadingEl = document.querySelector('.js-program-loading');
-  var sliderSelector = '.js-program-slider';
-  var slider = window.jQuery ? window.jQuery(sliderSelector) : null;
-  var isNavigating = false;
+  var form = document.getElementById('programFilters');
+  var grid = document.querySelector('.js-program-slider');
+  var list = document.querySelector('.program-list');
 
-  if (!row || !prevBtn || !nextBtn) return;
+  function owl() {
+    return window.jQuery && window.jQuery.fn && window.jQuery.fn.owlCarousel ? window.jQuery(grid) : null;
+  }
 
   function initProgramSlider() {
-    if (!slider || !slider.length || !window.jQuery || !window.jQuery.fn || !window.jQuery.fn.owlCarousel) return;
-    if (slider.hasClass('owl-loaded')) return;
+    var slider = owl();
+    if (!slider || !slider.length || slider.hasClass('owl-loaded')) return;
 
     slider.owlCarousel({
       loop: false,
@@ -596,98 +808,140 @@ document.addEventListener('DOMContentLoaded', function () {
         '<span class="gr-nav gr-next">&rsaquo;</span>'
       ],
       responsive: {
-        0: { items: 1 },
-        768: { items: 2 },
-        1024: { items: 3 }
+        0:    { items: 1 },
+        768:  { items: 2 },
+        1024: { items: 3 },
+        1280: { items: 4 }
       }
     });
   }
 
-  function syncButtons() {
-    var hasOverflow = row.scrollWidth > row.clientWidth + 1;
-    var atStart = row.scrollLeft <= 1;
-    var atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 2;
-    prevBtn.classList.toggle('is-disabled', !hasOverflow || atStart);
-    nextBtn.classList.toggle('is-disabled', !hasOverflow || atEnd);
-  }
-
-  prevBtn.addEventListener('click', function () {
-    if (prevBtn.classList.contains('is-disabled')) return;
-    row.scrollBy({ left: -260, behavior: 'smooth' });
-  });
-
-  nextBtn.addEventListener('click', function () {
-    if (nextBtn.classList.contains('is-disabled')) return;
-    row.scrollBy({ left: 260, behavior: 'smooth' });
-  });
-
-  row.addEventListener('scroll', syncButtons, { passive: true });
-  window.addEventListener('resize', syncButtons);
-  syncButtons();
-
-  if (!chips.length) {
-    initProgramSlider();
-    return;
-  }
-
-  function getSelectedTags() {
-    return chips
-      .filter(function (chip) { return chip.classList.contains('is-active'); })
-      .map(function (chip) { return chip.getAttribute('data-tag-slug') || ''; })
-      .filter(Boolean);
-  }
-
-  function navigateWithTags(selectedTags) {
-    if (isNavigating) return;
-    isNavigating = true;
-
-    var url = new URL(window.location.href);
-    url.searchParams.delete('q');
-    url.searchParams.delete('tags[]');
-    url.searchParams.delete('tags');
-    selectedTags.forEach(function (tag) {
-      url.searchParams.append('tags[]', tag);
-    });
-    url.hash = 'program-list';
-
-    // Clearing filters that are already clear asks for the page we are on, and
-    // a same-document navigation never reloads, so the spinner would sit there
-    // for good. Jump to the list instead.
-    var here = new URL(window.location.href);
-    if (here.pathname === url.pathname && here.search === url.search) {
-      isNavigating = false;
-      if (selectedCountEl) selectedCountEl.textContent = String(selectedTags.length);
-      window.location.hash = 'program-list';
-      return;
-    }
-
-    if (selectedCountEl) selectedCountEl.textContent = String(selectedTags.length);
-    if (resultCountEl) resultCountEl.textContent = '...';
-    if (programList) programList.classList.add('is-loading');
-    if (loadingEl) loadingEl.hidden = false;
-
-    window.requestAnimationFrame(function () {
-      window.setTimeout(function () {
-        window.location.href = url.toString();
-      }, 80);
-    });
-  }
-
-  chips.forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      chip.classList.toggle('is-active');
-      navigateWithTags(getSelectedTags());
-    });
-  });
-
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      chips.forEach(function (chip) { chip.classList.remove('is-active'); });
-      navigateWithTags([]);
-    });
-  }
-
   initProgramSlider();
+
+  if (!form || !grid) return;
+
+  var toggle = form.querySelector('.js-filter-toggle');
+  var panel = document.getElementById('programFilterPanel');
+  var count = form.querySelector('.js-selected-count');
+  var closeBtn = form.querySelector('.js-filter-close');
+  var clearBtn = form.querySelector('.js-filter-clear');
+  var applyBtn = form.querySelector('.js-filter-apply');
+  var resultCount = document.querySelector('.js-result-count');
+  var applyTemplate = applyBtn ? applyBtn.getAttribute('data-label') : '';
+  var pending = null;
+
+  function setOpen(open) {
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  function tickedBoxes() {
+    return form.querySelectorAll('input[type="checkbox"]:checked').length;
+  }
+
+  function syncCount() {
+    var ticked = tickedBoxes();
+    count.textContent = '· ' + count.dataset.label.replace(':count', ticked);
+    count.hidden = ticked === 0;
+  }
+
+  function showCount(total) {
+    if (resultCount) resultCount.textContent = String(total);
+    if (applyBtn) applyBtn.textContent = applyTemplate.replace(':count', total);
+  }
+
+  // Each box carries how many tours it would still leave, given what is
+  // ticked in the other groups; a box that leaves none is greyed out.
+  function showFacets(facets) {
+    if (!facets) return;
+
+    form.querySelectorAll('.program-filter__option[data-group]').forEach(function (option) {
+      var group = facets[option.dataset.group] || {};
+      var left = group[option.dataset.value] || 0;
+      var box = option.querySelector('input');
+      var counter = option.querySelector('.program-filter__left');
+
+      if (counter) counter.textContent = String(left);
+
+      var spent = left === 0 && !box.checked;
+      option.classList.toggle('is-empty', spent);
+      box.disabled = spent;
+    });
+  }
+
+  // Swapping the cards means the carousel has to be rebuilt around them.
+  function replaceCards(html) {
+    var slider = owl();
+    if (slider && slider.hasClass('owl-loaded')) slider.trigger('destroy.owl.carousel');
+
+    grid = document.querySelector('.js-program-slider') || grid;
+    grid.className = 'program-grid owl-carousel owl-theme js-program-slider';
+    grid.innerHTML = html;
+    initProgramSlider();
+  }
+
+  function applyFilters() {
+    var params = new URLSearchParams(new FormData(form));
+    var query = params.toString();
+
+    if (list) list.classList.add('is-loading');
+
+    window.clearTimeout(pending);
+    pending = window.setTimeout(function () {
+      fetch('{{ route('frontend.program') }}?' + query + '&partial=1', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          replaceCards(data.html);
+          showCount(data.count);
+          showFacets(data.facets);
+          window.history.replaceState({}, '', query ? '?' + query + '#program-list' : '{{ route('frontend.program') }}#program-list');
+        })
+        .catch(function () {
+          // Leave what is on screen; the form still submits the normal way.
+        })
+        .finally(function () {
+          if (list) list.classList.remove('is-loading');
+        });
+    }, 250);
+  }
+
+  toggle.addEventListener('click', function () { setOpen(panel.hidden); });
+  if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
+
+  form.addEventListener('change', function () {
+    syncCount();
+    applyFilters();
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      form.querySelectorAll('input[type="checkbox"]').forEach(function (box) { box.checked = false; });
+      syncCount();
+      applyFilters();
+    });
+  }
+
+  // The results are already on the page behind the panel, so the button only
+  // gets the panel out of the way.
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      setOpen(false);
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!panel.hidden && !form.contains(e.target)) setOpen(false);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  syncCount();
 });
 </script>
 @endpush
