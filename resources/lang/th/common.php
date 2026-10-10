@@ -5,7 +5,6 @@ return [
     'book_now'          => 'จองเลย',
     'menu'              => 'เมนู',
     'language_switch'   => 'เปลี่ยนภาษา',
-    'search'            => 'ค้นหา',
     'nav_home'          => 'หน้าแรก',
     'nav_programs'      => 'โปรแกรมทัวร์',
     'nav_about'         => 'เกี่ยวกับเรา',

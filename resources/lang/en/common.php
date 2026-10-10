@@ -5,7 +5,6 @@ return [
     'book_now'          => 'Book Now',
     'menu'              => 'Menu',
     'language_switch'   => 'Change language',
-    'search'            => 'Search',
     'nav_home'          => 'Home',
     'nav_programs'      => 'Programs',
     'nav_about'         => 'About',

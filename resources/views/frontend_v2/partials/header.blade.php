@@ -66,19 +66,6 @@
 .pillhdr__nav a[aria-current="page"]{ background:#b5db2a; color:#fff; }
 
 .pillhdr__actions{ display:flex; align-items:center; gap:10px; }
-.pillhdr__icon{
-  display:inline-grid;
-  place-items:center;
-  width:46px; height:46px;
-  border-radius:50%;
-  background:#fff;
-  color:#2b2621;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-  transition:color .2s ease;
-}
-.pillhdr__icon svg{ width:20px; height:20px; }
-.pillhdr__icon:hover{ color:#7f9c13; }
-
 .pillhdr__lang{ position:relative; }
 .pillhdr__flag{
   display:inline-grid; place-items:center;
@@ -120,7 +107,7 @@
   .pillhdr__nav a{ padding-inline:16px; font-size:14px; }
 }
 @media (max-width:991px){
-  .pillhdr__nav, .pillhdr__icon{ display:none; }
+  .pillhdr__nav{ display:none; }
   .pillhdr__burger{ display:block; }
   .pillhdr__actions{ margin-left:auto; }
   .pillhdr__bar{ padding-block:14px; }
@@ -148,12 +135,6 @@
             </nav>
 
             <div class="pillhdr__actions">
-                <a class="pillhdr__icon" href="{{ route('frontend.program') }}" aria-label="{{ __('common.search') }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                    </svg>
-                </a>
-
                 {{-- The flag is the button; the menu lists the languages by name. --}}
                 <div class="pillhdr__lang" id="localeMenu">
                     <button type="button" class="pillhdr__flag js-locale-toggle" aria-haspopup="true" aria-expanded="false"
