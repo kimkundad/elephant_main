@@ -2,6 +2,7 @@
 // the number in E.164 (+66958467417) plus the chosen country in a hidden field.
 import intlTelInput from 'intl-tel-input';
 import 'intl-tel-input/build/css/intlTelInput.css';
+import '../css/intl-phone.css';
 
 const DEFAULT_COUNTRY = 'th';
 
