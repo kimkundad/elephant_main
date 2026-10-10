@@ -743,8 +743,9 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
         </div>
 
         <div class="program-filter__actions">
-          <a class="program-filter__clear" href="{{ route('frontend.program') }}#program-list">{{ __('tour_filter.clear') }}</a>
-          <button type="submit" class="program-filter__apply">{{ __('tour_filter.apply', ['count' => $tours->count()]) }}</button>
+          <a class="program-filter__clear js-filter-clear" href="{{ route('frontend.program') }}#program-list">{{ __('tour_filter.clear') }}</a>
+          {{-- data-label keeps the wording for the script to count into. --}}
+          <button type="submit" class="program-filter__apply js-filter-apply" data-label="{{ __('tour_filter.apply', ['count' => ':count']) }}">{{ __('tour_filter.apply', ['count' => $tours->count()]) }}</button>
         </div>
       </div>
     </form>
@@ -758,28 +759,7 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
     </div>
 
     <div class="program-grid owl-carousel owl-theme js-program-slider">
-      @forelse($tours as $tour)
-        @php($tr = $tour->translation())
-        <div class="program-item js-program-item" data-tour-tags="{{ json_encode($tour->tags->pluck('slug')->values()->all()) }}">
-          <a class="program-media" href="{{ route('frontend.tours.show.v2', $tour->slug) }}" tabindex="-1" aria-hidden="true">
-            <img src="{{ $tour->thumbnail }}" alt="{{ $tr?->name ?? $tour->name }}">
-          </a>
-          <div class="program-content">
-            <div class="program-title"><a href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ $tr?->name ?? $tour->name }}</a></div>
-            <div class="program-meta">{{ strtoupper(__('common.program')) }}@if($tour->province) &middot; {{ $tour->province->name() }}@endif</div>
-            <span class="program-price">
-              <b>{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</b>
-              <i>{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</i>
-            </span>
-            <div class="program-desc">
-              {{ \Illuminate\Support\Str::limit(strip_tags($tr?->short_description ?? $tr?->description ?? $tour->short_description ?? $tour->description ?? ''), 220) }}
-            </div>
-            <a class="btn-primary" href="{{ route('frontend.tours.show.v2', $tour->slug) }}">{{ __('common.book_now') }}</a>
-          </div>
-        </div>
-      @empty
-        <p>{{ __('common.no_tours_list') }}</p>
-      @endforelse
+      @include('frontend_v2.partials.programs.cards')
     </div>
     <p class="program-empty js-program-empty" hidden>{{ __('common.no_tours_filter') }}</p>
   </div>
@@ -789,11 +769,16 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('programFilters');
-  var slider = window.jQuery ? window.jQuery('.js-program-slider') : null;
+  var grid = document.querySelector('.js-program-slider');
+  var list = document.querySelector('.program-list');
+
+  function owl() {
+    return window.jQuery && window.jQuery.fn && window.jQuery.fn.owlCarousel ? window.jQuery(grid) : null;
+  }
 
   function initProgramSlider() {
-    if (!slider || !slider.length || !window.jQuery || !window.jQuery.fn || !window.jQuery.fn.owlCarousel) return;
-    if (slider.hasClass('owl-loaded')) return;
+    var slider = owl();
+    if (!slider || !slider.length || slider.hasClass('owl-loaded')) return;
 
     slider.owlCarousel({
       loop: false,
@@ -818,29 +803,99 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initProgramSlider();
 
-  if (!form) return;
+  if (!form || !grid) return;
 
-  // The form submits on its own; this only opens the panel and keeps the
-  // number on the button in step with the boxes.
   var toggle = form.querySelector('.js-filter-toggle');
   var panel = document.getElementById('programFilterPanel');
   var count = form.querySelector('.js-selected-count');
   var closeBtn = form.querySelector('.js-filter-close');
+  var clearBtn = form.querySelector('.js-filter-clear');
+  var applyBtn = form.querySelector('.js-filter-apply');
+  var resultCount = document.querySelector('.js-result-count');
+  var applyTemplate = applyBtn ? applyBtn.getAttribute('data-label') : '';
+  var pending = null;
 
   function setOpen(open) {
     panel.hidden = !open;
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
+  function tickedBoxes() {
+    return form.querySelectorAll('input[type="checkbox"]:checked').length;
+  }
+
   function syncCount() {
-    var ticked = form.querySelectorAll('input[type="checkbox"]:checked').length;
-    count.textContent = String(ticked);
-    count.hidden = ticked === 0;
+    count.textContent = String(tickedBoxes());
+    count.hidden = tickedBoxes() === 0;
+  }
+
+  function showCount(total) {
+    if (resultCount) resultCount.textContent = String(total);
+    if (applyBtn) applyBtn.textContent = applyTemplate.replace(':count', total);
+  }
+
+  // Swapping the cards means the carousel has to be rebuilt around them.
+  function replaceCards(html) {
+    var slider = owl();
+    if (slider && slider.hasClass('owl-loaded')) slider.trigger('destroy.owl.carousel');
+
+    grid = document.querySelector('.js-program-slider') || grid;
+    grid.className = 'program-grid owl-carousel owl-theme js-program-slider';
+    grid.innerHTML = html;
+    initProgramSlider();
+  }
+
+  function applyFilters() {
+    var params = new URLSearchParams(new FormData(form));
+    var query = params.toString();
+
+    if (list) list.classList.add('is-loading');
+
+    window.clearTimeout(pending);
+    pending = window.setTimeout(function () {
+      fetch('{{ route('frontend.program') }}?' + query + '&partial=1', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          replaceCards(data.html);
+          showCount(data.count);
+          window.history.replaceState({}, '', query ? '?' + query + '#program-list' : '{{ route('frontend.program') }}#program-list');
+        })
+        .catch(function () {
+          // Leave what is on screen; the form still submits the normal way.
+        })
+        .finally(function () {
+          if (list) list.classList.remove('is-loading');
+        });
+    }, 250);
   }
 
   toggle.addEventListener('click', function () { setOpen(panel.hidden); });
   if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
-  form.addEventListener('change', syncCount);
+
+  form.addEventListener('change', function () {
+    syncCount();
+    applyFilters();
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      form.querySelectorAll('input[type="checkbox"]').forEach(function (box) { box.checked = false; });
+      syncCount();
+      applyFilters();
+    });
+  }
+
+  // The results are already on the page behind the panel, so the button only
+  // gets the panel out of the way.
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      setOpen(false);
+    });
+  }
 
   document.addEventListener('click', function (e) {
     if (!panel.hidden && !form.contains(e.target)) setOpen(false);

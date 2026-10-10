@@ -137,6 +137,18 @@ class ProgramFilterPanelTest extends TestCase
             ->assertSee('One hour feeding');
     }
 
+    public function test_the_panel_can_fetch_just_the_cards(): void
+    {
+        $response = $this->getJson('/programs?partial=1&duration[]=one_hour')->assertOk();
+
+        $response->assertJsonStructure(['count', 'html']);
+        $this->assertSame(1, $response->json('count'));
+        $this->assertStringContainsString('One hour feeding', $response->json('html'));
+        $this->assertStringNotContainsString('Full day trek', $response->json('html'));
+        // Only the cards: no header, no filter panel.
+        $this->assertStringNotContainsString('programFilters', $response->json('html'));
+    }
+
     public function test_admin_can_set_both_fields_on_a_tour(): void
     {
         $tour = Tour::firstWhere('name', 'Full day trek');

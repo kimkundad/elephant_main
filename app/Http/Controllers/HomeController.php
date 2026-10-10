@@ -137,6 +137,15 @@ class HomeController extends Controller
             ->orderByDesc('id')
             ->get();
 
+        // The filter panel asks for just the cards, so it can swap them in
+        // without reloading the page.
+        if ($request->boolean('partial')) {
+            return response()->json([
+                'count' => $tours->count(),
+                'html' => view('frontend_v2.partials.programs.cards', compact('tours'))->render(),
+            ]);
+        }
+
         return view('frontend_v2.pages.program', compact(
             'tours',
             'availableTags',
