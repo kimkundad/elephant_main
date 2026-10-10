@@ -93,15 +93,44 @@ class ProgramFilterPanelTest extends TestCase
             ->assertDontSee('Half day bath');
     }
 
-    public function test_boxes_in_different_groups_widen_the_list_too(): void
+    public function test_boxes_in_different_groups_narrow_the_list(): void
     {
-        // Full day OR anything tagged feeding: the one hour tour qualifies on
-        // its tag although its duration was not ticked.
+        // Each group has to be answered: a one hour tour tagged feeding is not
+        // a full day tour, so nothing is left.
         $this->get('/programs?duration[]=full_day&tags[]=hand-feeding')
             ->assertOk()
-            ->assertSee('Full day trek')
+            ->assertDontSee('Full day trek')
+            ->assertDontSee('One hour feeding');
+    }
+
+    public function test_a_province_and_a_duration_read_as_one_and_the_other(): void
+    {
+        $this->get('/programs?province[]=phuket&duration[]=one_hour')
+            ->assertOk()
             ->assertSee('One hour feeding')
-            ->assertDontSee('Half day bath');
+            ->assertDontSee('Half day bath')
+            ->assertDontSee('Full day trek');
+    }
+
+    public function test_a_box_that_would_leave_nothing_is_offered_but_not_selectable(): void
+    {
+        $html = $this->get('/programs?province[]=chiang-mai')->assertOk()->getContent();
+
+        // Chiang Mai has no one hour tour, so that box is shown greyed out.
+        $this->assertMatchesRegularExpression(
+            '/data-value="one_hour"[^>]*>\s*<input[^>]*disabled/s',
+            $html
+        );
+    }
+
+    public function test_each_box_counts_what_it_would_leave(): void
+    {
+        $facets = $this->getJson('/programs?partial=1&province[]=phuket')->assertOk()->json('facets');
+
+        $this->assertSame(1, $facets['duration']['one_hour']);
+        $this->assertSame(1, $facets['duration']['half_day_morning']);
+        $this->assertSame(0, $facets['duration']['full_day'], 'No full day tour in Phuket.');
+        $this->assertSame(2, $facets['province']['phuket'], 'A group never counts against its own pick.');
     }
 
     public function test_a_province_filters_by_location(): void

@@ -201,6 +201,18 @@
   border-color:#b5db2a;
   background:#f4fae1;
 }
+.program-filter__left{
+  font-style:normal;
+  font-size:12px;
+  color:#8a7f73;
+}
+/* Nothing left behind this box given the other groups: shown, so the choice
+   is still visible, but not selectable. */
+.program-filter__option.is-empty{
+  opacity:.4;
+  cursor:not-allowed;
+}
+.program-filter__option.is-empty input{ cursor:not-allowed; }
 .program-filter__actions{
   display:flex;
   align-items:center;
@@ -703,9 +715,11 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
             <fieldset class="program-filter__group">
               <legend>{{ __('tour_filter.groups.location') }}</legend>
               @foreach($provinces as $province)
-                <label class="program-filter__option">
-                  <input type="checkbox" name="province[]" value="{{ $province->slug }}" @checked(in_array($province->slug, $selectedProvinces, true))>
+                @php($left = $facets['province'][$province->slug] ?? 0)
+                <label class="program-filter__option @if(!$left && !in_array($province->slug, $selectedProvinces, true)) is-empty @endif" data-group="province" data-value="{{ $province->slug }}">
+                  <input type="checkbox" name="province[]" value="{{ $province->slug }}" @checked(in_array($province->slug, $selectedProvinces, true)) @disabled(!$left && !in_array($province->slug, $selectedProvinces, true))>
                   <span>{{ $province->name() }}</span>
+                  <i class="program-filter__left">{{ $left }}</i>
                 </label>
               @endforeach
             </fieldset>
@@ -714,9 +728,11 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
           <fieldset class="program-filter__group">
             <legend>{{ __('tour_filter.groups.duration') }}</legend>
             @foreach(\App\Models\Tour::DURATIONS as $duration)
-              <label class="program-filter__option">
-                <input type="checkbox" name="duration[]" value="{{ $duration }}" @checked(in_array($duration, $selectedDurations, true))>
+              @php($left = $facets['duration'][$duration] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($duration, $selectedDurations, true)) is-empty @endif" data-group="duration" data-value="{{ $duration }}">
+                <input type="checkbox" name="duration[]" value="{{ $duration }}" @checked(in_array($duration, $selectedDurations, true)) @disabled(!$left && !in_array($duration, $selectedDurations, true))>
                 <span>{{ __('tour_filter.durations.' . $duration) }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
               </label>
             @endforeach
           </fieldset>
@@ -724,9 +740,11 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
           <fieldset class="program-filter__group">
             <legend>{{ __('tour_filter.groups.experience_type') }}</legend>
             @foreach(\App\Models\Tour::EXPERIENCE_TYPES as $type)
-              <label class="program-filter__option">
-                <input type="checkbox" name="experience[]" value="{{ $type }}" @checked(in_array($type, $selectedExperiences, true))>
+              @php($left = $facets['experience'][$type] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($type, $selectedExperiences, true)) is-empty @endif" data-group="experience" data-value="{{ $type }}">
+                <input type="checkbox" name="experience[]" value="{{ $type }}" @checked(in_array($type, $selectedExperiences, true)) @disabled(!$left && !in_array($type, $selectedExperiences, true))>
                 <span>{{ __('tour_filter.experience_types.' . $type) }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
               </label>
             @endforeach
           </fieldset>
@@ -734,9 +752,11 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
           <fieldset class="program-filter__group program-filter__group--wide">
             <legend>{{ __('tour_filter.groups.activities') }}</legend>
             @foreach(($availableTags ?? collect()) as $tag)
-              <label class="program-filter__option">
-                <input type="checkbox" name="tags[]" value="{{ $tag->slug }}" @checked(in_array($tag->slug, $selectedTags, true))>
+              @php($left = $facets['tags'][$tag->slug] ?? 0)
+              <label class="program-filter__option @if(!$left && !in_array($tag->slug, $selectedTags, true)) is-empty @endif" data-group="tags" data-value="{{ $tag->slug }}">
+                <input type="checkbox" name="tags[]" value="{{ $tag->slug }}" @checked(in_array($tag->slug, $selectedTags, true)) @disabled(!$left && !in_array($tag->slug, $selectedTags, true))>
                 <span>{{ $tag->label }}</span>
+                <i class="program-filter__left">{{ $left }}</i>
               </label>
             @endforeach
           </fieldset>
@@ -834,6 +854,25 @@ document.addEventListener('DOMContentLoaded', function () {
     if (applyBtn) applyBtn.textContent = applyTemplate.replace(':count', total);
   }
 
+  // Each box carries how many tours it would still leave, given what is
+  // ticked in the other groups; a box that leaves none is greyed out.
+  function showFacets(facets) {
+    if (!facets) return;
+
+    form.querySelectorAll('.program-filter__option[data-group]').forEach(function (option) {
+      var group = facets[option.dataset.group] || {};
+      var left = group[option.dataset.value] || 0;
+      var box = option.querySelector('input');
+      var counter = option.querySelector('.program-filter__left');
+
+      if (counter) counter.textContent = String(left);
+
+      var spent = left === 0 && !box.checked;
+      option.classList.toggle('is-empty', spent);
+      box.disabled = spent;
+    });
+  }
+
   // Swapping the cards means the carousel has to be rebuilt around them.
   function replaceCards(html) {
     var slider = owl();
@@ -860,6 +899,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (data) {
           replaceCards(data.html);
           showCount(data.count);
+          showFacets(data.facets);
           window.history.replaceState({}, '', query ? '?' + query + '#program-list' : '{{ route('frontend.program') }}#program-list');
         })
         .catch(function () {

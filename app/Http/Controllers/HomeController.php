@@ -82,13 +82,12 @@ class HomeController extends Controller
         }
         $selectedProvinces = array_values(array_intersect($selectedProvinces, $provinces->pluck('slug')->all()));
 
-        $hasFilters = $selectedTags || $selectedDurations || $selectedExperiences || $selectedProvinces;
         $selectedCount = count($selectedTags) + count($selectedDurations) + count($selectedExperiences) + count($selectedProvinces);
 
-        $tours = Tour::query()
+        $candidates = Tour::query()
             ->visible()
             ->with(['tags', 'translations', 'province'])
-            ->when(!$hasFilters && $searchTerm !== '', function ($query) use ($searchTerm) {
+            ->when($searchTerm !== '', function ($query) use ($searchTerm) {
                 $like = '%' . $searchTerm . '%';
 
                 $query->where(function ($inner) use ($like) {
@@ -113,35 +112,72 @@ class HomeController extends Controller
                         });
                 });
             })
-            // A tour shows if it matches ANY ticked box, in any group: the
-            // guest is saying what they are interested in, not narrowing down.
-            ->when($hasFilters, function ($query) use ($selectedTags, $selectedDurations, $selectedExperiences, $selectedProvinces) {
-                $query->where(function ($any) use ($selectedTags, $selectedDurations, $selectedExperiences, $selectedProvinces) {
-                    if ($selectedProvinces) {
-                        $any->orWhereHas('province', fn ($q) => $q->whereIn('slug', $selectedProvinces));
-                    }
-
-                    if ($selectedDurations) {
-                        $any->orWhereIn('duration', $selectedDurations);
-                    }
-
-                    if ($selectedExperiences) {
-                        $any->orWhereIn('experience_type', $selectedExperiences);
-                    }
-
-                    if ($selectedTags) {
-                        $any->orWhereHas('tags', fn ($q) => $q->whereIn('slug', $selectedTags));
-                    }
-                });
-            })
             ->orderByDesc('id')
             ->get();
+
+        /**
+         * A tour has to answer every group that has a box ticked, and any one
+         * of the boxes within a group: Chiang Mai AND a full day, not Chiang
+         * Mai OR a full day. $skip leaves one group out, which is how each
+         * group counts what is still open to it.
+         */
+        $matches = function (Tour $tour, array $picked, ?string $skip = null): bool {
+            foreach ($picked as $group => $values) {
+                if (!$values || $group === $skip) {
+                    continue;
+                }
+
+                $has = match ($group) {
+                    'province' => in_array($tour->province?->slug, $values, true),
+                    'duration' => in_array($tour->duration, $values, true),
+                    'experience' => in_array($tour->experience_type, $values, true),
+                    'tags' => (bool) array_intersect($tour->tags->pluck('slug')->all(), $values),
+                };
+
+                if (!$has) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        $picked = [
+            'province' => $selectedProvinces,
+            'duration' => $selectedDurations,
+            'experience' => $selectedExperiences,
+            'tags' => $selectedTags,
+        ];
+
+        $tours = $candidates->filter(fn (Tour $tour) => $matches($tour, $picked))->values();
+
+        // How many tours each box would still leave, counted against the other
+        // groups only, so ticking one box never empties its own group.
+        $options = [
+            'province' => $provinces->pluck('slug')->all(),
+            'duration' => Tour::DURATIONS,
+            'experience' => Tour::EXPERIENCE_TYPES,
+            'tags' => $availableTags->pluck('slug')->all(),
+        ];
+
+        $facets = [];
+
+        foreach ($options as $group => $values) {
+            $pool = $candidates->filter(fn (Tour $tour) => $matches($tour, $picked, $group));
+
+            foreach ($values as $value) {
+                $facets[$group][$value] = $pool
+                    ->filter(fn (Tour $tour) => $matches($tour, [$group => [$value]]))
+                    ->count();
+            }
+        }
 
         // The filter panel asks for just the cards, so it can swap them in
         // without reloading the page.
         if ($request->boolean('partial')) {
             return response()->json([
                 'count' => $tours->count(),
+                'facets' => $facets,
                 'html' => view('frontend_v2.partials.programs.cards', compact('tours'))->render(),
             ]);
         }
@@ -154,6 +190,7 @@ class HomeController extends Controller
             'selectedExperiences',
             'selectedProvinces',
             'selectedCount',
+            'facets',
             'searchTerm',
             'provinces'
         ));
