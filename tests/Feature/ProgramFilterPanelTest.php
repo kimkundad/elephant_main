@@ -149,6 +149,19 @@ class ProgramFilterPanelTest extends TestCase
         $this->assertStringNotContainsString('programFilters', $response->json('html'));
     }
 
+    public function test_the_admin_tour_form_offers_both_fields(): void
+    {
+        $tour = Tour::firstWhere('name', 'Full day trek');
+
+        $this->actingAsAdmin()
+            ->get(route('admin.tours.edit', $tour->id))
+            ->assertOk()
+            ->assertSee('name="duration"', false)
+            ->assertSee('name="experience_type"', false)
+            ->assertSee('Full Day')
+            ->assertSee('Observation Only');
+    }
+
     public function test_admin_can_set_both_fields_on_a_tour(): void
     {
         $tour = Tour::firstWhere('name', 'Full day trek');
