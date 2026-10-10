@@ -876,6 +876,26 @@
     overflow: hidden;
     height: 70px;
 }
+/* Reviews carousel: owl lays its items out as inline blocks, so the cards took
+   their own heights and one long review stretched the whole row. The stage
+   becomes a flex row, every card fills its slot and the text stops at seven
+   lines. */
+#google-review-slider .owl-stage{ display:flex; }
+#google-review-slider .owl-item{ display:flex; height:auto; }
+#google-review-slider .item{ display:flex; width:100%; }
+#google-review-slider .testimonial-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+}
+#google-review-slider .testimonial-box p{
+    display:-webkit-box;
+    -webkit-line-clamp:7;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
 .box_primary {
     position: relative;
     padding: 20px 150px;
@@ -1373,7 +1393,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   autoplayTimeout: 5000,
   autoplayHoverPause: true,
   nav: true,
-  dots: true,
+  dots: false,
   navText: [
     '<span class="gr-nav gr-prev">‹</span>',
     '<span class="gr-nav gr-next">›</span>'
