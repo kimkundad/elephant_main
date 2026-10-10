@@ -58,10 +58,14 @@ class HomeController extends Controller
     public function programV2(Request $request)
     {
         $searchTerm = trim((string) $request->query('q', ''));
-        $selectedTags = collect($request->query('tags', []))
-            ->filter(fn ($tag) => is_string($tag) && $tag !== '')
+        $list = fn (string $key) => collect((array) $request->query($key, []))
+            ->filter(fn ($value) => is_string($value) && $value !== '')
             ->values()
             ->all();
+
+        $selectedTags = $list('tags');
+        $selectedDurations = array_values(array_intersect($list('duration'), Tour::DURATIONS));
+        $selectedExperiences = array_values(array_intersect($list('experience'), Tour::EXPERIENCE_TYPES));
 
         $availableTags = TourTag::query()
             ->where('is_active', true)
@@ -70,14 +74,21 @@ class HomeController extends Controller
             ->get();
 
         $provinces = Province::active()->orderBy('name_th')->get();
-        $selectedProvince = $provinces->firstWhere('slug', (string) $request->query('province', ''));
 
-        $filterByTags = count($selectedTags) > 0;
+        // province was a single value before the filter panel; both forms work.
+        $selectedProvinces = $list('province');
+        if (!$selectedProvinces && is_string($request->query('province')) && $request->query('province') !== '') {
+            $selectedProvinces = [(string) $request->query('province')];
+        }
+        $selectedProvinces = array_values(array_intersect($selectedProvinces, $provinces->pluck('slug')->all()));
+
+        $hasFilters = $selectedTags || $selectedDurations || $selectedExperiences || $selectedProvinces;
+        $selectedCount = count($selectedTags) + count($selectedDurations) + count($selectedExperiences) + count($selectedProvinces);
 
         $tours = Tour::query()
             ->visible()
             ->with(['tags', 'translations', 'province'])
-            ->when(!$filterByTags && $searchTerm !== '', function ($query) use ($searchTerm) {
+            ->when(!$hasFilters && $searchTerm !== '', function ($query) use ($searchTerm) {
                 $like = '%' . $searchTerm . '%';
 
                 $query->where(function ($inner) use ($like) {
@@ -102,16 +113,41 @@ class HomeController extends Controller
                         });
                 });
             })
-            ->when($filterByTags, function ($query) use ($selectedTags) {
-                $query->whereHas('tags', function ($tagQuery) use ($selectedTags) {
-                    $tagQuery->whereIn('slug', $selectedTags);
+            // A tour shows if it matches ANY ticked box, in any group: the
+            // guest is saying what they are interested in, not narrowing down.
+            ->when($hasFilters, function ($query) use ($selectedTags, $selectedDurations, $selectedExperiences, $selectedProvinces) {
+                $query->where(function ($any) use ($selectedTags, $selectedDurations, $selectedExperiences, $selectedProvinces) {
+                    if ($selectedProvinces) {
+                        $any->orWhereHas('province', fn ($q) => $q->whereIn('slug', $selectedProvinces));
+                    }
+
+                    if ($selectedDurations) {
+                        $any->orWhereIn('duration', $selectedDurations);
+                    }
+
+                    if ($selectedExperiences) {
+                        $any->orWhereIn('experience_type', $selectedExperiences);
+                    }
+
+                    if ($selectedTags) {
+                        $any->orWhereHas('tags', fn ($q) => $q->whereIn('slug', $selectedTags));
+                    }
                 });
             })
-            ->when($selectedProvince, fn ($query) => $query->where('province_id', $selectedProvince->id))
             ->orderByDesc('id')
             ->get();
 
-        return view('frontend_v2.pages.program', compact('tours', 'availableTags', 'selectedTags', 'searchTerm', 'provinces', 'selectedProvince'));
+        return view('frontend_v2.pages.program', compact(
+            'tours',
+            'availableTags',
+            'selectedTags',
+            'selectedDurations',
+            'selectedExperiences',
+            'selectedProvinces',
+            'selectedCount',
+            'searchTerm',
+            'provinces'
+        ));
     }
 
     public function home()

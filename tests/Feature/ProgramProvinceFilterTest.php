@@ -42,19 +42,19 @@ class ProgramProvinceFilterTest extends TestCase
             ->assertSee('Chiang Mai Feeding');
     }
 
-    public function test_chips_hidden_with_one_active_province(): void
+    public function test_the_location_group_is_dropped_with_one_active_province(): void
     {
         $this->makeTour($this->chiangMai(), ['name' => 'Chiang Mai Feeding']);
 
-        // Match the element, not the CSS rule of the same name.
-        $this->get('/programs')->assertOk()->assertDontSee('class="program-provinces"', false);
+        // Nothing to choose between, so the filter panel leaves the group out.
+        $this->get('/programs')->assertOk()->assertDontSee('name="province[]"', false);
     }
 
-    public function test_chips_shown_with_two_active_provinces(): void
+    public function test_the_location_group_lists_two_active_provinces(): void
     {
         $this->makeProvince('phuket', ['name_en' => 'Phuket']);
 
-        $this->get('/programs')->assertOk()->assertSee('class="program-provinces"', false)->assertSee('Phuket');
+        $this->get('/programs')->assertOk()->assertSee('name="province[]"', false)->assertSee('Phuket');
     }
 
     public function test_tours_in_inactive_province_are_hidden_everywhere(): void
