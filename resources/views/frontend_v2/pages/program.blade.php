@@ -114,15 +114,9 @@
   box-shadow:0 8px 20px rgba(0,0,0,.06);
 }
 .program-filter__count{
-  display:inline-grid;
-  place-items:center;
-  min-width:22px;
-  height:22px;
-  padding:0 6px;
-  border-radius:999px;
-  background:#b5db2a;
-  color:#fff;
-  font-size:12px;
+  font-size:14px;
+  font-weight:600;
+  color:#7f9c13;
 }
 .program-filter__count[hidden]{ display:none; }
 
@@ -695,7 +689,8 @@ body .pillhdr .pillhdr__burger span{ background:#2b2621; }
             <path d="M4 6h16M7 12h10M10 18h4"/>
           </svg>
           <span>{{ __('tour_filter.title') }}</span>
-          <span class="program-filter__count js-selected-count" @if(!$selectedCount) hidden @endif>{{ $selectedCount }}</span>
+          {{-- Spelled out, so it is not read as a count of the tours found. --}}
+          <span class="program-filter__count js-selected-count" data-label="{{ __('tour_filter.selected', ['count' => ':count']) }}" @if(!$selectedCount) hidden @endif>&middot; {{ __('tour_filter.selected', ['count' => $selectedCount]) }}</span>
         </button>
 
         <div class="program-filter__result">
@@ -845,8 +840,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function syncCount() {
-    count.textContent = String(tickedBoxes());
-    count.hidden = tickedBoxes() === 0;
+    var ticked = tickedBoxes();
+    count.textContent = '· ' + count.dataset.label.replace(':count', ticked);
+    count.hidden = ticked === 0;
   }
 
   function showCount(total) {

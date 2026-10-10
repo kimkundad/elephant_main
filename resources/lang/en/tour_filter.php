@@ -3,6 +3,7 @@
 return [
     'title' => 'Filters',
     'clear' => 'Clear all',
+    'selected' => ':count selected',
     'apply' => 'Show :count tours',
     'close' => 'Close filters',
 

@@ -3,6 +3,7 @@
 return [
     'title' => 'ตัวกรอง',
     'clear' => 'ล้างทั้งหมด',
+    'selected' => 'เลือก :count',
     'apply' => 'ดู :count ทัวร์',
     'close' => 'ปิดตัวกรอง',
 
