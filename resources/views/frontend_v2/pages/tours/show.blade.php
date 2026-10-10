@@ -24,9 +24,20 @@
 
 @push('styles')
 <style>
+/* With no hero for the bar to float over, the header sits in the flow as a
+   plain white strip and the page opens on the booking panel. */
+/* The header partial styles it as an overlay from a <style> inside <body>,
+   which comes after this one, so these need the extra specificity to win. */
+body .pillhdr{ position:relative; }
+body .pillhdr .pillhdr__bar{ background:#fff; padding-block:14px; }
+body .pillhdr.is-stuck{ position:relative; }
+body .pillhdr.is-stuck .pillhdr__bar{ box-shadow:none; padding-block:14px; }
+body .pillhdr .pillhdr__flag .flag-icon{ box-shadow:0 0 0 1px rgba(0,0,0,.12); }
+body .pillhdr .pillhdr__burger span{ background:#2b2621; }
+
 .tour-v2{
   background:#f7f5f1;
-  padding:70px 0 90px;
+  padding:40px 0 90px;
 }
 .tour-grid{
   display:grid;
@@ -490,11 +501,6 @@ textarea.tour-form-control{
 @endpush
 
 @section('content')
-
-{{-- HERO --}}
-<section class="about-hero" style="background-image:url('{{ Vite::asset('resources/frontend/images/bg-chang.webp') }}')">
-  <div class="about-hero__overlay"></div>
-</section>
 
 <section class="tour-v2">
   <div class="container">
