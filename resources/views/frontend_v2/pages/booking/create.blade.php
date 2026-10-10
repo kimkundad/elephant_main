@@ -232,18 +232,6 @@
     width:calc(100% - 12px);
   }
 }
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
-}
-
-@media (min-width: 1500px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1350px;
-    }
-}
-
 /* Validation feedback. The controller bounces back with withErrors() from six
    places plus validate(); without these the form just reloaded silently. */
 .booking-errors{

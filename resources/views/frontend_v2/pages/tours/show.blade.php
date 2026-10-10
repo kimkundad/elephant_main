@@ -510,17 +510,6 @@ textarea.tour-form-control{
     font-size: 13px;
   }
 }
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
-}
-
-@media (min-width: 1500px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1350px;
-    }
-}
 </style>
 @endpush
 

@@ -74,17 +74,6 @@
   .contact-form .form-row{ grid-template-columns: 1fr; }
   .contact-title{ font-size:34px; }
 }
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
-}
-
-@media (min-width: 1500px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1350px;
-    }
-}
 @media (min-width: 768px) {
     .col-md-4 {
         flex: 0 0 33.333333%;

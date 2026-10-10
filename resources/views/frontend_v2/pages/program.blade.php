@@ -80,12 +80,6 @@
   .program-title{ font-size:24px; }
 }
 
-@media (min-width: 1200px) {
-    .container, .elementor-section.elementor-section-boxed > .elementor-container {
-        max-width: 1140px;
-    }
-}
-
 /* Program list v2 */
 .program-list{
   padding: 80px 0 40px;
