@@ -409,7 +409,7 @@
     flex: 0 0 auto;
     border: 0;
     border-radius: 999px;
-    background: #0f8a4a;
+    background: #b5db2a;
     color: #fff;
     font-weight: 700;
     font-size: 17px;
@@ -421,7 +421,7 @@
 .hero-discovery__button-icon{ display: none; }
 
 .hero-discovery__button:hover{
-    background: #0c733e;
+    background: #a6cb24;
     transform: translateY(-1px);
 }
 
