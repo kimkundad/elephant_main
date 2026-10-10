@@ -1268,27 +1268,82 @@ document.addEventListener('DOMContentLoaded', function () {
     return r.left + r.width / 2;
   };
 
-  const sync = () => {
+  const nearestSlide = () => {
     const middle = centreOf(strip);
-    let current = 0;
+    let index = 0;
     let best = Infinity;
 
     slides.forEach((slide, i) => {
       const distance = Math.abs(centreOf(slide) - middle);
-      if (distance < best) { best = distance; current = i; }
+      if (distance < best) { best = distance; index = i; }
     });
 
+    return index;
+  };
+
+  let current = 0;
+
+  const sync = () => {
+    current = nearestSlide();
     dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+  };
+
+  const goTo = (index) => {
+    current = (index + slides.length) % slides.length;
+    strip.scrollBy({ left: centreOf(slides[current]) - centreOf(strip), behavior: 'smooth' });
   };
 
   dots.forEach((dot, i) => {
     dot.addEventListener('click', function () {
-      strip.scrollBy({ left: centreOf(slides[i]) - centreOf(strip), behavior: 'smooth' });
+      pauseAutoplay();
+      goTo(i);
     });
   });
 
+  // Autoplay, unless the visitor asked for less motion. It pauses while the
+  // section is off screen and for a while after a swipe, so it never fights
+  // someone looking at a picture.
+  const stillMoment = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let timer = null;
+  let resume = null;
+  let visible = true;
+
+  const isSlider = () => window.getComputedStyle(strip).display === 'flex';
+
+  const stopAutoplay = () => {
+    window.clearInterval(timer);
+    timer = null;
+  };
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (stillMoment.matches || !visible || !isSlider()) return;
+    timer = window.setInterval(() => goTo(nearestSlide() + 1), 4500);
+  };
+
+  function pauseAutoplay() {
+    stopAutoplay();
+    window.clearTimeout(resume);
+    resume = window.setTimeout(startAutoplay, 9000);
+  }
+
+  ['pointerdown', 'touchstart', 'wheel'].forEach((event) => {
+    strip.addEventListener(event, pauseAutoplay, { passive: true });
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      visible ? startAutoplay() : stopAutoplay();
+    }, { threshold: 0.4 }).observe(strip);
+  }
+
+  stillMoment.addEventListener('change', startAutoplay);
+  window.addEventListener('resize', startAutoplay);
+
   strip.addEventListener('scroll', sync, { passive: true });
   sync();
+  startAutoplay();
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
