@@ -215,6 +215,15 @@
                 <div class="col-xs-6">
                     <nav>
                         <ul>
+                            <li class="nav-link " data-src="{{ $menuActiveImage }}">
+                                <a href="{{ route('frontend.home') }}">
+                                    <div class="real">{{ __('common.nav_home') }}</div>
+                                    <div class="hover">
+                                        <span>{{ __('common.nav_home') }}</span>
+                                        <div class="cover-hover"></div>
+                                    </div>
+                                </a>
+                            </li>
                             <li class="nav-link " data-src="{{ $menuLinkImages['about'] }}">
                                 <a href="{{ route('frontend.about') }}">
                                     <div class="real">About</div>

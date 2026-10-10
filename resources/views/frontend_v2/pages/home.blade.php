@@ -620,6 +620,10 @@
     display: contents;
 }
 
+#home-content-1 .welcome-intro-dots {
+    display: none;
+}
+
 #home-content-1 .welcome-intro-image {
     display: flex;
     align-items: flex-start;
@@ -884,11 +888,38 @@
     #home-content-1 .welcome-intro-slider::-webkit-scrollbar { display: none; }
 
     #home-content-1 .welcome-intro-slider .welcome-intro-image {
-        flex: 0 0 84%;
-        max-width: 84%;
+        flex: 0 0 100%;
+        max-width: 100%;
         padding: 0;
         margin-bottom: 0;
         scroll-snap-align: center;
+    }
+
+    /* One photograph at a time leaves nothing peeking to say it slides, so
+       the dots do that job. */
+    #home-content-1 .welcome-intro-dots {
+        display: flex;
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    #home-content-1 .welcome-intro-dots button {
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(43, 38, 33, .25);
+        cursor: pointer;
+        transition: background-color .2s ease, transform .2s ease;
+    }
+
+    #home-content-1 .welcome-intro-dots button.is-active {
+        background: #b5db2a;
+        transform: scale(1.3);
     }
 
     #home-content-1 .welcome-intro-image img {
@@ -1050,6 +1081,11 @@
                                 <div class="col-lg-3 col-md-6 mb-20 welcome-intro-image welcome-intro-image-b">
                                     <img src="{{ $welcomeImageTwo }}" alt="Welcome 2">
                                 </div>
+                          </div>
+
+                          <div class="welcome-intro-dots" aria-hidden="true">
+                                <button type="button" class="is-active" data-slide="0"></button>
+                                <button type="button" data-slide="1"></button>
                           </div>
 
 
@@ -1216,6 +1252,45 @@
 
         @push('scripts')
 <script>
+// The welcome photographs scroll as a strip on phones; the dots follow along
+// and jump to a picture when tapped.
+document.addEventListener('DOMContentLoaded', function () {
+  const strip = document.querySelector('.welcome-intro-slider');
+  const dots = Array.from(document.querySelectorAll('.welcome-intro-dots button'));
+  if (!strip || !dots.length) return;
+
+  const slides = Array.from(strip.querySelectorAll('.welcome-intro-image'));
+
+  // Measured against the strip itself: offsetLeft answers to whichever
+  // ancestor is positioned, which is not this element.
+  const centreOf = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.left + r.width / 2;
+  };
+
+  const sync = () => {
+    const middle = centreOf(strip);
+    let current = 0;
+    let best = Infinity;
+
+    slides.forEach((slide, i) => {
+      const distance = Math.abs(centreOf(slide) - middle);
+      if (distance < best) { best = distance; current = i; }
+    });
+
+    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+  };
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', function () {
+      strip.scrollBy({ left: centreOf(slides[i]) - centreOf(strip), behavior: 'smooth' });
+    });
+  });
+
+  strip.addEventListener('scroll', sync, { passive: true });
+  sync();
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const heroSearchInput = document.getElementById('hero-search-input');
   const heroAutocomplete = document.getElementById('hero-autocomplete');
