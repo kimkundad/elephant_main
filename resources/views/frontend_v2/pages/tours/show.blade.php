@@ -123,29 +123,6 @@
   line-height:1.8;
   margin-bottom:14px;
 }
-.tour-price-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  align-items:center;
-}
-.tour-price-badge{
-  display:inline-block;
-  background:#2b2621;
-  color:#fff;
-  padding:8px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.08em;
-}
-.tour-price-badge--child{
-  background:#fff;
-  color:#2b2621;
-  border:1px solid rgba(0,0,0,.14);
-  font-weight:600;
-}
-
 /* The Book button is what the page is for, so it carries the site accent
    instead of the plain outline it shared with the card border. */
 .session-card.session-card-link .session-btn{
@@ -463,7 +440,7 @@ textarea.tour-form-control{
 @media (max-width: 992px){
   .tour-grid{ grid-template-columns: 1fr; }
   /* Stacked, the description sat between the calendar and the sessions, so
-     booking meant scrolling past it. Prices and sessions come first and the
+     booking meant scrolling past it. The sessions come first and the
      description reads after them. */
   .tour-detail-col{
     display: flex;
@@ -471,7 +448,6 @@ textarea.tour-form-control{
   }
   .tour-detail-col > *{ order: 5; }
   .tour-detail-col > .tour-detail-head{ order: 1; margin-bottom: 14px; }
-  .tour-detail-col > .tour-price-row{ order: 2; margin-bottom: 14px; }
   .tour-detail-col > .tour-sessions{ order: 3; margin-top: 0; }
   .tour-detail-col > .tour-sub{ order: 4; margin-top: 22px; }
   .tour-title{ font-size:34px; }
@@ -481,8 +457,8 @@ textarea.tour-form-control{
 @media (max-width: 575px){
   .tour-gallery{ column-count:1; }
   .tour-title{ font-size: 26px; }
-  /* The intro runs long on a phone; smaller and tighter keeps the price and
-     the session list within reach of the fold. */
+  /* The intro runs long on a phone; smaller and tighter keeps the session
+     list within reach of the fold. */
   .tour-sub{
     font-size: 14px;
     line-height: 1.6;
@@ -603,11 +579,6 @@ textarea.tour-form-control{
 
         <div class="tour-sub">
           {{ $tourShortDescription }}
-        </div>
-
-        <div class="tour-price-row">
-          <span class="tour-price-badge">{{ __('common.price_adult') }} THB {{ number_format($tour->price_adult ?? 0) }}</span>
-          <span class="tour-price-badge tour-price-badge--child">{{ __('common.price_child') }} THB {{ number_format($tour->price_child ?? 0) }}</span>
         </div>
 
         <div class="tour-sessions" id="sessions-wrap">
