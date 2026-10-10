@@ -254,9 +254,28 @@
 }
 
 /* Program list v2 */
+/* With no hero for it to float over, the header sits in the flow here as a
+   plain white strip. The partial styles itself from a <style> inside <body>,
+   which comes after this one, hence the extra specificity. */
+body .pillhdr{ position:relative; }
+body .pillhdr .pillhdr__bar{ background:#fff; padding-block:14px; }
+body .pillhdr.is-stuck{ position:relative; }
+body .pillhdr.is-stuck .pillhdr__bar{ box-shadow:none; padding-block:14px; }
+body .pillhdr .pillhdr__flag .flag-icon{ box-shadow:0 0 0 1px rgba(0,0,0,.12); }
+body .pillhdr .pillhdr__burger span{ background:#2b2621; }
+
 .program-list{
-  padding: 80px 0 40px;
+  padding: 36px 0 40px;
   background:#f7f5f1;
+}
+.program-heading{
+  margin:0 0 20px;
+  font-size:38px;
+  line-height:1.1;
+  color:#2b2621;
+}
+@media (max-width:767px){
+  .program-heading{ font-size:28px; margin-bottom:16px; }
 }
 .program-list.is-loading .program-grid,
 .program-list.is-loading .program-empty{
@@ -644,22 +663,12 @@
 @endpush
 
 @section('content')
-@php
-  $programHeroBackground = \App\Models\PageMedia::url('v2.program.hero.background', Vite::asset('resources/frontend/images/bg-chang.webp'));
-@endphp
-
-{{-- HERO --}}
-<section class="about-hero" style="background-image:url('{{ $programHeroBackground }}')">
-  <div class="about-hero__overlay"></div>
-  <div class="container about-hero__inner">
-    <div class="about-hero__kicker">SMALL ELEPHANTS</div>
-    <h1 class="about-hero__title">{{ app()->getLocale() === 'en' ? 'Our Elephant Tours' : 'โปรแกรมท่องเที่ยว' }}</h1>
-  </div>
-</section>
 
 
 <section id="program-list" class="program-list">
   <div class="container">
+    <h1 class="program-heading">{{ app()->getLocale() === 'en' ? 'Our Elephant Tours' : 'โปรแกรมท่องเที่ยว' }}</h1>
+
     {{-- One button, and everything to choose from behind it. It is a plain GET
          form, so the filters work without JavaScript; the script only opens the
          panel and keeps the count on the button fresh. --}}
