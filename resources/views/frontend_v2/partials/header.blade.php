@@ -100,6 +100,23 @@
 .pillhdr__langitem .flag-icon{ width:22px; height:22px; border-radius:50%; flex:0 0 auto; }
 .pillhdr__langcheck{ width:16px; height:16px; margin-left:auto; color:#7f9c13; }
 
+.nav-menu__close{
+  position:absolute;
+  top:24px; right:24px;
+  z-index:5;
+  display:grid; place-items:center;
+  width:48px; height:48px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:50%;
+  background:transparent;
+  color:#fff;
+  cursor:pointer;
+  transition:background-color .2s ease, border-color .2s ease;
+}
+.nav-menu__close svg{ width:22px; height:22px; }
+.nav-menu__close:hover{ background:rgba(255,255,255,.12); border-color:#fff; }
+
 /* The theme's own hamburger styles still drive the full screen menu, so this
    only decides when it shows and keeps the bars visible on a light bar. */
 .pillhdr__burger{ display:none; }
@@ -168,6 +185,14 @@
     </div>
 
     <article class="nav-menu">
+            {{-- The hamburger is hidden behind the open menu, so closing needs its
+                 own button. --}}
+            <button type="button" class="nav-menu__close" id="v2-menu-close" aria-label="{{ __('common.close') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+
             <div class="box-menu">
                 <div class="col-xs-6">
                     <div>
@@ -236,6 +261,22 @@
 
     sync();
     window.addEventListener('scroll', sync, { passive: true });
+})();
+
+// Closing the full screen menu runs the theme's own hamburger handler, so the
+// body scroll lock and the image fades unwind exactly as they were set.
+(function () {
+    var close = document.getElementById('v2-menu-close');
+    var burger = document.getElementById('v2-menu-toggle');
+    if (!close || !burger) return;
+
+    close.addEventListener('click', function () {
+        burger.click();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.querySelector('.nav-menu.active')) burger.click();
+    });
 })();
 
 // Language menu: the flag opens it, a click anywhere else or Escape closes it.

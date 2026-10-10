@@ -4,6 +4,7 @@ return [
     'program'           => 'PROGRAM',
     'book_now'          => 'Book Now',
     'menu'              => 'Menu',
+    'close'             => 'Close',
     'language_switch'   => 'Change language',
     'nav_home'          => 'Home',
     'nav_programs'      => 'Programs',
