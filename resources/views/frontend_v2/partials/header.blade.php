@@ -88,17 +88,6 @@
 .pillhdr__lang a.is-active{ opacity:1; text-decoration:underline; text-underline-offset:4px; }
 .pillhdr.is-stuck .pillhdr__lang{ color:#2b2621; }
 
-.pillhdr__cta{
-  display:inline-flex; align-items:center;
-  min-height:46px; padding:0 22px;
-  border-radius:999px;
-  background:#b5db2a; color:#fff;
-  font-size:14px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-  text-decoration:none;
-  transition:background-color .2s ease;
-}
-.pillhdr__cta:hover{ background:#a6cb24; color:#fff; }
-
 /* The theme's own hamburger styles still drive the full screen menu, so this
    only decides when it shows and keeps the bars visible on a light bar. */
 .pillhdr__burger{ display:none; }
@@ -108,7 +97,7 @@
   .pillhdr__nav a{ padding-inline:16px; font-size:14px; }
 }
 @media (max-width:991px){
-  .pillhdr__nav, .pillhdr__cta, .pillhdr__icon{ display:none; }
+  .pillhdr__nav, .pillhdr__icon{ display:none; }
   .pillhdr__burger{ display:block; }
   .pillhdr__actions{ margin-left:auto; }
   .pillhdr__bar{ padding-block:14px; }
@@ -147,8 +136,6 @@
                     <span aria-hidden="true">/</span>
                     <a href="{{ route('frontend.locale.switch', 'th') }}" class="{{ $locale === 'th' ? 'is-active' : '' }}">TH</a>
                 </div>
-
-                <a class="pillhdr__cta" href="{{ route('frontend.program') }}">{{ __('common.book_now') }}</a>
 
                 {{-- Keeps the class the theme script binds the full screen menu to. --}}
                 <div class="hamburger pillhdr__burger" id="v2-menu-toggle" role="button" tabindex="0" aria-label="{{ __('common.menu') }}">
