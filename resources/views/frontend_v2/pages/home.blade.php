@@ -418,6 +418,8 @@
     transition: transform .2s ease, background .2s ease;
 }
 
+.hero-discovery__button-icon{ display: none; }
+
 .hero-discovery__button:hover{
     background: #0c733e;
     transform: translateY(-1px);
@@ -749,12 +751,12 @@
         margin-bottom: 14px;
     }
 
+    /* One pill with the button inside it, as the field is the whole point of
+       the hero on a phone and a stacked button pushed it up the screen. */
     .hero-discovery__search{
-        flex-direction: column;
-        align-items: stretch;
-        border-radius: 24px;
-        padding: 16px;
-        gap: 10px;
+        border-radius: 999px;
+        padding: 7px 7px 7px 22px;
+        gap: 8px;
     }
 
     .hero-discovery__field{
@@ -763,10 +765,16 @@
     }
 
     .hero-discovery__button{
-        width: 100%;
-        padding: 14px 18px;
-        font-size: 15px;
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border-radius: 50%;
     }
+
+    .hero-discovery__button-label{ display: none; }
+    .hero-discovery__button-icon{ display: block; width: 21px; height: 21px; }
 
     .hero-discovery__autocomplete{
         border-radius: 20px;
@@ -960,8 +968,12 @@
                                 autocomplete="off"
                                 aria-label="Search programs"
                             >
-                            <button class="hero-discovery__button" type="submit">
-                                {{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}
+                            <button class="hero-discovery__button" type="submit" aria-label="{{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}">
+                                <span class="hero-discovery__button-label">{{ \App\Models\SiteText::getValue('home.hero.discovery_cta', 'Search') }}</span>
+                                {{-- Shown in place of the word on phones, where the field needs the room. --}}
+                                <svg class="hero-discovery__button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                                </svg>
                             </button>
                         </form>
                     </div>
