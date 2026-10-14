@@ -166,6 +166,45 @@ class ProgramFilterPanelTest extends TestCase
             ->assertSee('One hour feeding');
     }
 
+    public function test_a_search_for_a_place_ticks_that_box(): void
+    {
+        // Coming from the home page search with 'Chiang Mai' means the filter.
+        $this->get('/programs?q=Chiang+Mai')
+            ->assertOk()
+            ->assertSee('value="chiang-mai" checked', false)
+            ->assertSee('Full day trek')
+            ->assertDontSee('One hour feeding');
+    }
+
+    public function test_the_case_and_the_spacing_do_not_matter(): void
+    {
+        foreach (['chiang mai', 'CHIANG MAI', '  Chiang Mai  '] as $term) {
+            $this->get('/programs?q=' . urlencode($term))
+                ->assertOk()
+                ->assertSee('value="chiang-mai" checked', false);
+        }
+    }
+
+    public function test_a_duration_or_an_activity_ticks_the_same_way(): void
+    {
+        $this->get('/programs?q=1-Hour+Experience')
+            ->assertOk()
+            ->assertSee('value="one_hour" checked', false);
+
+        $this->get('/programs?q=Elephant+Feeding')
+            ->assertOk()
+            ->assertSee('value="hand-feeding" checked', false);
+    }
+
+    public function test_a_phrase_that_is_not_an_option_stays_a_text_search(): void
+    {
+        // Part of a name, not the whole of one: still a search of the copy.
+        $this->get('/programs?q=feeding')
+            ->assertOk()
+            ->assertDontSee('value="hand-feeding" checked', false)
+            ->assertSee('One hour feeding');
+    }
+
     public function test_the_panel_can_fetch_just_the_cards(): void
     {
         $response = $this->getJson('/programs?partial=1&duration[]=one_hour')->assertOk();

@@ -82,6 +82,61 @@ class HomeController extends Controller
         }
         $selectedProvinces = array_values(array_intersect($selectedProvinces, $provinces->pluck('slug')->all()));
 
+        /**
+         * Someone searching "Chiang Mai" from the home page means the filter,
+         * not a phrase to look for in the copy, so an exact match on any
+         * option's name ticks that box instead. Case and spacing aside, it has
+         * to be the whole term: "prepare their food" stays a text search.
+         */
+        if ($searchTerm !== '') {
+            $fold = fn (?string $value) => mb_strtolower(trim((string) $value));
+            $names = [];
+
+            foreach ($provinces as $province) {
+                foreach ([$province->name_en, $province->name_th, $province->slug] as $name) {
+                    $names[$fold($name)] = ['province', $province->slug];
+                }
+            }
+
+            foreach (Tour::DURATIONS as $duration) {
+                foreach (['en', 'th'] as $locale) {
+                    $names[$fold(__('tour_filter.durations.' . $duration, [], $locale))] = ['duration', $duration];
+                }
+            }
+
+            foreach (Tour::EXPERIENCE_TYPES as $type) {
+                foreach (['en', 'th'] as $locale) {
+                    $names[$fold(__('tour_filter.experience_types.' . $type, [], $locale))] = ['experience', $type];
+                }
+            }
+
+            foreach ($availableTags as $tag) {
+                foreach ([$tag->name_en, $tag->name_th, $tag->slug] as $name) {
+                    $names[$fold($name)] = ['tags', $tag->slug];
+                }
+            }
+
+            unset($names['']);
+
+            if (isset($names[$fold($searchTerm)])) {
+                [$group, $value] = $names[$fold($searchTerm)];
+
+                $bucket = match ($group) {
+                    'province' => 'selectedProvinces',
+                    'duration' => 'selectedDurations',
+                    'experience' => 'selectedExperiences',
+                    'tags' => 'selectedTags',
+                };
+
+                if (!in_array($value, $$bucket, true)) {
+                    $$bucket[] = $value;
+                }
+
+                // The term became a filter, so it is no longer a text search.
+                $searchTerm = '';
+            }
+        }
+
         $selectedCount = count($selectedTags) + count($selectedDurations) + count($selectedExperiences) + count($selectedProvinces);
 
         $candidates = Tour::query()
