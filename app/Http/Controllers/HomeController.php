@@ -84,9 +84,9 @@ class HomeController extends Controller
 
         /**
          * Someone searching "Chiang Mai" from the home page means the filter,
-         * not a phrase to look for in the copy, so an exact match on any
-         * option's name ticks that box instead. Case and spacing aside, it has
-         * to be the whole term: "prepare their food" stays a text search.
+         * not a phrase to hunt through the copy, so a term that names an
+         * option ticks that box instead. Case, spacing and either language
+         * aside, and part of a name counts: "Hand" finds Hand Feeding.
          */
         if ($searchTerm !== '') {
             $fold = fn (?string $value) => mb_strtolower(trim((string) $value));
@@ -118,18 +118,36 @@ class HomeController extends Controller
 
             unset($names['']);
 
-            if (isset($names[$fold($searchTerm)])) {
-                [$group, $value] = $names[$fold($searchTerm)];
+            $term = $fold($searchTerm);
 
-                $bucket = match ($group) {
-                    'province' => 'selectedProvinces',
-                    'duration' => 'selectedDurations',
-                    'experience' => 'selectedExperiences',
-                    'tags' => 'selectedTags',
-                };
+            // The whole name of an option, or a piece of one: "Hand" finds Hand
+            // Feeding. Two letters at least, or a stray letter would tick half
+            // the panel.
+            $hits = isset($names[$term])
+                ? [$names[$term]]
+                : (mb_strlen($term) >= 2
+                    ? array_values(array_filter(
+                        $names,
+                        fn (string $name) => str_contains($name, $term),
+                        ARRAY_FILTER_USE_KEY
+                    ))
+                    : []);
 
-                if (!in_array($value, $$bucket, true)) {
-                    $$bucket[] = $value;
+            // Several boxes in one group read as "either", which widens the
+            // list. Across groups they read as "both", which would empty it, so
+            // a term that spans groups stays a search of the copy.
+            if ($hits && count(array_unique(array_column($hits, 0))) === 1) {
+                foreach ($hits as [$group, $value]) {
+                    $bucket = match ($group) {
+                        'province' => 'selectedProvinces',
+                        'duration' => 'selectedDurations',
+                        'experience' => 'selectedExperiences',
+                        'tags' => 'selectedTags',
+                    };
+
+                    if (!in_array($value, $$bucket, true)) {
+                        $$bucket[] = $value;
+                    }
                 }
 
                 // The term became a filter, so it is no longer a text search.

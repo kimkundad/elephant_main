@@ -196,13 +196,36 @@ class ProgramFilterPanelTest extends TestCase
             ->assertSee('value="hand-feeding" checked', false);
     }
 
-    public function test_a_phrase_that_is_not_an_option_stays_a_text_search(): void
+    public function test_part_of_a_name_ticks_it_too(): void
     {
-        // Part of a name, not the whole of one: still a search of the copy.
-        $this->get('/programs?q=feeding')
+        // 'Hand' finds Hand Feeding, and so does 'feeding'.
+        foreach (['feeding', 'Elephant Feed'] as $term) {
+            $this->get('/programs?q=' . urlencode($term))
+                ->assertOk()
+                ->assertSee('value="hand-feeding" checked', false);
+        }
+    }
+
+    public function test_a_term_spanning_two_groups_stays_a_text_search(): void
+    {
+        // 'day' is in two durations, which widens the list, but a term that
+        // reaches a second group would read as 'both' and empty it.
+        $this->get('/programs?q=day')
+            ->assertOk()
+            ->assertSee('value="full_day" checked', false)
+            ->assertSee('value="half_day_morning" checked', false);
+
+        $this->get('/programs?q=elephants')
+            ->assertOk()
+            ->assertDontSee('value="hand-feeding" checked', false);
+    }
+
+    public function test_a_single_letter_ticks_nothing(): void
+    {
+        $this->get('/programs?q=a')
             ->assertOk()
             ->assertDontSee('value="hand-feeding" checked', false)
-            ->assertSee('One hour feeding');
+            ->assertDontSee('value="chiang-mai" checked', false);
     }
 
     public function test_the_panel_can_fetch_just_the_cards(): void
