@@ -62,12 +62,30 @@ class Booking extends Model
     }
 
     /**
-     * When the guest has to be at the pickup point, e.g. "08:30". Null when the
-     * tour has no pickup lead time set.
+     * When the guest has to be somewhere, e.g. "08:30".
+     *
+     * A guest we collect is told when the van reaches the pickup point, which
+     * is the tour's lead time before the start. A guest driving themselves is
+     * told to be at the camp shortly before it starts instead, so the clock
+     * has to follow the label.
+     *
+     * Null when the tour sets no lead time and nobody is being collected.
      */
     public function pickupTime(): ?string
     {
-        return $this->tour?->pickupTimeFor($this->session?->start_time);
+        $start = $this->session?->start_time;
+
+        if (!$start) {
+            return null;
+        }
+
+        if ($this->self_drive) {
+            return \Carbon\Carbon::parse($start)
+                ->subMinutes(Tour::SELF_DRIVE_ARRIVE_MINUTES)
+                ->format(TourSession::TIME_FORMAT);
+        }
+
+        return $this->tour?->pickupTimeFor($start);
     }
 
     /** What to call that time: guests we pick up wait for us, self drivers arrive themselves. */

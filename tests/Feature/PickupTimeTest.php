@@ -66,6 +66,26 @@ class PickupTimeTest extends TestCase
             ->assertSee('08:00');
     }
 
+    public function test_a_self_driver_is_given_the_time_to_reach_the_camp(): void
+    {
+        // Two hours before a 09:30 start is when the van would leave; a guest
+        // driving themselves is due twenty minutes before it starts.
+        $tour = $this->tourWithLead(2);
+
+        $this->assertSame('09:10', $this->bookingFor($tour, ['self_drive' => true])->pickupTime());
+        $this->assertSame('07:30', $this->bookingFor($tour, ['public_code' => 'PICKUPCODE2'])->pickupTime());
+    }
+
+    public function test_the_email_gives_a_self_driver_that_same_time(): void
+    {
+        $booking = $this->bookingFor($this->tourWithLead(2), ['self_drive' => true]);
+
+        $html = (new BookingConfirmedMail($booking, 'fake-png', 'https://example.test/b/PICKUPCODE'))->render();
+
+        $this->assertStringContainsString('Arrive at the venue by: 09:10', $html);
+        $this->assertStringNotContainsString('07:30', $html);
+    }
+
     public function test_self_drivers_are_told_when_to_reach_the_camp(): void
     {
         $tour = $this->tourWithLead(1);
