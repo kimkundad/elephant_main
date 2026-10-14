@@ -501,13 +501,6 @@
     font-weight: 700;
 }
 
-.hero-discovery__suggestion-sub{
-    display: block;
-    font-size: 14px;
-    color: #607086;
-    margin-top: 4px;
-}
-
 #home-content-1 {
     padding: 60px 0 40px;
     position: relative;
@@ -806,9 +799,6 @@
         font-size: 16px;
     }
 
-    .hero-discovery__suggestion-sub{
-        font-size: 12px;
-    }
 
     #home-content-1 {
         padding: 56px 0 10px;
@@ -1052,7 +1042,6 @@
                         <span class="hero-discovery__suggestion-icon">⌖</span>
                         <span>
                             <span class="hero-discovery__suggestion-label">{{ $tag->label }}</span>
-                            <span class="hero-discovery__suggestion-sub">{{ app()->getLocale() === 'en' ? 'Tour category' : 'หมวดหมู่กิจกรรม' }}</span>
                         </span>
                     </button>
                 @endforeach
