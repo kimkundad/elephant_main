@@ -1,4 +1,6 @@
-FROM php:8.2-fpm-alpine
+# Pinned, not a floating 8.2 tag: 8.2.35 carries the fix for the October 2026
+# RCEs (CVE-2026-109618 / CVE-2026-109619). Bump this line to move PHP.
+FROM php:8.2.35-fpm-alpine
 
 RUN apk add --no-cache \
     bash git curl unzip \
