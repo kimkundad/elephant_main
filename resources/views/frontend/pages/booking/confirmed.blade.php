@@ -70,3 +70,7 @@
   </div>
 </div>
 @endsection
+
+@push("scripts")
+@include("partials.tracking.purchase")
+@endpush

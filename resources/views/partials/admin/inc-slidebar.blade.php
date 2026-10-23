@@ -108,6 +108,7 @@
                 'label' => 'ระบบ',
                 'items' => [
                     ['title' => 'Site Settings', 'url' => route('admin.settings.edit'), 'icon' => 'settings'],
+                    ['title' => 'Tracking & Tags', 'url' => route('admin.tracking.edit'), 'icon' => 'tag'],
                     ['title' => 'Users', 'url' => url('admin/users'), 'icon' => 'users'],
                     ['title' => 'Logout', 'url' => url('admin/logout'), 'icon' => 'logout'],
                 ],

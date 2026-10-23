@@ -15,6 +15,7 @@ use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\BookingPublicController;
 use App\Http\Controllers\GoogleReviewsController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\TrackingSettingController;
 use App\Http\Controllers\Admin\ElephantController;
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\DiscountCodeController;
@@ -78,11 +79,13 @@ Route::name('frontend.')->group(function () {
     Route::view('/support-us', 'frontend_v2.pages.support-us')->name('support_us');
     Route::view('/terms', 'frontend_v2.pages.terms')->name('terms');
     Route::view('/policy', 'frontend_v2.pages.policy')->name('policy');
+    Route::view('/refund-policy', 'frontend_v2.pages.refund-policy')->name('refund_policy');
 
     Route::get('/v2/what-to-bring', fn () => redirect()->route('frontend.what_to_bring'))->name('what_to_bring.v2');
     Route::get('/v2/support-us', fn () => redirect()->route('frontend.support_us'))->name('support_us.v2');
     Route::get('/v2/terms', fn () => redirect()->route('frontend.terms'))->name('terms.v2');
     Route::get('/v2/policy', fn () => redirect()->route('frontend.policy'))->name('policy.v2');
+    Route::get('/v2/refund-policy', fn () => redirect()->route('frontend.refund_policy'))->name('refund_policy.v2');
 
     // ตรวจสถานะ PromptPay (polling จากหน้า QR)
     Route::get('/booking/{booking}/payment-status', [FrontBookingController::class, 'paymentStatus'])
@@ -186,6 +189,12 @@ Route::middleware(['auth', 'role:superAdmin|admin'])
             ->name('settings.edit');
         Route::post('/settings', [SiteSettingController::class, 'update'])
             ->name('settings.update');
+
+        // Marketing tags (GA4, Meta Pixel, ...)
+        Route::get('/tracking', [TrackingSettingController::class, 'edit'])
+            ->name('tracking.edit');
+        Route::post('/tracking', [TrackingSettingController::class, 'update'])
+            ->name('tracking.update');
 
         // Site texts (v2)
         Route::get('/site-texts/home', [SiteTextController::class, 'editHome'])

@@ -6,12 +6,29 @@ import * as CookieConsent from 'vanilla-cookieconsent';
 
 const config = window.__cookieConsent;
 
-// Push the analytics decision to GA4 Consent Mode (defaults set in <head>).
-function syncGoogleConsent() {
-    if (typeof window.gtag !== 'function') return;
-
+// Push the visitor's decision to the tags: GA4 Consent Mode (defaults set in
+// <head>) and the Meta Pixel, which starts revoked until marketing is accepted.
+function syncTagConsent() {
     const analytics = CookieConsent.acceptedCategory('analytics') ? 'granted' : 'denied';
-    window.gtag('consent', 'update', { analytics_storage: analytics });
+    const marketing = CookieConsent.acceptedCategory('marketing') ? 'granted' : 'denied';
+
+    if (window.__consent) {
+        window.__consent.analytics = analytics === 'granted';
+        window.__consent.marketing = marketing === 'granted';
+    }
+
+    if (typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', {
+            analytics_storage: analytics,
+            ad_storage: marketing,
+            ad_user_data: marketing,
+            ad_personalization: marketing,
+        });
+    }
+
+    if (typeof window.fbq === 'function') {
+        window.fbq('consent', marketing === 'granted' ? 'grant' : 'revoke');
+    }
 }
 
 if (config) {
@@ -30,10 +47,13 @@ if (config) {
             analytics: {
                 autoClear: { cookies: [{ name: /^_ga/ }, { name: '_gid' }] },
             },
+            marketing: {
+                autoClear: { cookies: [{ name: /^_fbp/ }, { name: '_fbc' }, { name: /^_ttp/ }, { name: /^_gcl/ }] },
+            },
         },
 
-        onConsent: syncGoogleConsent,
-        onChange: syncGoogleConsent,
+        onConsent: syncTagConsent,
+        onChange: syncTagConsent,
 
         language: {
             default: config.locale,
@@ -62,6 +82,11 @@ if (config) {
                                 title: t.preferences.analytics_title,
                                 description: t.preferences.analytics_text,
                                 linkedCategory: 'analytics',
+                            },
+                            {
+                                title: t.preferences.marketing_title,
+                                description: t.preferences.marketing_text,
+                                linkedCategory: 'marketing',
                             },
                             { title: t.preferences.more_title, description: t.preferences.more_text },
                         ],

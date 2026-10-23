@@ -4,37 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-94EZMK5EPY"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-
-      // Consent Mode v2: analytics stays denied until the visitor accepts in the
-      // cookie banner. A returning visitor's saved choice (cc_cookie) is read here
-      // so the first page view already uses it.
-      (function () {
-        var analytics = 'denied';
-        try {
-          var match = document.cookie.match(/(?:^|;\s*)cc_cookie=([^;]*)/);
-          var saved = match && JSON.parse(decodeURIComponent(match[1]));
-          if (saved && saved.categories && saved.categories.indexOf('analytics') !== -1) {
-            analytics = 'granted';
-          }
-        } catch (e) {}
-        gtag('consent', 'default', {
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied',
-          analytics_storage: analytics,
-          wait_for_update: 500
-        });
-      })();
-
-      gtag('js', new Date());
-
-      gtag('config', 'G-94EZMK5EPY');
-    </script>
+    @include('partials.tracking.head')
     @php
         $metaTitle = trim($__env->yieldContent('title', 'SMALL ELEPHANTS V2'));
         $metaDescription = trim($__env->yieldContent(
@@ -226,6 +196,7 @@
     @stack('styles')
 </head>
 <body class="v2-body loaded">
+@include("partials.tracking.body")
     <section id="loader">
         <div class="item-logo-loader">
             <img src="{{ $siteSetting?->logo_header_url ?: asset('img/logo.webp') }}"

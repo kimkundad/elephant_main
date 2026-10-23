@@ -4,15 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-94EZMK5EPY"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+    @include("partials.tracking.head")
 
-      gtag('config', 'G-94EZMK5EPY');
-    </script>
     <title>@yield('title', 'SMALL ELEPHANTS')</title>
 
     {{-- ถ้าใช้ Vite --}}
@@ -109,6 +102,7 @@
     @stack('styles')
 </head>
 <body class="@yield('body-class')">
+@include("partials.tracking.body")
 
     @include('frontend.partials.header')
 

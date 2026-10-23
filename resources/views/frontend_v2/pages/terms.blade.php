@@ -52,6 +52,9 @@
           <li><span>&#10003;</span> {{ __('terms.cancellation.items.2') }}</li>
           <li><span>&#10003;</span> {{ __('terms.cancellation.items.3') }}</li>
         </ul>
+        <p class="about-text">
+          <a href="{{ route('frontend.refund_policy') }}">{{ __('refund.page_title') }} &rarr;</a>
+        </p>
 
         <div class="about-eyebrow" style="margin-top:28px;">{{ __('terms.payment.eyebrow') }}</div>
         <h2 class="about-title">{{ __('terms.payment.title') }}</h2>

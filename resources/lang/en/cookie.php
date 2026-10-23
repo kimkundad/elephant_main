@@ -25,6 +25,9 @@ return [
         'analytics_title' => 'Analytics cookies',
         'analytics_text'  => 'These cookies help us understand how visitors use the website through Google Analytics. The data collected does not identify you personally.',
 
+        'marketing_title' => 'Marketing cookies',
+        'marketing_text'  => 'These cookies let us measure our Facebook, Instagram and Google ads, so we can see which ones actually lead to a booking. Turning them off does not stop you seeing ads, it only stops us measuring them.',
+
         'more_title' => 'More information',
         'more_text'  => 'For any questions about our cookie policy, please read our <a href=":policy_url">privacy policy</a> or <a href=":contact_url">contact us</a>.',
     ],
