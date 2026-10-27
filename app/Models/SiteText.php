@@ -14,6 +14,9 @@ class SiteText extends Model
         'value',
     ];
 
+    /** Values already read this request, so one page does not query the same key twice. */
+    private static array $valueCache = [];
+
     public static function getValue(string $key, string $fallback = '', ?string $locale = null): string
     {
         $locale = $locale ?: app()->getLocale();
@@ -21,16 +24,21 @@ class SiteText extends Model
             $locale = 'th';
         }
 
-        static $cache = [];
         $cacheKey = $locale . '|' . $key;
 
-        if (!array_key_exists($cacheKey, $cache)) {
-            $cache[$cacheKey] = static::query()
+        if (!array_key_exists($cacheKey, static::$valueCache)) {
+            static::$valueCache[$cacheKey] = static::query()
                 ->where('key', $key)
                 ->where('locale', $locale)
                 ->value('value');
         }
 
-        return $cache[$cacheKey] ?: $fallback;
+        return static::$valueCache[$cacheKey] ?: $fallback;
+    }
+
+    /** Drop what has been read, after a save and between tests. */
+    public static function forgetCached(): void
+    {
+        static::$valueCache = [];
     }
 }

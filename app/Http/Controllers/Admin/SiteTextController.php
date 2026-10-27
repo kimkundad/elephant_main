@@ -234,6 +234,8 @@ class SiteTextController extends Controller
             ['key' => $key, 'locale' => $locale],
             ['page' => $page, 'section' => $section, 'value' => $value]
         );
+
+        SiteText::forgetCached();
     }
 
     private function linesToArray(string $text): array

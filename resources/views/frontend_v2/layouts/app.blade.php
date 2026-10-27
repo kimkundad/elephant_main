@@ -11,22 +11,44 @@
             'meta_description',
             'Ethical elephant sanctuary experiences in Chiang Mai with meaningful, respectful programs.'
         ));
+        // An admin writing the description in a textarea leaves line breaks in
+        // it, which a meta tag cannot carry.
+        $metaDescription = preg_replace('/\s+/u', ' ', $metaDescription);
         $ogTitle = trim($__env->yieldContent('og_title', $metaTitle));
-        $ogDescription = trim($__env->yieldContent('og_description', $metaDescription));
+        $ogDescription = preg_replace('/\s+/u', ' ', trim($__env->yieldContent('og_description', $metaDescription)));
         $ogImage = trim($__env->yieldContent(
             'og_image',
             $siteSetting?->og_image_url ?: Vite::asset('resources/frontend/images/NEW-home-page-image.webp')
         ));
+
+        // A shared link is often only the page title: a phone's share sheet sends
+        // that and nothing else, so the brand has to be in it.
+        $siteName = trim((string) ($siteSetting?->site_name ?: 'Small Elephants'));
+        $documentTitle = $siteName !== '' && !str_contains($metaTitle, $siteName)
+            ? $metaTitle . ' | ' . $siteName
+            : $metaTitle;
+
+        $canonicalUrl = \App\Support\CanonicalUrl::current();
+        $isThaiPage = app()->getLocale() === 'th';
     @endphp
-    <title>{{ $metaTitle }}</title>
+    <title>{{ $documentTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
     <meta property="og:title" content="{{ $ogTitle }}">
     <meta property="og:description" content="{{ $ogDescription }}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request()->fullUrl() }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:locale" content="{{ $isThaiPage ? 'th_TH' : 'en_US' }}">
+    <meta property="og:locale:alternate" content="{{ $isThaiPage ? 'en_US' : 'th_TH' }}">
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $ogTitle }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image" content="{{ $ogImage }}">
 
     <link rel="icon" href="{{ asset('favicon.ico?v=2') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=2') }}">

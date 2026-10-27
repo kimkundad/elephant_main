@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Canonical Host
+    |--------------------------------------------------------------------------
+    |
+    | The single host every page is shared and indexed under, without a
+    | scheme, e.g. "www.smallelephants.com". Left empty, the host of the
+    | incoming request is used instead.
+    |
+    */
+
+    'canonical_host' => env('APP_CANONICAL_HOST'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

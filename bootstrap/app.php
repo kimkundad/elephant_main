@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Behind nginx the request reaches PHP over plain http; without this the
+        // app builds http:// links for visitors who are on https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->prependToGroup('web', \App\Http\Middleware\BypassSessionForBots::class);
 
         $middleware->validateCsrfTokens(except: [
