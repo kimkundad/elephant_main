@@ -9,6 +9,7 @@
     $menuLinkImages = [
         'about' => \App\Models\PageMedia::url('v2.header.menu.about_image', $menuHoverImage),
         'programs' => \App\Models\PageMedia::url('v2.header.menu.programs_image', $menuHoverImage),
+        'elephants' => \App\Models\PageMedia::url('v2.header.menu.elephants_image', $menuHoverImage),
         'contact' => \App\Models\PageMedia::url('v2.header.menu.contact_image', $menuHoverImage),
     ];
 @endphp
@@ -150,6 +151,7 @@
             <nav class="pillhdr__nav" aria-label="{{ __('common.menu') }}">
                 <a href="{{ route('frontend.home') }}" @if(request()->routeIs('frontend.home')) aria-current="page" @endif>{{ __('common.nav_home') }}</a>
                 <a href="{{ route('frontend.program') }}" @if(request()->routeIs('frontend.program*') || request()->routeIs('frontend.tours.*')) aria-current="page" @endif>{{ __('common.nav_programs') }}</a>
+                <a href="{{ route('frontend.elephants') }}" @if(request()->routeIs('frontend.elephants*')) aria-current="page" @endif>{{ __('common.nav_elephants') }}</a>
                 <a href="{{ route('frontend.about') }}" @if(request()->routeIs('frontend.about')) aria-current="page" @endif>{{ __('common.nav_about') }}</a>
                 <a href="{{ route('frontend.contact') }}" @if(request()->routeIs('frontend.contact')) aria-current="page" @endif>{{ __('common.nav_contact') }}</a>
             </nav>
@@ -238,6 +240,15 @@
                                     <div class="real">Programs</div>
                                     <div class="hover">
                                         <span>Programs</span>
+                                        <div class="cover-hover"></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-link " data-src="{{ $menuLinkImages['elephants'] }}">
+                                <a href="{{ route('frontend.elephants') }}">
+                                    <div class="real">{{ __('common.nav_elephants') }}</div>
+                                    <div class="hover">
+                                        <span>{{ __('common.nav_elephants') }}</span>
                                         <div class="cover-hover"></div>
                                     </div>
                                 </a>

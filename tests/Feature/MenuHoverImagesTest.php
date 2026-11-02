@@ -35,12 +35,14 @@ class MenuHoverImagesTest extends TestCase
     {
         $this->media('v2.header.menu.about_image', 'page-media/about.jpg');
         $this->media('v2.header.menu.programs_image', 'page-media/programs.jpg');
+        $this->media('v2.header.menu.elephants_image', 'page-media/elephants.jpg');
         $this->media('v2.header.menu.contact_image', 'page-media/contact.jpg');
 
         $this->get(route('frontend.home'))
             ->assertOk()
             ->assertSee('page-media/about.jpg', false)
             ->assertSee('page-media/programs.jpg', false)
+            ->assertSee('page-media/elephants.jpg', false)
             ->assertSee('page-media/contact.jpg', false);
     }
 
@@ -51,9 +53,9 @@ class MenuHoverImagesTest extends TestCase
         $html = $this->get(route('frontend.home'))->assertOk()->getContent();
 
         $this->assertSame(
-            4,
+            5,
             substr_count($html, 'page-media/shared-hover.jpg'),
-            'The shared image stands in for all three menu items plus the hover slot itself.'
+            'The shared image stands in for all four menu items plus the hover slot itself.'
         );
     }
 

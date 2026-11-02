@@ -42,6 +42,19 @@
                                 </div>
 
                                 <div class="row mb-6">
+                                    <div class="col-md-12">
+                                        <label class="form-label required">โปรแกรมของช้างตัวนี้</label>
+                                        <select class="form-select" name="tour_id" required>
+                                            <option value="">-- เลือกโปรแกรม --</option>
+                                            @foreach($tours as $tour)
+                                                <option value="{{ $tour->id }}" @selected((string) old('tour_id', $elephant->tour_id) === (string) $tour->id)>{{ $tour->name }}{{ $tour->is_active ? '' : ' (ปิดอยู่)' }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="form-text">ปุ่ม Read more ของช้างตัวนี้ในหน้าแรกจะพาไปหน้าโปรแกรมนี้ ถ้าโปรแกรมถูกปิด จะพาไปหน้า Our Elephants แทน</div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-6">
                                     <div class="col-md-6">
                                         <label class="form-label">วันที่ช่วยเหลือ</label>
                                         <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at', optional($elephant->rescued_at)->format('Y-m-d')) }}">

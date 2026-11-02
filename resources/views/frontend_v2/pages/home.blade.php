@@ -1183,7 +1183,7 @@
                                         @endif
                                     </div>
                                     <div class="elephant-desc">{{ $elephant->getTranslated('history', $elephant->history) }}</div>
-                                    <a href="{{ route('frontend.elephants.v2') }}#{{ $elephant->slug ?? '' }}" class="btn-book" aria-label="Read more">
+                                    <a href="{{ $elephant->programUrl() }}" class="btn-book" aria-label="Read more">
                                         {{ \App\Models\SiteText::getValue('home.actions.read_more', 'Read more') }}
                                     </a>
                                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Elephant;
+use App\Models\Tour;
 use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,7 +24,7 @@ class ElephantController extends Controller
 
     public function create()
     {
-        return view('admin.elephants.create');
+        return view('admin.elephants.create', ['tours' => $this->tours()]);
     }
 
     public function store(Request $request)
@@ -31,6 +32,7 @@ class ElephantController extends Controller
         $data = $request->validate([
             'name_th' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
+            'tour_id' => ['required', 'integer', 'exists:tours,id'],
             'rescued_at' => ['nullable', 'date'],
             'history_th' => ['nullable', 'string'],
             'history_en' => ['nullable', 'string'],
@@ -47,6 +49,7 @@ class ElephantController extends Controller
         $elephant = Elephant::create([
             'name' => $data['name_th'],
             'slug' => $slug,
+            'tour_id' => $data['tour_id'],
             'rescued_at' => $data['rescued_at'] ?? null,
             'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
@@ -71,7 +74,7 @@ class ElephantController extends Controller
     public function edit(Elephant $elephant)
     {
         $elephant->load('translations');
-        return view('admin.elephants.edit', compact('elephant'));
+        return view('admin.elephants.edit', ['elephant' => $elephant, 'tours' => $this->tours()]);
     }
 
     public function update(Request $request, Elephant $elephant)
@@ -79,6 +82,7 @@ class ElephantController extends Controller
         $data = $request->validate([
             'name_th' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
+            'tour_id' => ['required', 'integer', 'exists:tours,id'],
             'rescued_at' => ['nullable', 'date'],
             'history_th' => ['nullable', 'string'],
             'history_en' => ['nullable', 'string'],
@@ -99,6 +103,7 @@ class ElephantController extends Controller
         $elephant->update([
             'name' => $data['name_th'],
             'slug' => $slug,
+            'tour_id' => $data['tour_id'],
             'rescued_at' => $data['rescued_at'] ?? null,
             'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
@@ -134,6 +139,12 @@ class ElephantController extends Controller
         $elephant->save();
 
         return back();
+    }
+
+    /** Every program, so an elephant can be pointed at one before it goes live. */
+    private function tours()
+    {
+        return Tour::orderBy('name')->get(['id', 'name', 'is_active']);
     }
 
     private function uploadImages(array $files): array

@@ -30,6 +30,7 @@
                 <ul class="menu-footer">
                     <li><a href="{{ route('frontend.home') }}">Home</a></li>
                     <li><a href="{{ route('frontend.program.v2') }}">Programs</a></li>
+                    <li><a href="{{ route('frontend.elephants') }}">Our Elephants</a></li>
                     <li><a href="{{ route('frontend.about.v2') }}">About</a></li>
                     <li><a href="{{ route('frontend.contact.v2') }}">Contact</a></li>
                 </ul>

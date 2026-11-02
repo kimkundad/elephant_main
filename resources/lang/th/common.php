@@ -10,6 +10,7 @@ return [
     'nav_programs'      => 'โปรแกรมทัวร์',
     'nav_about'         => 'เกี่ยวกับเรา',
     'nav_contact'       => 'ติดต่อเรา',
+    'nav_elephants'     => 'ช้างของเรา',
     'price_adult'       => 'ผู้ใหญ่',
     'price_child'       => 'เด็ก',
     'no_tours'          => 'ยังไม่มีโปรแกรมในขณะนี้',

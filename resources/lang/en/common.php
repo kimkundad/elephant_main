@@ -10,6 +10,7 @@ return [
     'nav_programs'      => 'Programs',
     'nav_about'         => 'About',
     'nav_contact'       => 'Contact',
+    'nav_elephants'     => 'Our Elephants',
     'price_adult'       => 'Adult',
     'price_child'       => 'Child',
     'no_tours'          => 'No experiences available right now.',

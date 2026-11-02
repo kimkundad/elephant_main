@@ -284,7 +284,7 @@ class HomeController extends Controller
 
         $elephants = Elephant::query()
             ->where('is_active', 1)
-            ->with('translations')
+            ->with(['translations', 'tour'])
             ->orderBy('sort_order')
             ->orderByDesc('id')
             ->get();

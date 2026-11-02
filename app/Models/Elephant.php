@@ -9,6 +9,7 @@ class Elephant extends Model
     protected $fillable = [
         'name',
         'slug',
+        'tour_id',
         'rescued_at',
         'history',
         'images',
@@ -21,6 +22,27 @@ class Elephant extends Model
         'images' => 'array',
         'is_active' => 'boolean',
     ];
+
+    /** The program a guest books to meet this elephant. */
+    public function tour()
+    {
+        return $this->belongsTo(Tour::class);
+    }
+
+    /**
+     * Where "Read more" leads: the elephant's program while it can be booked,
+     * otherwise this elephant on the Our Elephants page.
+     */
+    public function programUrl(): string
+    {
+        $tour = $this->tour;
+
+        if ($tour && Tour::visible()->whereKey($tour->id)->exists()) {
+            return route('frontend.tours.show.v2', $tour->slug);
+        }
+
+        return route('frontend.elephants') . '#' . $this->slug;
+    }
 
     public function translations()
     {
