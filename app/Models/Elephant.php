@@ -38,7 +38,8 @@ class Elephant extends Model
             ?? $this->translations->firstWhere('locale', 'th');
     }
 
-    public function getTranslated(string $field, string $fallback = '', ?string $locale = null): string
+    /** The fallback may be an empty column (history is optional), so null reads as ''. */
+    public function getTranslated(string $field, ?string $fallback = '', ?string $locale = null): string
     {
         $t = $this->translation($locale);
         if ($t && isset($t->{$field}) && $t->{$field} !== '') {
@@ -49,6 +50,6 @@ class Elephant extends Model
             return (string) $this->{$field};
         }
 
-        return $fallback;
+        return $fallback ?? '';
     }
 }
