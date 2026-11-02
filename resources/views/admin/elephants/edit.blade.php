@@ -55,6 +55,30 @@
                                 </div>
 
                                 <div class="row mb-6">
+                                    <div class="col-md-12">
+                                        <h4 class="mb-1">ที่อยู่ของช้าง</h4>
+                                        <div class="form-text mb-4">ข้อมูลภายใน เห็นเฉพาะในหลังบ้าน ไม่แสดงบนเว็บไซต์</div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">จังหวัด</label>
+                                        <select class="form-select" name="province_id">
+                                            <option value="">-- ไม่ระบุ --</option>
+                                            @foreach($provinces as $province)
+                                                <option value="{{ $province->id }}" @selected((string) old('province_id', $elephant->province_id) === (string) $province->id)>{{ $province->name_th }}{{ $province->is_active ? '' : ' (ปิดอยู่)' }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label">ปาง</label>
+                                        <input class="form-control" name="camp_name" value="{{ old('camp_name', $elephant->camp_name) }}" maxlength="255">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">ข้อมูลปาง</label>
+                                        <textarea class="form-control" name="camp_info" rows="4">{{ old('camp_info', $elephant->camp_info) }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-6">
                                     <div class="col-md-6">
                                         <label class="form-label">วันที่ช่วยเหลือ</label>
                                         <input class="form-control" type="date" name="rescued_at" value="{{ old('rescued_at', optional($elephant->rescued_at)->format('Y-m-d')) }}">

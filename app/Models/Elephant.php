@@ -10,6 +10,9 @@ class Elephant extends Model
         'name',
         'slug',
         'tour_id',
+        'province_id',
+        'camp_name',
+        'camp_info',
         'rescued_at',
         'history',
         'images',
@@ -27,6 +30,12 @@ class Elephant extends Model
     public function tour()
     {
         return $this->belongsTo(Tour::class);
+    }
+
+    /** Where the elephant lives. Internal: shown in the admin only. */
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Elephant;
+use App\Models\Province;
 use App\Models\Tour;
 use App\Support\SpacesImageUploader;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class ElephantController extends Controller
 
     public function create()
     {
-        return view('admin.elephants.create', ['tours' => $this->tours()]);
+        return view('admin.elephants.create', ['tours' => $this->tours(), 'provinces' => $this->provinces()]);
     }
 
     public function store(Request $request)
@@ -33,6 +34,9 @@ class ElephantController extends Controller
             'name_th' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
             'tour_id' => ['required', 'integer', 'exists:tours,id'],
+            'province_id' => ['nullable', 'integer', 'exists:provinces,id'],
+            'camp_name' => ['nullable', 'string', 'max:255'],
+            'camp_info' => ['nullable', 'string', 'max:5000'],
             'rescued_at' => ['nullable', 'date'],
             'history_th' => ['nullable', 'string'],
             'history_en' => ['nullable', 'string'],
@@ -50,6 +54,9 @@ class ElephantController extends Controller
             'name' => $data['name_th'],
             'slug' => $slug,
             'tour_id' => $data['tour_id'],
+            'province_id' => $data['province_id'] ?? null,
+            'camp_name' => $data['camp_name'] ?? null,
+            'camp_info' => $data['camp_info'] ?? null,
             'rescued_at' => $data['rescued_at'] ?? null,
             'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
@@ -74,7 +81,11 @@ class ElephantController extends Controller
     public function edit(Elephant $elephant)
     {
         $elephant->load('translations');
-        return view('admin.elephants.edit', ['elephant' => $elephant, 'tours' => $this->tours()]);
+        return view('admin.elephants.edit', [
+            'elephant' => $elephant,
+            'tours' => $this->tours(),
+            'provinces' => $this->provinces(),
+        ]);
     }
 
     public function update(Request $request, Elephant $elephant)
@@ -83,6 +94,9 @@ class ElephantController extends Controller
             'name_th' => ['required', 'string', 'max:255'],
             'name_en' => ['required', 'string', 'max:255'],
             'tour_id' => ['required', 'integer', 'exists:tours,id'],
+            'province_id' => ['nullable', 'integer', 'exists:provinces,id'],
+            'camp_name' => ['nullable', 'string', 'max:255'],
+            'camp_info' => ['nullable', 'string', 'max:5000'],
             'rescued_at' => ['nullable', 'date'],
             'history_th' => ['nullable', 'string'],
             'history_en' => ['nullable', 'string'],
@@ -104,6 +118,9 @@ class ElephantController extends Controller
             'name' => $data['name_th'],
             'slug' => $slug,
             'tour_id' => $data['tour_id'],
+            'province_id' => $data['province_id'] ?? null,
+            'camp_name' => $data['camp_name'] ?? null,
+            'camp_info' => $data['camp_info'] ?? null,
             'rescued_at' => $data['rescued_at'] ?? null,
             'history' => $data['history_th'] ?? null,
             'images' => $imageUrls,
@@ -145,6 +162,11 @@ class ElephantController extends Controller
     private function tours()
     {
         return Tour::orderBy('name')->get(['id', 'name', 'is_active']);
+    }
+
+    private function provinces()
+    {
+        return Province::orderBy('name_th')->get(['id', 'name_th', 'is_active']);
     }
 
     private function uploadImages(array $files): array
